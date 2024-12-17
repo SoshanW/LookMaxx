@@ -1,0 +1,11 @@
+Model Information:
+* title:	head planes
+* source:	https://sketchfab.com/3d-models/head-planes-7aa3861514bf4e8a9a9395934a5a73ef
+* author:	Den.Prodan (https://sketchfab.com/Den.Prodan)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "head planes" (https://sketchfab.com/3d-models/head-planes-7aa3861514bf4e8a9a9395934a5a73ef) by Den.Prodan (https://sketchfab.com/Den.Prodan) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
