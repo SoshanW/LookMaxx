@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset = "UTF=8">
+        <meta name = "viewport" content = "width=device-width, initial-scale = 0.1">
+        <title>Signup Form</title>
+        <link rel = "stylesheet" href = "signup_style.css">
+        <script src = "signup_script.js"></script>
+            
+    </head>
+
+    <body>
+        <div class = "signup_container">
+            <h2>Signup to Create an Account</h2>
+            <form id = "signupForm">
+                <div class = "form">
+                    <input
+                    type = "text"
+                    id = "username"
+                    name = "username"
+                    placeholder = "Username"
+                    required
+                    >
+                    <div id = "username_error" class = "error">
+                        Username must be longer than six characters
+                    </div>
+                </div>
+
+                <div class = "form">
+                    <input
+                    type = "email"
+                    id = "email"
+                    name = "email"
+                    placeholder="Email"
+                    required
+                    >
+                    <div id="email_error" class = "error">
+                        Email entered is not valid
+                    </div>
+                </div>
+
+                <div class = "form">
+                    <input 
+                    type = "password"
+                    id = "password"
+                    name = "password"
+                    placeholder="Password"
+                    >
+                    <div id="password_error" class = "error">
+                        Password must contain at leaset eight characters
+                    </div>
+                </div>
+
+                <div class = "form">
+                    <input
+                    type = "password"
+                    id = "confirm-password"
+                    name = "confirm-password"
+                    placeholder="Confirm Password">
+                    <div id="confirmPassword_error" class = "error">
+                        Passwords do not match
+                    </div>
+                </div>
+
+                <button type = "submit" class = "signup_btn">Signup</button>
+            </form>
+
+            <div class="login_link">
+                Already have an account? <a href="#login">Log In</a>
+            </div>
+        </div>
+    </body>
