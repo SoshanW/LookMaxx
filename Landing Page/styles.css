@@ -1,10 +1,27 @@
 :root {
   --bg-primary: #ffffff;
   --text-primary: #1a1a2e;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
   --accent-purple: #a58ac774;
   --accent-teal: #44bfca;
   --white: #ffffff;
   --gradient-primary: linear-gradient(135deg,#5f7cc0,#30363f);
+  --transition-speed: 0.3s;
+  --fluid-min-width: 320;
+  --fluid-max-width: 1200;
+  --fluid-min-size: 15;
+  --fluid-max-size: 18;
+  --fluid-min-ratio: calc(var(--fluid-min-size) / var(--fluid-min-width));
+  --fluid-max-ratio: calc(var(--fluid-max-size) / var(--fluid-max-width));
+}
+
+html{
+  font-size: clamp(
+    calc(var(--fluid-min-size)*1px),
+    calc((var(--fluid-min-ratio)*100)*1vw),
+    calc(var(--fluid-max-size)*1px)
+  );
 }
 
 * {
