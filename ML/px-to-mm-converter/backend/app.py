@@ -25,3 +25,20 @@ def calibrate():
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
+    
+@app.route('/convert', methods=['POST'])
+def convert():
+  try:
+      data = request.json
+      pixels = data['pixels']
+      conversion_ratio = data['conversion_ratio']
+      mm_measurement = pixels * conversion_ratio
+      return jsonify({
+          'success': True,
+          'millimeters': mm_measurement
+      })
+  except Exception as e:
+      return jsonify({'success': False, 'error': str(e)}), 400
+
+if __name__ == '__main__':
+    app.run(debug=True)
