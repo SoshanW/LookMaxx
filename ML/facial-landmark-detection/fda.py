@@ -9,7 +9,7 @@ print("Looking for image file:", os.path.abspath('dumbImage.jpg'))
 print("File exists:", os.path.exists('dumbImage.jpg'))
 
 # Load image with error checking
-img_base = cv2.imread('1.jpg')
+img_base = cv2.imread('./assets/naflan.jpg')
 if img_base is None:
     raise Exception("Error: Could not load image 'dumbImage.jpg'. Please check if the file exists and the path is correct.")
 
