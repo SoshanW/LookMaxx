@@ -1,42 +1,54 @@
-import mediapipe
-import cv2
-import matplotlib.pyplot as plt
+import mediapipe;
+import cv2;
+import matplotlib.pyplot as plt;
+# from mpl_toolkits.mplot3d import Axes3D;
 
-# Load and check image
-img_base = cv2.imread('1.jpg')
-if img_base is None:
-    raise Exception("Error: Image not found or could not be read")
-    
-# Convert BGR to RGB (MediaPipe expects RGB format)
-img = cv2.cvtColor(img_base, cv2.COLOR_BGR2RGB)
+img_base = cv2.imread('dumbImage.jpg')
+img = img_base.copy()
 
-# Initialize face mesh
 mp_face_mesh = mediapipe.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, min_detection_confidence=0.5)
+face_mesh = mp_face_mesh.FaceMesh(static_image_mode = True)
 
-# Process the image
 results = face_mesh.process(img)
-
-# Check if any face was detected
-if results.multi_face_landmarks is None:
-    print("No face detected in the image")
-    # Display the original image for debugging
-    plt.imshow(cv2.cvtColor(img_base, cv2.COLOR_BGR2RGB))
-    plt.title('Original Image - No Face Detected')
-    plt.show()
-    exit()
-
-# Get landmarks
 landmarks = results.multi_face_landmarks[0]
 
-# Draw landmarks on image
-for landmark in landmarks.landmark:
-    relative_x = int(landmark.x * img.shape[1])
-    relative_y = int(landmark.y * img.shape[0])
-    cv2.circle(img, (relative_x, relative_y), 2, (0, 0, 255), -1)
+xs = []; ys = []; zs = []
 
-# Display result
-plt.figure(figsize=(10, 10))
-plt.imshow(img)
-plt.title('Face Landmarks')
+for landmark in landmarks.landmark:
+    x = landmark.x
+    y = landmark.y
+    z = landmark.z
+
+    # xs.append(x)
+    # ys.append(y)
+    # zs.append(z) 
+
+    realtive_x = int(x*img.shape[1])
+    realtive_y = int(y*img.shape[0])
+
+    cv2.circle(img, (realtive_x, realtive_y), 5, (0, 0, 255), -1)
+
+fig = plt.figure(figsize=(15, 15))
+plt.inshow(img[:,:,::-1])
+plt.show()
+# fig = plt.figure()
+# ax = Axes3D(fig)
+
+# projection = ax.scatter(xs, ys, zs, color = 'green')
+
+# plt.show()
+
+img = img_base.copy()
+
+for source_idx, target_idx in mp_face_mesh.FACEMESH_TESSELATION: 
+    source = landmarks.landmark[source_idx]
+    target = landmarks.landmark[target_idx]
+
+    relative_source = (int(source.ximg.shape[1]), int(source.yimg.shape[0]))
+    relative_target = (int(target.ximg.shape[1]), int(target.yimg.shape[0]))
+
+    cv2.line(img, relative_source, relative_target, (0, 255, 0), 2)
+
+fig = plt.figure(figsize=(15, 15)) 
+plt.imshow(img[:,:,::-1])
 plt.show()
