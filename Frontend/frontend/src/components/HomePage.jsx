@@ -1,5 +1,7 @@
 import React from 'react';
-import Header from './Header'; // Import the Header component
+import { Link } from 'react-router-dom';
+import Header from './Header';
+import '../styles.css'; // Import the CSS file
 
 function HomePage() {
   return (
@@ -11,25 +13,34 @@ function HomePage() {
       <div
         className="hero-section d-flex flex-column justify-content-center align-items-center text-center"
         style={{
-          backgroundColor: '#e6e6f7',
+          backgroundImage: `url('/public/images/hero.jpeg')`, // Replace with your image path
+          backgroundSize: 'cover', // Ensures the image covers the entire section
+          backgroundPosition: 'center', // Centers the image
+          backgroundRepeat: 'no-repeat', // Prevents tiling
           color: '#000',
           height: '100vh',
           padding: '2rem',
         }}
       >
         <div className="hero-text mt-5">
-          <h1 className="display-1 fw-bold">
+          <h1
+            className="display-1 fw-bold animate-text" // Add the animation class
+            style={{
+              color: '#ffffff',
+              textShadow: '10px 10px 10px rgba(144, 144, 144, 0.7)',
+              fontSize: '5rem',
+            }}
+          >
             Welcome To <span style={{ color: '#5d65b3' }}>Look</span>
-            <span style={{ color: '#000' }}>Maxx</span>
+            <span style={{ color: '#ffffff' }}>Maxx</span>
           </h1>
-          <div className="d-flex justify-content-center gap-3 mt-4">
-            <button
-              className="btn btn-primary btn-lg"
-              style={{ backgroundColor: '#5d65b3', borderColor: '#858bcb' }}
-            >
+          <div className="d-flex justify-content-center gap-4 mt-4">
+            <button className="btn custom-button">
               Discover
             </button>
-            <button className="btn btn-dark btn-lg">Get Started</button>
+            <Link to="/signup" className="btn custom-button-dark">
+              Get Started
+            </Link>
           </div>
         </div>
         <div className="scroll-down mt-5">
@@ -47,28 +58,7 @@ function HomePage() {
           <h2>Retail</h2>
           <p>Find the latest fashion trends tailored for you and try them on your avatar. </p>
         </section>
-        <section id="community" className="py-5">
-          <h2>Community</h2>
-          <p>Join our vibrant community and share your journey to self-discovery.</p>
-        </section>
-        <section id="study" className="py-5">
-          <h2>Study</h2>
-          <p>Learn about scientific insights into beauty standards and self-awareness.</p>
-        </section>
-        <section id="about" className="py-5">
-          <h2>About</h2>
-          <p>Discover the mission and vision of LookMaxx.</p>
-        </section>
-        <section id="ffr" className="py-5">
-          <h2>FFR</h2>
-          <p>Explore our Facial Feature Recognition (FFR) technology to gain scientific insights for your appearance.</p>
-        </section>
       </div>
-
-      {/* Footer */}
-      <footer className="text-center py-3 bg-dark text-white">
-        <p>&copy; 2025 LookMaxx. All Rights Reserved.</p>
-      </footer>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+
+
 /* SignUpForm.css */
 .signup-container {
     min-height: 100vh;
@@ -90,7 +92,7 @@
   
   .form-input:focus {
     border-color: #1e3a8a;
-    ring-color: #1e3a8a;
+    outline-color: #1e3a8a;
   }
   
   .submit-button {
@@ -118,3 +120,54 @@
     color: white;
     border: none;
   }
+
+  /*Homepage css */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-text {
+    animation: fadeIn 2s ease-in-out;
+  }
+  
+  .custom-button {
+    background-color: #5d65b3;
+    border-color: #858bcb;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    color: #ffffff;
+    border-radius : 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .custom-button:hover {
+    background-color: #9ea3d6;
+    transform: scale(1.05);
+  }
+  
+  .custom-button-dark {
+    background-color: #ffffff;
+    border-color: #ffffff;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    color: #000000;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .custom-button-dark:hover {
+    background-color: #b6b6b6;
+    transform: scale(1.05);
+  }
+
+  
+
+
+  
