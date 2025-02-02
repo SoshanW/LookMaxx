@@ -117,7 +117,7 @@ def calculate_eye_ratios(landmarks, img_shape):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
     
     # Draw interpupillary distance
-    cv2.line(img_eyes, left_inner, right_inner, line_color, 2)
+    cv2.line(img_eyes, left_inner, right_inner, (0,255,0) , 2)
     cv2.putText(img_eyes, f'{interpupillary_ratio:.3f}',
                 (left_inner[0], left_inner[1] - 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
