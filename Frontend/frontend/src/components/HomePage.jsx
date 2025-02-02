@@ -1,62 +1,59 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from './Header';
-import '../styles.css'; // Import the CSS file
+import '../styles.css'; // Import the separate CSS file
+import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Import Material Icon
+
 
 function HomePage() {
   return (
-    <div className="d-flex flex-column min-vh-100">
-      {/* the Header */}
+    <div className="page-container">
+      {/* Header */}
       <Header />
 
       {/* Hero Section */}
-      <div
-        className="hero-section d-flex flex-column justify-content-center align-items-center text-center"
-        style={{
-          backgroundImage: `url('/public/images/hero.jpeg')`, // Replace with your image path
-          backgroundSize: 'cover', // Ensures the image covers the entire section
-          backgroundPosition: 'center', // Centers the image
-          backgroundRepeat: 'no-repeat', // Prevents tiling
-          color: '#000',
-          height: '100vh',
-          padding: '2rem',
-        }}
-      >
-        <div className="hero-text mt-5">
-          <h1
-            className="display-1 fw-bold animate-text" // Add the animation class
-            style={{
-              color: '#ffffff',
-              textShadow: '10px 10px 10px rgba(144, 144, 144, 0.7)',
-              fontSize: '5rem',
-            }}
-          >
-            Welcome To <span style={{ color: '#5d65b3' }}>Look</span>
-            <span style={{ color: '#ffffff' }}>Maxx</span>
+      <div className="hero-section">
+        <div className="hero-text">
+          <h1 className="hero-title">
+            Welcome To <span className="highlight">Look</span>
+            <span className="white-text">Maxx</span>
           </h1>
-          <div className="d-flex justify-content-center gap-4 mt-4">
-            <button className="btn custom-button">
-              Discover
-            </button>
-            <Link to="/signup" className="btn custom-button-dark">
-              Get Started
-            </Link>
+          <div className="button-container">
+            <button className="btn custom-button">Discover</button>
+            <Link to="/signup" className="btn custom-button-dark">Get Started</Link>
           </div>
         </div>
-        <div className="scroll-down mt-5">
-          <span className="fs-3">&#8595;</span>
+        <div className="scroll-down">
+          <ExpandMoreIcon style={{ fontSize: '5rem', color:'white'}} /> {/* Material Icon */} 
         </div>
       </div>
 
       {/* Scrollable Content Section */}
-      <div id="content-section" className="content-section" style={{ backgroundColor: '#f9f9f9', padding: '2rem' }}>
-        <section id="home" className="py-5">
+      <div id="content-section" className="content-section">
+        <section id="home" className="content-block">
           <h2>Home</h2>
           <p>Explore the LookMaxx experience, connecting you to beauty and modeling opportunities.</p>
         </section>
-        <section id="retail" className="py-5">
+        <section id="retail" className="content-block">
           <h2>Retail</h2>
-          <p>Find the latest fashion trends tailored for you and try them on your avatar. </p>
+          <p>Find the latest fashion trends tailored for you and try them on your avatar.</p>
+        </section>
+        <section id="community" className="content-block">
+          <h2>Community</h2>
+          <p>Join a community of like-minded individuals passionate about beauty and modeling.</p>
+        </section>
+        <section id="study" className="content-block">
+          <h2>Study</h2>
+          <p>Learn about beauty science, facial feature recognition, and the latest research.</p>
+        </section>
+        <section id="about" className="content-block">
+          <h2>About</h2>
+          <p>Discover the vision and mission behind LookMaxx and how we aim to revolutionize beauty.</p>
+        </section>
+        <section id="ffr" className="content-block">
+          <h2>Facial Feature Recognition (FFR)</h2>
+          <p>Explore how AI-driven facial feature recognition helps analyze beauty scientifically.</p>
         </section>
       </div>
     </div>

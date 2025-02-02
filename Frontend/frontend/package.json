@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@mui/icons-material": "^6.4.2",
     "bootstrap": "^5.3.3",
     "lucide-react": "^0.471.2",
     "react": "^18.3.1",

@@ -1,3 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+
+/*Homepage css */
+  @keyframes zoomIn {
+    from {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  .zoom-in {
+    animation: zoomIn 1.5s ease-out;
+  } 
+
+/* Hero Section */
+.hero-section {
+  background-image: url('/public/images/face.jpeg'); /* Replace with your image path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #000;
+  height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-text {
+  margin-top: 5rem;
+}
+
+.hero-title {
+  font-size: 7rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 10px 10px 20px rgba(217, 215, 197, 0.7);
+  font-family: 'Century Gothic', sans-serif; /* Apply the new font */
+}
+
+.highlight {
+  color: #1f1645;
+}
+
+.white-text {
+  color: #ffffff;
+}
+
+/* Buttons */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 1.5rem;
+}
+
+.custom-button {
+  background-color: #1f1645;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.custom-button-dark {
+  background-color: #c3d7dc;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.custom-button:hover {
+  background-color: #638dd0;
+  transform: scale(1.05);
+}
+.custom-button-dark:hover {
+  background-color: #8ed2ef;
+  transform: scale(1.05);
+}
+
+/* Scroll Down Indicator */
+.scroll-down {
+  margin-top: 3rem;
+}
+
+.scroll-icon {
+  font-size: 2rem;
+}
+
+/* General Page Styling */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Content Section */
+.content-section {
+  background-color: #f9f9f9;
+  padding: 2rem;
+}
+
+.content-block {
+  padding: 3rem 0;
+}
+
+.content-block h2 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.content-block p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Header CSS */
+.header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 2rem;
+  background-color: #e8eff3;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #5d65b3;
+  margin-left: 30px;
+}
+
+.black-text {
+  color: #000;
+}
+
+.tagline {
+  font-size: 1rem;
+  margin-top: -5px;
+  color: #5d65b3;
+}
+
+.nav-menu {
+  flex-grow: 1;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list li {
+  margin: 0 10px;
+}
+
+.nav-list a {
+  text-decoration: none;
+  color: #000;
+  font-size: 1.5rem;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-list a:hover {
+  color: #5d65b3;
+}
+
+.search-container {
+  margin-right: 30px;
+}
+
+.search-input {
+  width: 250px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 
 
 /* SignUpForm.css */
@@ -121,52 +315,7 @@
     border: none;
   }
 
-  /*Homepage css */
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
   
-  .animate-text {
-    animation: fadeIn 2s ease-in-out;
-  }
-  
-  .custom-button {
-    background-color: #5d65b3;
-    border-color: #858bcb;
-    padding: 1rem 2rem;
-    font-size: 1.5rem;
-    color: #ffffff;
-    border-radius : 8px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-  }
-  
-  .custom-button:hover {
-    background-color: #9ea3d6;
-    transform: scale(1.05);
-  }
-  
-  .custom-button-dark {
-    background-color: #ffffff;
-    border-color: #ffffff;
-    padding: 1rem 2rem;
-    font-size: 1.5rem;
-    color: #000000;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-  }
-  
-  .custom-button-dark:hover {
-    background-color: #b6b6b6;
-    transform: scale(1.05);
-  }
-
   
 
 
