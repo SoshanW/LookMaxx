@@ -64,6 +64,58 @@ def calculate_facial_thirds(landmarks, img_shape):
     
     return upper_ratio, middle_ratio, lower_ratio
 
+def calculate_eye_ratios(landmarks, img_shape):
+    # Create a fresh copy of the base image for eye measurements
+    img_eyes = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
+    
+    # Get coordinates for left eye corners
+    left_outer = (int(landmarks.landmark[33].x * img_shape[1]), 
+                 int(landmarks.landmark[33].y * img_shape[0]))
+    left_inner = (int(landmarks.landmark[133].x * img_shape[1]), 
+                 int(landmarks.landmark[133].y * img_shape[0]))
+    
+    # Get coordinates for right eye corners
+    right_inner = (int(landmarks.landmark[362].x * img_shape[1]), 
+                  int(landmarks.landmark[362].y * img_shape[0]))
+    right_outer = (int(landmarks.landmark[263].x * img_shape[1]), 
+                  int(landmarks.landmark[263].y * img_shape[0]))
+    
+    # Calculate distances
+    left_eye_width = ((left_outer[0] - left_inner[0])**2 + (left_outer[1] - left_inner[1])**2)**0.5
+    interpupillary_dist = ((left_inner[0] - right_inner[0])**2 +  (left_inner[1] - right_inner[1])**2)**0.5
+    total_eye_span = ((left_outer[0] - right_outer[0])**2 + (left_outer[1] - right_outer[1])**2)**0.5
+    
+    # Calculate ratios
+    left_eye_ratio = left_eye_width / total_eye_span
+    interpupillary_ratio = interpupillary_dist / total_eye_span
+    
+    # Draw measurements on image
+    line_color = (255, 0, 0)  # Red color for lines
+    text_color = (0, 255, 0)  # Green color for text
+    
+    # Draw left eye width
+    cv2.line(img_eyes, left_outer, left_inner, line_color, 2)
+    cv2.putText(img_eyes, f'{left_eye_ratio:.3f}', 
+                (left_outer[0], left_outer[1] - 10), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
+    
+    # Draw interpupillary distance
+    cv2.line(img_eyes, left_inner, right_inner, line_color, 2)
+    cv2.putText(img_eyes, f'{interpupillary_ratio:.3f}', 
+                (left_inner[0], left_inner[1] - 30), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
+    
+    # Draw total eye span (as reference)
+    cv2.line(img_eyes, left_outer, right_outer, (0, 0, 255), 1)
+    
+    # Display the eye measurements
+    plt.figure(figsize=(15, 15))
+    plt.imshow(img_eyes)
+    plt.title('Eye Measurements')
+    plt.show()
+    
+    return left_eye_ratio, interpupillary_ratio
+
 # Print current working directory and check if file exists
 print("Current working directory:", os.getcwd())
 print("Looking for image file:", os.path.abspath('dumbImage.jpg'))
@@ -108,6 +160,11 @@ if results.multi_face_landmarks:
     upper, middle, lower = calculate_facial_thirds(landmarks, img.shape)
     print(f'Face width-to-height ratio: {ratio:.2f}')
     print(f'Facial thirds ratios - Upper: {upper:.2f}, Middle: {middle:.2f}, Lower: {lower:.2f}')
+    
+    # Calculate and display eye ratios
+    left_eye_ratio, interpupillary_ratio = calculate_eye_ratios(landmarks, img.shape)
+    print(f'Left eye width ratio: {left_eye_ratio:.3f}')
+    print(f'Interpupillary to total width ratio: {interpupillary_ratio:.3f}')
 
 # Display image with landmarks
 fig = plt.figure(figsize=(15, 15))
