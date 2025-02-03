@@ -35,3 +35,36 @@ df["Difference"] = df["Calculated"] - df["Perfect"]
 df["Percentage Difference"] = (df["Difference"] / df["Perfect"]) * 100
 
 print(df)
+
+
+#Graphical Representation Start
+plt.figure(figsize=(15, 15))
+x= np.arange(len(df["Metric"])) #label location
+width = 0.35
+
+fig, ax =  plt.subplots()
+bars1 = ax.bar(x - width/2, df["Calculated"], width, label="Calculated")
+bars2 = ax.bar(x + width/2, df["Perfect"], width, label="Perfect")
+
+#texts for labels
+ax.set_ylabel("Ratios")
+ax.set_title("Comparison Report")
+ax.set_xticks(x)
+ax.set_xticklabels(df["Metric"])
+ax.legend()
+
+#Adding the value in top of the bar
+def add_value_labels(bars):
+  for bar in bars:
+    height = bar.get_height()
+    ax.annotate('{}'.format(height),
+                xy=(bar.get_x() + bar.get_width() / 2, height),
+                xytext=(0, 3),
+                textcoords="offset points",
+                ha='center', va='bottom')
+
+add_value_labels(bars1)
+add_value_labels(bars2)
+
+plt.tight_layout()
+plt.show()
