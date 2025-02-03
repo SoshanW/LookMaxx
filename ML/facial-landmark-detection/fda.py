@@ -183,12 +183,12 @@ if results.multi_face_landmarks:
 
     # Create a dictionary to store the results
     results_dict = {
-        "face_ratio": ratio,
-        "upper_ratio": upper,
-        "middle_ratio": middle,
-        "lower_ratio": lower,
-        "left_eye_ratio": left_eye_ratio,
-        "interpupillary_ratio": interpupillary_ratio
+        "face_ratio": round(ratio, 2),
+        "upper_ratio": round(upper, 2),
+        "middle_ratio": round(middle, 2),
+        "lower_ratio": round(lower, 2),
+        "left_eye_ratio": round(left_eye_ratio, 2),
+        "interpupillary_ratio": round(interpupillary_ratio, 2)
     }
 
     # Save the results to a JSON file

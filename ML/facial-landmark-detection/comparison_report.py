@@ -3,15 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 
-# Sample Data for Testing
-calculated_ratios = {
-    "face_ratio": 1.5,
-    "upper_ratio": 0.35,
-    "middle_ratio": 0.15,
-    "lower_ratio": 0.9,
-    "left_eye_ratio": 0.3,
-    "interpupillary_ratio": 0.7
-}
+# Load calculated ratios from JSON file
+with open("facial_metrics.json", "r") as f:
+    calculated_ratios = json.load(f)
 
 # Sample Perfect data for Testing
 perfect_ratios = {
