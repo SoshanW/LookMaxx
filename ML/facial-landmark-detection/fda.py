@@ -180,6 +180,45 @@ def calculate_nasal_index(landmarks, img_shape):
     
     return nasal_index
 
+def calculate_lip_ratio(landmarks, img_shape):
+    img_lips = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
+
+    # Using philtrum point for upper lip top
+    upper_lip_top = (int(landmarks.landmark[0].x * img_shape[1]),
+                    int(landmarks.landmark[0].y * img_shape[0]))
+    upper_lip_bottom = (int(landmarks.landmark[13].x * img_shape[1]),
+                       int(landmarks.landmark[13].y * img_shape[0]))
+    
+    lower_lip_top = (int(landmarks.landmark[14].x * img_shape[1]),
+                    int(landmarks.landmark[14].y * img_shape[0]))
+    lower_lip_bottom = (int(landmarks.landmark[17].x * img_shape[1]),
+                       int(landmarks.landmark[17].y * img_shape[0]))
+    
+    upper_lip_height = abs(upper_lip_bottom[1] - upper_lip_top[1])
+    lower_lip_height = abs(lower_lip_bottom[1] - lower_lip_top[1])
+    
+    upper_color = (255, 0, 0)  # Blue
+    lower_color = (0, 255, 0)  # Green
+    
+    # Draw measurements 
+    cv2.line(img_lips, upper_lip_top, upper_lip_bottom, upper_color, 2)
+    cv2.putText(img_lips, f'Upper: {upper_lip_height:.2f}px', 
+                (upper_lip_top[0] - 150, (upper_lip_top[1] + upper_lip_bottom[1])//2),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, upper_color, 2)
+
+    cv2.line(img_lips, lower_lip_top, lower_lip_bottom, lower_color, 2)
+    cv2.putText(img_lips, f'Lower: {lower_lip_height:.2f}px', 
+                (lower_lip_top[0] - 150, (lower_lip_top[1] + lower_lip_bottom[1])//2),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, lower_color, 2)
+
+    lip_ratio = upper_lip_height / lower_lip_height if lower_lip_height != 0 else 0
+    cv2.putText(img_lips, f'Upper/Lower Ratio: {lip_ratio:.2f}', 
+                (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
+
+    save_image(img_lips, 'lip_ratio.png')
+    return lip_ratio
+
 # Load image with error checking
 img_base = cv2.imread('./assets/naflan.jpg')
 if img_base is None:
@@ -228,6 +267,10 @@ if results.multi_face_landmarks:
     nasal_index = calculate_nasal_index(landmarks, img_rgb.shape)
     print(f'Nasal Index: {nasal_index:.3f}')
 
+    # Calculate lip ratio
+    lip_ratio = calculate_lip_ratio(landmarks, img_rgb.shape)
+    print(f'Lip Ratio (Upper to Lower): {lip_ratio:.3f}')
+
     # Create a dictionary to store the results
     results_dict = {
         "face_ratio": round(ratio, 2),
@@ -236,7 +279,8 @@ if results.multi_face_landmarks:
         "lower_ratio": round(lower, 2),
         "left_eye_ratio": round(left_eye_ratio, 2),
         "interpupillary_ratio": round(interpupillary_ratio, 2),
-        "nasal_index": round(nasal_index, 2)
+        "nasal_index": round(nasal_index, 2),
+        "lip_ratio": round(lip_ratio, 2)
     }
 
     # Save the results to a JSON file

@@ -16,7 +16,8 @@ perfect_ratios = {
     "lower_ratio": 0.5,
     "left_eye_ratio": 0.25,
     "interpupillary_ratio": 0.5,
-    "nasal_ratio": 0.25
+    "nasal_ratio": 0.25,
+    "lip_ratio": 0.25,
 }
 
 # Converting the dictionaries to dataframes
@@ -38,7 +39,7 @@ if not os.path.exists(comparison_graph_dir):
     os.makedirs(comparison_graph_dir)
 
 # Graphical Representation Start
-fig, ax = plt.subplots(figsize=(10, 5))  # Set figure size here
+fig, ax = plt.subplots(figsize=(12, 5))  # Set figure size here
 x = np.arange(len(df["Metric"]))  # label location
 width = 0.35
 
