@@ -240,7 +240,7 @@ if results.multi_face_landmarks:
     }
 
     # Save the results to a JSON file
-    with open('facial_metrics.json', 'w') as json_file:
+    with open('./reports/facial_metrics.json', 'w') as json_file:
         json.dump(results_dict, json_file, indent=4)
     print("Results saved to 'facial_metrics.json'.")
 

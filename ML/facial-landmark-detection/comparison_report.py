@@ -5,7 +5,7 @@ import json
 import os  # Import os to handle directory creation
 
 # Load calculated ratios from JSON file
-with open("facial_metrics.json", "r") as f:
+with open("./reports/facial_metrics.json", "r") as f:
     calculated_ratios = json.load(f)
 
 # Sample Perfect data for Testing
@@ -73,7 +73,7 @@ plt.show()
 
 # Saving to JSON file
 comparison_report = df.to_dict(orient="records")  # Corrected from to.dict
-with open("comparison_report.json", "w") as f:
+with open("./reports/comparison_report.json", "w") as f:
     json.dump(comparison_report, f, indent=4)
 
 print("Comparison report saved to 'comparison_report.json'")
