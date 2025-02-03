@@ -140,15 +140,50 @@ def calculate_eye_ratios(landmarks, img_shape):
     
     return left_eye_ratio, interpupillary_ratio
 
-# Print current working directory and check if file exists
-print("Current working directory:", os.getcwd())
-print("Looking for image file:", os.path.abspath('dumbImage.jpg'))
-print("File exists:", os.path.exists('dumbImage.jpg'))
+def calculate_nasal_index(landmarks, img_shape):
+    img_nasal = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
+
+    # Updated landmarks for nasal width (alae)
+    left_ala = (int(landmarks.landmark[129].x * img_shape[1]), 
+                int(landmarks.landmark[129].y * img_shape[0]))
+    right_ala = (int(landmarks.landmark[358].x * img_shape[1]), 
+                 int(landmarks.landmark[358].y * img_shape[0]))
+    
+    # Updated landmarks for nasal height (nasion to subnasale)
+    nasion = (int(landmarks.landmark[168].x * img_shape[1]), 
+              int(landmarks.landmark[168].y * img_shape[0]))
+    subnasale = (int(landmarks.landmark[2].x * img_shape[1]), 
+                 int(landmarks.landmark[2].y * img_shape[0]))
+    
+    nasal_width = ((right_ala[0] - left_ala[0])**2 + (right_ala[1] - left_ala[1])**2)**0.5
+    nose_height = ((nasion[0] - subnasale[0])**2 + (nasion[1] - subnasale[1])**2)**0.5
+    
+    nasal_index = (nasal_width / nose_height) 
+
+    line_color = (255, 0, 255)
+    
+    cv2.line(img_nasal, left_ala, right_ala, line_color, 2)
+    cv2.putText(img_nasal, f'Interalar Width: {nasal_width:.2f}', 
+                (left_ala[0], left_ala[1] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
+    
+    cv2.line(img_nasal, nasion, subnasale, line_color, 2)
+    cv2.putText(img_nasal, f'Nasal Height: {nose_height:.2f}', 
+                (nasion[0] + 10, (nasion[1] + subnasale[1])//2),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
+    
+    cv2.putText(img_nasal, f'Nasal Index: {nasal_index:.2f}', 
+                (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.9, line_color, 2)
+    
+    save_image(img_nasal, 'nasal_index.png')
+    
+    return nasal_index
 
 # Load image with error checking
 img_base = cv2.imread('./assets/naflan.jpg')
 if img_base is None:
-    raise Exception("Error: Could not load image 'dumbImage.jpg'. Please check if the file exists and the path is correct.")
+    raise Exception("Error: Could not load image 'naflan.jpg'. Please check if the file exists and the path is correct.")
 
 # Initialize face mesh
 mp_face_mesh = mediapipe.solutions.face_mesh
@@ -189,6 +224,10 @@ if results.multi_face_landmarks:
     print(f'Left eye width ratio: {left_eye_ratio:.3f}')
     print(f'Interpupillary to total width ratio: {interpupillary_ratio:.3f}')
 
+    #Calulcate nasal index
+    nasal_index = calculate_nasal_index(landmarks, img_rgb.shape)
+    print(f'Nasal Index: {nasal_index:.3f}')
+
     # Create a dictionary to store the results
     results_dict = {
         "face_ratio": round(ratio, 2),
@@ -196,7 +235,8 @@ if results.multi_face_landmarks:
         "middle_ratio": round(middle, 2),
         "lower_ratio": round(lower, 2),
         "left_eye_ratio": round(left_eye_ratio, 2),
-        "interpupillary_ratio": round(interpupillary_ratio, 2)
+        "interpupillary_ratio": round(interpupillary_ratio, 2),
+        "nasal_index": round(nasal_index, 2)
     }
 
     # Save the results to a JSON file

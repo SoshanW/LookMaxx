@@ -15,7 +15,8 @@ perfect_ratios = {
     "middle_ratio": 0.25,
     "lower_ratio": 0.5,
     "left_eye_ratio": 0.25,
-    "interpupillary_ratio": 0.5
+    "interpupillary_ratio": 0.5,
+    "nasal_ratio": 0.25
 }
 
 # Converting the dictionaries to dataframes
