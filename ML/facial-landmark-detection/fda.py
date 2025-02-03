@@ -4,6 +4,21 @@ import matplotlib.pyplot as plt
 import os
 import json  # Import the json module
 
+# Define the path for the graphs directory inside the assets folder
+graphs_dir = os.path.join('assets', 'facial_ratio_graphs')
+
+# Create a directory for graphs if it doesn't exist
+if not os.path.exists(graphs_dir):
+    os.makedirs(graphs_dir)
+
+def save_image(image, filename):
+    """Save the image to the specified filename in the graphs directory."""
+    plt.figure(figsize=(15, 15))
+    plt.imshow(image)
+    plt.axis('off')  # Hide axes
+    plt.savefig(os.path.join(graphs_dir, filename), bbox_inches='tight')
+    plt.close()  # Close the figure to free memory
+
 def calculate_face_ratio(landmarks, img_shape):
     # Create a fresh copy of the base image
     img_ratio = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
@@ -19,11 +34,8 @@ def calculate_face_ratio(landmarks, img_shape):
                 (min(x_coords), min(y_coords)-10),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
     
-    # Display face ratio
-    plt.figure(figsize=(15, 15))
-    plt.imshow(img_ratio)
-    plt.title('Face Width to Height Ratio')
-    plt.show()
+    # Save face ratio image
+    save_image(img_ratio, 'face_ratio.png')
     
     return ratio
 
@@ -75,11 +87,8 @@ def calculate_facial_thirds(landmarks, img_shape):
                 (face_right + text_offset, (nose_bottom + chin)//2),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
     
-    # Display facial thirds
-    plt.figure(figsize=(15, 15))
-    plt.imshow(img_thirds)
-    plt.title('Facial Thirds Measurements')
-    plt.show()
+    # Save facial thirds image
+    save_image(img_thirds, 'facial_thirds.png')
     
     return upper_ratio, middle_ratio, lower_ratio
 
@@ -126,11 +135,8 @@ def calculate_eye_ratios(landmarks, img_shape):
     # Draw total eye span (reference)
     cv2.line(img_eyes, left_outer, right_outer, (0, 0, 255), 1)
     
-    # Display eye measurements
-    plt.figure(figsize=(15, 15))
-    plt.imshow(img_eyes)
-    plt.title('Eye Measurements')
-    plt.show()
+    # Save eye measurements image
+    save_image(img_eyes, 'eye_measurements.png')
     
     return left_eye_ratio, interpupillary_ratio
 
@@ -160,7 +166,9 @@ if results.multi_face_landmarks is None:
     plt.figure(figsize=(15, 15))
     plt.imshow(cv2.cvtColor(img_base, cv2.COLOR_BGR2RGB))
     plt.title('Original Image - No Face Detected')
-    plt.show()
+    plt.axis('off')
+    plt.savefig(os.path.join(graphs_dir, 'no_face_detected.png'), bbox_inches='tight')
+    plt.close()
     exit()
 
 # Get landmarks
@@ -211,8 +219,7 @@ for source_idx, target_idx in mp_face_mesh.FACEMESH_TESSELATION:
 
     cv2.line(img_tessellation, relative_source, relative_target, (0, 255, 0), 1)
 
-# Display tessellation
-plt.figure(figsize=(15, 15))
-plt.imshow(img_tessellation)
-plt.title('Face Mesh Tessellation')
-plt.show()
+# Save tessellation image
+save_image(img_tessellation, 'face_mesh_tessellation.png')
+
+print("All images saved in the 'assets/graphs' directory.")
