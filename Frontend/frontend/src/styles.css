@@ -14,6 +14,16 @@
   .zoom-in {
     animation: zoomIn 1.5s ease-out;
   } 
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
 /* Hero Section */
 .hero-section {
@@ -41,6 +51,7 @@
   color: #ffffff;
   text-shadow: 10px 10px 20px rgba(217, 215, 197, 0.7);
   font-family: 'Century Gothic', sans-serif; /* Apply the new font */
+  animation : zoomIn 1s ease-out;
 }
 
 .highlight {
@@ -68,6 +79,8 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  opacity: 0; /* Initially hidden */
+  animation: fadeInUp 1s ease-in-out 1s forwards; /* Animation with delay */
 }
 
 .custom-button-dark {
@@ -79,6 +92,8 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  opacity: 0; /* Initially hidden */
+  animation: fadeInUp 1s ease-in-out 1s forwards; /* Animation with delay */
 }
 
 .custom-button:hover {
@@ -117,13 +132,23 @@
 }
 
 .content-block h2 {
-  font-size: 2rem;
-  color: #333;
+  font-size: 3rem;
+  color: #1f1645;
+  text-align: center;
+  ;
+}
+.content-block h3 {
+  font-size: 1.7rem;
+  color: #1f1645;
+  text-align: center;
+  margin-top: 20px;
+  ;
 }
 
 .content-block p {
   font-size: 1.2rem;
-  color: #666;
+  color: #1f1645;
+  text-align: center;
 }
 
 /* Header CSS */
@@ -134,24 +159,6 @@
   padding: 1rem 2rem;
   background-color: #e8eff3;
 }
-
-.logo {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #5d65b3;
-  margin-left: 30px;
-}
-
-.black-text {
-  color: #000;
-}
-
-.tagline {
-  font-size: 1rem;
-  margin-top: -5px;
-  color: #5d65b3;
-}
-
 .nav-menu {
   flex-grow: 1;
 }
@@ -171,9 +178,11 @@
 
 .nav-list a {
   text-decoration: none;
-  color: #000;
+  color: #1f1645;
   font-size: 1.5rem;
   transition: color 0.3s ease-in-out;
+  font-family: 'Century Gothic', sans-serif;
+  font-weight: bold;
 }
 
 .nav-list a:hover {
@@ -187,136 +196,193 @@
 .search-input {
   width: 250px;
   padding: 0.5rem;
+  font-size: 1.2rem;
+  border: 1px solid #49adff;
+  border-radius: 10px;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #5d65b3;
+  margin-left: 30px;
+}
+
+.black-text {
+  color: #000000;
+}
+
+.tagline {
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  margin-top: -5px;
+  color: #5d65b3;
+}
+
+/* Features Section Styling */
+.features-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 20px;
+}
+
+.feature-card {
+  background: #c3d7dc;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 400px;
+  padding: 15px;
+  box-shadow: 0 3px 15px rgb(163, 183, 248);
+  transition: transform 0.3s ease-in-out;
+  font-family: 'Century Gothic', sans-serif;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-image {
+  width: 100%;
+  height: 250px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+}
+
+.feature-one {
+  background-image: url('/public/images/card1.jpeg');
+}
+
+.feature-two {
+  background-image: url('/public/images/card2.jpeg');
+}
+
+.feature-three {
+  background-image: url('/public/images/card3.jpeg');
+}
+
+.feature-text {
+  text-align: center;
+  color: #1f1645;
+  margin-top: 10px;
+  font-size: 1.1rem;
+}
+
+.feature-button {
+  background-color: #1f1645;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.feature-button:hover {
+  background-color: #7c9acc;
+}
+/* Fun Facts Section */
+.fun-facts {
+  text-align: center;
+  padding: 20px;
+}
+
+.fun-facts-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  position: relative;
+  font-family: 'Lobster', cursive;
+}
+
+.fun-fact-box {
+  background-color: #e6e6fa;
+  padding: 15px;
+  border-radius: 20px;
+  box-shadow: 0 3px 10px rgb(170, 213, 235);
+  max-width: 300px;
+  text-align: center;
+  margin: 10px;
+}
+
+.fun-fact-note {
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.beauty-chat * {
+  position: relative;
+  z-index: 1; /* Ensure text and button are above the background */
+}
+
+.beauty-chat {
+  text-align: center;
+  position: relative;
+  font-family: 'Century Gothic', sans-serif;
+  padding: 2rem;
+  border-radius: 15px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.beauty-chat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/images/low.jpeg'); /* Make sure the path is correct */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  z-index: 0; /* Set a low z-index but not negative */
 }
 
 
+.beauty-chat h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #2f2464; /* Dark color for contrast */
+}
 
-/* SignUpForm.css */
-.signup-container {
-    min-height: 100vh;
-    background: linear-gradient(to bottom right, #f9fafb, #ffffff);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  
-  .signup-card {
-    width: 100%;
-    max-width: 28rem;
-    border-color: #e5e7eb;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  }
-  
-  .signup-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  
-  .logo-container {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .logo {
-    width: 12rem;
-    height: 3rem;
-  }
-  
-  .logo-text {
-    font-size: 3.75rem;
-    font-weight: bold;
-  }
-  
-  .logo-look {
-    fill: #6B7280;
-  }
-  
-  .logo-maxx {
-    fill: #FFFFFF;
-    stroke: #1e3a8a;
-    stroke-width: 1;
-  }
-  
-  .slogan {
-    text-align: center;
-    color: #4B5563;
-    font-size: 1.125rem;
-  }
-  
-  .signup-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .form-label {
-    color: #374151;
-  }
-  
-  .input-container {
-    position: relative;
-  }
-  
-  .input-icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
-    color: #9CA3AF;
-  }
-  
-  .form-input {
-    padding-left: 2.5rem;
-    background-color: #ffffff;
-    border-color: #e5e7eb;
-  }
-  
-  .form-input:focus {
-    border-color: #1e3a8a;
-    outline-color: #1e3a8a;
-  }
-  
-  .submit-button {
-    width: 100%;
-    background-color: #111827;
-    color: white;
-    font-weight: 600;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    margin-top: 1.5rem;
-    transition: background-color 0.2s;
-  }
-  
-  .submit-button:hover {
-    background-color: #1e3a8a;
-  }
-  
-  .error-alert {
-    margin-bottom: 1rem;
-  }
-  
-  .success-alert {
-    margin-bottom: 1rem;
-    background-color: #1e3a8a;
-    color: white;
-    border: none;
-  }
+.beauty-chat .beauty-text {
+  font-size: 3.5rem;
+  font-weight: bold;
+  display: inline-block;
+  padding: 5px 15px;
+  transform: rotate(-5deg);
+}
 
-  
-  
+.beauty-chat p {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 15px 0;
+  color: #1f1645;
+}
+
+.start-chatting {
+  background-color: #3d3581;
+  color: white;
+  font-size: 1.5rem;
+  padding: 12px 25px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.start-chatting:hover {
+  background-color: #8c85d3;
+}
 
 
   
