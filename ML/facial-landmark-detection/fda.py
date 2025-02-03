@@ -2,6 +2,7 @@ import mediapipe
 import cv2
 import matplotlib.pyplot as plt
 import os
+import json  # Import the json module
 
 def calculate_face_ratio(landmarks, img_shape):
     # Create a fresh copy of the base image
@@ -179,6 +180,21 @@ if results.multi_face_landmarks:
     left_eye_ratio, interpupillary_ratio = calculate_eye_ratios(landmarks, img_rgb.shape)
     print(f'Left eye width ratio: {left_eye_ratio:.3f}')
     print(f'Interpupillary to total width ratio: {interpupillary_ratio:.3f}')
+
+    # Create a dictionary to store the results
+    results_dict = {
+        "face_ratio": ratio,
+        "upper_ratio": upper,
+        "middle_ratio": middle,
+        "lower_ratio": lower,
+        "left_eye_ratio": left_eye_ratio,
+        "interpupillary_ratio": interpupillary_ratio
+    }
+
+    # Save the results to a JSON file
+    with open('facial_metrics.json', 'w') as json_file:
+        json.dump(results_dict, json_file, indent=4)
+    print("Results saved to 'facial_metrics.json'.")
 
 # Create tessellation image
 img_tessellation = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
