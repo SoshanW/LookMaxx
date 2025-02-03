@@ -49,7 +49,8 @@ class InteractiveThreeScene {
     setupRenderer() {
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(this.width, this.height);
-        document.body.appendChild(renderer.domElement);
+        const container = document.getElementById('scene-container');
+        container.appendChild(renderer.domElement);
         return renderer;
     }
 
