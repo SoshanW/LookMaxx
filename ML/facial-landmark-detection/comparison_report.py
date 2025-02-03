@@ -68,3 +68,10 @@ add_value_labels(bars2)
 
 plt.tight_layout()
 plt.show()
+
+#Saving to Json file
+comparison_report = df.to.dict(orient="records")
+with open("comparison_report.json", "w") as f:
+  json.dump(comparison_report, f, indent=4)
+
+print("Comparison report saved to 'comparison_report.json'")
