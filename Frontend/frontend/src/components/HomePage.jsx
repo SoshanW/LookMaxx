@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from './Header';
+import Footer from './Footer';
 import '../styles.css'; // Import the separate CSS file
 import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Import Material Icon
@@ -12,7 +13,6 @@ function HomePage() {
     <div className="page-container">
       {/* Header */}
       <Header />
-
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-text">
@@ -84,8 +84,8 @@ function HomePage() {
             <p>Talk with industry experts and other like-minded people</p>
               <button className="btn start-chatting">Start Chatting</button>
       </section>
-
-      </div>
+    </div>
+      <Footer /> 
     </div>
   );
 }

@@ -6,8 +6,7 @@ function Header() {
     <header className="header">
       {/* Logo Section */}
       <div className="logo">
-        <span>Look</span><span className="black-text">Maxx</span>
-        <p className="tagline">Beauty Redefined</p>
+        
       </div>
 
       {/* Navigation Menu */}

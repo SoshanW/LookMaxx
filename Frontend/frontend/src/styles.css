@@ -46,7 +46,7 @@
 }
 
 .hero-title {
-  font-size: 7rem;
+  font-size: 6.5rem;
   font-weight: bold;
   color: #ffffff;
   text-shadow: 10px 10px 20px rgba(217, 215, 197, 0.7);
@@ -57,7 +57,6 @@
 .highlight {
   color: #1f1645;
 }
-
 .white-text {
   color: #ffffff;
 }
@@ -101,7 +100,7 @@
   transform: scale(1.05);
 }
 .custom-button-dark:hover {
-  background-color: #8ed2ef;
+  background-color: #638dd0;
   transform: scale(1.05);
 }
 
@@ -123,7 +122,7 @@
 
 /* Content Section */
 .content-section {
-  background-color: #f9f9f9;
+  background-color: #ebf3fd;
   padding: 2rem;
 }
 
@@ -156,8 +155,9 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem; /* Reduced padding */
   background-color: #e8eff3;
+  height: 80px; /* Set a smaller height */
 }
 .nav-menu {
   flex-grow: 1;
@@ -196,27 +196,75 @@
 .search-input {
   width: 250px;
   padding: 0.5rem;
-  font-size: 1.2rem;
+  font-size: 1rem;
   border: 1px solid #49adff;
   border-radius: 10px;
 }
 
 .logo {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #5d65b3;
-  margin-left: 30px;
+  width: 200px; 
+  height: 80px;
+  background-image: url('/images/logo.png');
+  background-size: contain; 
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* Footer Styles */
+.footer {
+  background-color: #1f1645;
+  color: white;
+  padding: 2rem 1rem;
+  text-align: center;
+  font-family: 'Century Gothic', sans-serif;
+  
 }
 
-.black-text {
-  color: #000000;
+.footer-content {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center;
+  justify-content: center;
+  gap: 1rem; /* Space between nav and social icons */
 }
 
-.tagline {
+.footer-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-nav a {
+  color: white;
+  text-decoration: none;
   font-size: 1rem;
-  margin-top: -5px;
-  color: #5d65b3;
+  transition: color 0.3s ease;
 }
+
+.footer-nav a:hover {
+  color: #b1e0ee;
+}
+
+.footer-social {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-social a {
+  color: white;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+  gap: 1rem;
+}
+
+.footer-social a:hover {
+  color: #b1e0ee;
+}
+
+.footer-bottom {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-top: 10px;
+}
+
 
 /* Features Section Styling */
 .features-container {
@@ -227,14 +275,14 @@
 }
 
 .feature-card {
-  background: #c3d7dc;
+  background: #c5d5e6;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 400px;
   padding: 15px;
-  box-shadow: 0 3px 15px rgb(163, 183, 248);
+  box-shadow: 0 3px 15px rgb(191, 209, 248);
   transition: transform 0.3s ease-in-out;
   font-family: 'Century Gothic', sans-serif;
 }
@@ -299,10 +347,10 @@
 }
 
 .fun-fact-box {
-  background-color: #e6e6fa;
+  background-color: #b5c2df;
   padding: 15px;
   border-radius: 20px;
-  box-shadow: 0 3px 10px rgb(170, 213, 235);
+  box-shadow: 0 3px 10px rgb(170, 191, 235);
   max-width: 300px;
   text-align: center;
   margin: 10px;
