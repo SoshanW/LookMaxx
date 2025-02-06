@@ -1,36 +1,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
-/*Homepage css */
-  @keyframes zoomIn {
-    from {
-      transform: scale(0.5);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  .zoom-in {
-    animation: zoomIn 1.5s ease-out;
-  } 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+/* Model Container Styles */
+.model-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: all;
+  background: linear-gradient(to bottom, #a2aed4, #ebf3fd);
+}
 
-/* Hero Section */
+.model-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Existing animations */
+@keyframes zoomIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.zoom-in {
+  animation: zoomIn 1.5s ease-out;
+}
+
+/* Hero Section - Modified */
 .hero-section {
-  background-image: url('/public/images/face.jpeg'); /* Replace with your image path */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  position: relative;
   color: #000;
   height: 100vh;
   padding: 2rem;
@@ -39,14 +54,17 @@
   justify-content: center;
   align-items: center;
   text-align: center;
+  overflow: hidden;
 }
 
 .hero-text {
   margin-top: 5rem;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-title {
-  font-size: 6.5rem;
+  font-size: 6rem;
   font-weight: bold;
   color: #ffffff;
   text-shadow: 10px 10px 20px rgba(217, 215, 197, 0.7);
@@ -73,8 +91,8 @@
   background-color: #1f1645;
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  font-size: 1.6rem;
+  padding: 1rem 1rem;
+  font-size: 1.5rem;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
@@ -86,8 +104,8 @@
   background-color: #c3d7dc;
   color: rgb(0, 0, 0);
   border: none;
-  padding: 1rem 2rem;
-  font-size: 1.6rem;
+  padding: 1rem 1rem;
+  font-size: 1.5rem;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;

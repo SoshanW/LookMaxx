@@ -5,6 +5,7 @@ import Footer from './Footer';
 import '../styles.css'; // Import the separate CSS file
 import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; // Import Material Icon
+import Model3D from './Model3D';  
 
 
 
@@ -15,20 +16,23 @@ function HomePage() {
       <Header />
       {/* Hero Section */}
       <div className="hero-section">
-        <div className="hero-text">
-          <h1 className="hero-title">
-            Welcome To <span className="highlight">Look</span>
-            <span className="white-text">Maxx</span>
-          </h1>
-          <div className="button-container">
-            <button className="btn custom-button">Discover</button>
-            <Link to="/signup" className="btn custom-button-dark">Get Started</Link>
-          </div>
-        </div>
-        <div className="scroll-down">
-          <ExpandMoreIcon style={{ fontSize: '5rem', color:'white'}} /> {/* Material Icon */} 
+      <div className="model-wrapper">
+        <Model3D />
+      </div>
+      <div className="hero-text">
+        <h1 className="hero-title">
+          Welcome To <span className="highlight">Look</span>
+          <span className="white-text">Maxx</span>
+        </h1>
+        <div className="button-container">
+          <button className="btn custom-button">Discover</button>
+          <Link to="/signup" className="btn custom-button-dark">Get Started</Link>
         </div>
       </div>
+      <div className="scroll-down">
+        <ExpandMoreIcon style={{ fontSize: '5rem', color:'white'}} />
+      </div>
+    </div>
 
       <div id="content-section" className="content-section">
         <section className="content-block">
