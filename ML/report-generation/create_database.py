@@ -1,4 +1,4 @@
-from langchain.document_loaders import DirectoryLoader
+from langchain_community.document_loaders import DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 import os
@@ -40,3 +40,6 @@ def save_to_chroma(chunks: list[Documents]):
     )
     db.persist()
     print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
+
+if __name__ == "__main__":
+    main()
