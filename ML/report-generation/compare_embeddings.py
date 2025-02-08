@@ -1,7 +1,12 @@
 from langchain.document_loaders import DirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.schema import Document
+import os
+import shutil
 
 # Global Variables
 DATA_PATH = "data"
+CHROMA_PATH = "chroma"
 
 def load_documents():
     loader = DirectoryLoader(DATA_PATH, glob="*.md")
@@ -23,3 +28,15 @@ def split_text(documents: list[Document]):
     print(document.metadata)
 
     return chunks
+
+def save_to_chroma(chunks: list[Documents]):
+    # Clearing out the database first
+    if os.path.exists(CHROMA_PATH):
+        shutil.rmtree(CHROMA_PATH)
+
+    # Create a new DB for the document
+    db = Chroma.from_documents(
+        chunks, OpenAIEmbeddings(), persist_directory=CHROMA_PATH
+    )
+    db.persist()
+    print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
