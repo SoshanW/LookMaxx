@@ -1,12 +1,27 @@
 from langchain_community.document_loaders import DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
+import openai
+from dotenv import load_dotenv
 import os
 import shutil
+
+load_dotenv()
+openai.api_key = os.environ['OPENAI_API_KEY']
 
 # Global Variables
 DATA_PATH = "data"
 CHROMA_PATH = "chroma"
+
+def main():
+    generate_data_store()
+
+def generate_data_store():
+    documents = loack_documents()
+    chunks = split_text(documents)
+    save_to_chroma(chunks)
 
 def load_documents():
     loader = DirectoryLoader(DATA_PATH, glob="*.md")
