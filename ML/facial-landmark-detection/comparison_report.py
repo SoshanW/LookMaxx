@@ -11,13 +11,13 @@ with open("./reports/facial_metrics.json", "r") as f:
 # Sample Perfect data for Testing
 perfect_ratios = {
     "face_ratio": 1.6,
-    "upper_ratio": 0.25,
-    "middle_ratio": 0.25,
-    "lower_ratio": 0.5,
-    "left_eye_ratio": 0.25,
-    "interpupillary_ratio": 0.5,
-    "nasal_ratio": 0.25,
-    "lip_ratio": 0.25,
+    "upper_ratio": 0.31,
+    "middle_ratio": 0.30,
+    "lower_ratio": 0.38,
+    "left_eye_ratio": 0.34,
+    "interpupillary_ratio": 0.36,
+    "nasal_ratio": 0.62,
+    "lip_ratio": 0.75
 }
 
 # Converting the dictionaries to dataframes

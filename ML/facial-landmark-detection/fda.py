@@ -56,7 +56,7 @@ def calculate_facial_thirds(landmarks, img_shape):
     nose_bottom = y_coords[94]  
     chin = max(y_coords)
     
-    upper_third = eyebrow - forehead
+    upper_third = eyebrow - forehead    
     middle_third = nose_bottom - eyebrow
     lower_third = chin - nose_bottom
     
@@ -118,22 +118,25 @@ def calculate_eye_ratios(landmarks, img_shape):
     interpupillary_ratio = interpupillary_dist / total_eye_span
     
     # Draw measurements
-    line_color = (255, 0, 0)  # Red color for lines
+    line_color1 = (255, 0, 0) # Red color for lines
+    line_color2 = (0, 255, 0) # Red color for lines
+    line_color3 = (0, 0, 255) # Red color for lines
+
     
     # Draw left eye width
-    cv2.line(img_eyes, left_outer, left_inner, line_color, 2)
-    cv2.putText(img_eyes, f'{left_eye_ratio:.3f}', 
+    cv2.line(img_eyes, left_outer, left_inner, line_color1, 2)
+    cv2.putText(img_eyes, f'{left_eye_ratio:.2f}', 
                 (left_outer[0], left_outer[1] - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color1, 2)
     
     # Draw interpupillary distance
-    cv2.line(img_eyes, left_inner, right_inner, (0,255,0) , 2)
-    cv2.putText(img_eyes, f'{interpupillary_ratio:.3f}',
+    cv2.line(img_eyes, left_inner, right_inner,line_color2 , 2)
+    cv2.putText(img_eyes, f'{interpupillary_ratio:.2f}',
                 (left_inner[0], left_inner[1] - 30),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color, 2)
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, line_color2, 2)
     
     # Draw total eye span (reference)
-    cv2.line(img_eyes, left_outer, right_outer, (0, 0, 255), 1)
+    cv2.line(img_eyes, left_outer, right_outer, line_color3, 1)
     
     # Save eye measurements image
     save_image(img_eyes, 'eye_measurements.png')
