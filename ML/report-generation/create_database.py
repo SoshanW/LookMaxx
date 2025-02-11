@@ -7,6 +7,9 @@ import openai
 from dotenv import load_dotenv
 import os
 import shutil
+import nltk
+
+nltk.download()
 
 load_dotenv()
 openai.api_key = os.environ['OPENAI_API_KEY']
@@ -19,7 +22,7 @@ def main():
     generate_data_store()
 
 def generate_data_store():
-    documents = loack_documents()
+    documents = load_documents()
     chunks = split_text(documents)
     save_to_chroma(chunks)
 
@@ -44,7 +47,7 @@ def split_text(documents: list[Document]):
 
     return chunks
 
-def save_to_chroma(chunks: list[Documents]):
+def save_to_chroma(chunks: list[Document]):
     # Clearing out the database first
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
