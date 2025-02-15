@@ -62,7 +62,9 @@ def show_context(context):
         print("\n")
 
 if __name__ == "__main__":
-    path = "data/Understanding_Climate_change.pdf"
+    path = "data/Understanding_Climate_Change.pdf"
+
+    initialize_vertex_ai()
 
     chunks_vector_store = encode_pdf(path, chunk_size=1000, chunk_overlap=200)
 
