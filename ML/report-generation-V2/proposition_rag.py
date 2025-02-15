@@ -61,7 +61,7 @@ class GeneratePropositions(BaseModel):
         description = "List of propositions (factual, self-contained, and concise information)"
     )
 
-llm = init_chat_model("claude-3-5-sonnet-latest", model_kwargs={"model_provider": "anthropic"})
+llm = ChatAnthropic(model="claude-3-5-sonnet-latest")
 structured_llm = llm.with_structured_output(GeneratePropositions)
 
 proposition_examples = [
@@ -129,7 +129,6 @@ class GradePropositions(BaseModel):
     )
 
 # LLM with function call
-llm = ChatAnthropic(model="claude-3-5-sonnet-latest")
 structured_llm= llm.with_structured_output(GradePropositions)
 
 # Prompt
