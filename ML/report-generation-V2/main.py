@@ -1,7 +1,7 @@
 from config import Config
 from services.ai_service import AIService
 from services.text_splitter_service import TextSplitterService
-from services.proposition_service import PropositionService, P
+from services.proposition_service import PropositionService
 from services.evaluation_service import EvaluationService
 from services.vector_store_service import VectorStoreService
 from langchain_core.documents import Document
