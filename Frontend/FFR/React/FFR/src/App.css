@@ -48,3 +48,19 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+@keyframes buttonHover {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.scroll-button-hover:hover {
+  animation: buttonHover 1s ease-in-out infinite;
+}

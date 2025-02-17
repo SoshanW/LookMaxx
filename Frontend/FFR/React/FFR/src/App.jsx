@@ -4,6 +4,7 @@ import ScrollText from './components/ScrollText';
 import Navbar from './components/Navbar';
 import CustomScrollbar from './components/CustomScrollbar';
 import SectionIndicator from './components/SectionIndicator';
+import DynamicScrollButton from './components/DynamicScrollButton';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <ScrollText />
       <CustomScrollbar />
       <SectionIndicator />
+      <DynamicScrollButton />
     </div>
   );
 }

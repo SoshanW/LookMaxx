@@ -1,4 +1,3 @@
-// ScrollText.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import '../styles/ScrollText.css';
@@ -6,103 +5,79 @@ import '../styles/ScrollText.css';
 const ScrollText = () => {
   const headingRef = useRef(null);
   const subheadingRef = useRef(null);
+  const buttonRef = useRef(null);
   const cornerTextRef = useRef(null);
-  const containerRef = useRef(null);
   const [isVisible, setIsVisible] = useState(true);
 
   const handleScroll = () => {
-    // Get viewport height
     const viewportHeight = window.innerHeight;
-    // Get current scroll position
     const scrollPosition = window.scrollY;
-    
-    // Calculate if we're in the hero section (first viewport)
-    // Adding a small buffer (100px) for smoother transition
-    const isInHeroSection = scrollPosition <= (viewportHeight - 100);
-    
+    // Changed from 0.2 to 0.05 - now triggers after scrolling just 5% of viewport height
+    const fadeThreshold = viewportHeight * 0.5;
+    const isInHeroSection = scrollPosition <= fadeThreshold;
     setIsVisible(isInHeroSection);
   };
 
   useEffect(() => {
-    // Initial fade-in animations
+    // Initial animations
     gsap.fromTo(
-      headingRef.current,
+      [headingRef.current, subheadingRef.current, buttonRef.current],
       { opacity: 0, y: 20 },
       { 
-        opacity: 1,
-        y: 0,
+        opacity: 1, 
+        y: 0, 
         duration: 1.5,
+        stagger: 0.3
       }
     );
 
-    gsap.fromTo(
-      subheadingRef.current,
-      { opacity: 0, y: 20 },
-      { 
-        opacity: 1,
-        y: 0,
-        duration: 1.5,
-        delay: 0.3,
-      }
-    );
-
-    gsap.fromTo(
-      cornerTextRef.current,
-      { opacity: 0 },
-      { 
-        opacity: 1,
-        duration: 1.5,
-      }
-    );
-
-    // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
-    // Staggered fade animations based on section visibility
     if (!isVisible) {
-      gsap.to(headingRef.current, {
+      // Fade out main content faster
+      gsap.to([headingRef.current, subheadingRef.current, buttonRef.current], {
         opacity: 0,
-        duration: 0.4,
+        y: -30,
+        duration: 0.3, // Slightly faster animation
+        stagger: 0.05, // Reduced stagger time
+        ease: "power2.inOut"
       });
-      gsap.to(subheadingRef.current, {
-        opacity: 0,
-        duration: 0.4,
-        delay: 0.15,
-      });
-      gsap.to(cornerTextRef.current, {
-        opacity: 0,
-        duration: 0.4,
-      });
+      
+      // Slide out corner text
+      cornerTextRef.current.classList.add('slide-out');
     } else {
-      gsap.to(headingRef.current, {
+      // Fade in main content
+      gsap.to([headingRef.current, subheadingRef.current, buttonRef.current], {
         opacity: 1,
-        duration: 0.4,
+        y: 0,
+        duration: 0.3,
+        stagger: 0.05,
+        ease: "power2.inOut"
       });
-      gsap.to(subheadingRef.current, {
-        opacity: 1,
-        duration: 0.4,
-        delay: 0.15,
-      });
-      gsap.to(cornerTextRef.current, {
-        opacity: 1,
-        duration: 0.4,
-      });
+      
+      // Slide in corner text
+      cornerTextRef.current.classList.remove('slide-out');
     }
   }, [isVisible]);
 
   return (
-    <div className="scroll-text-container" ref={containerRef}>
-      <div className="text-wrapper">
-        <div ref={headingRef} className="scroll-text heading">
-          Facial Feature Recognition
-        </div>
-        <div ref={subheadingRef} className="scroll-text subheading">
-          Get your face scanned. Dive into FFR.
-        </div>
+    <div className="scroll-text-container">
+      <div ref={headingRef} className="scroll-text heading">
+        Facial Feature Recognition
       </div>
+      <div ref={subheadingRef} className="scroll-text subheading">
+        Get your face scanned. Dive into FFR.
+      </div>
+      <button 
+        ref={buttonRef} 
+        className="get-started-button"
+        onClick={() => console.log('Get Started clicked')}
+      >
+        Get Started
+      </button>
       <div ref={cornerTextRef} className="corner-text">
         FFR
       </div>
