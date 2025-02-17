@@ -1,9 +1,9 @@
-// App.jsx
 import React from 'react';
 import ImageSequence from './components/ImageSequence';
 import ScrollText from './components/ScrollText';
 import Navbar from './components/Navbar';
 import CustomScrollbar from './components/CustomScrollbar';
+import SectionIndicator from './components/SectionIndicator';
 import './App.css';
 
 function App() {
@@ -13,6 +13,7 @@ function App() {
       <ImageSequence frameCount={220} imageFormat="jpg" />
       <ScrollText />
       <CustomScrollbar />
+      <SectionIndicator />
     </div>
   );
 }
