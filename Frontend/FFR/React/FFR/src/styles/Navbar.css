@@ -1,31 +1,112 @@
 /* styles/Navbar.css */
 
 .navbar {
-  position: fixed; /* Fix the navbar at the top */
-  top: 0; /* Align to the top */
-  left: 0; /* Align to the left */
-  width: 100%; /* Full width */
-  padding: 10px 20px; /* Add padding for spacing */
-  background-color: transparent; /* Make the background transparent */
-  z-index: 1000; /* Ensure it stays on top */
-  display: flex; /* Use flexbox for alignment */
-  justify-content: center; /* Center the items horizontally */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 20px;
+  background-color: transparent;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
-.navbar a {
-  text-decoration: none; /* Remove underline from links */
-  color: white; /* Set text color */
-  padding: 10px 20px; /* Add padding to links */
+/* Navigation link container */
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
 }
 
-.navbar a:hover {
-  color: #007bff; /* Change color on hover */
+.nav-link {
+  position: relative;
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  font-family: 'Nasalization', sans-serif;
+  letter-spacing: 0.1em;
+  transition: color 0.3s ease;
+  overflow: hidden;
 }
 
-.nav-item {
-  transition: background-color 0.3s ease;
+/* Hover line effect */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background: white;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
 }
 
-.nav-item:hover {
-  background-color: rgba(0, 183, 74, 0.5); /* Example color */
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Glow effect on hover */
+.nav-link:hover {
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* Active state */
+.nav-link.active {
+  color: #ffffff;
+}
+
+.nav-link.active::after {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+}
+
+/* Scale effect on click */
+.nav-link:active {
+  transform: scale(0.95);
+}
+
+/* Background blur on scroll */
+.navbar.scrolled {
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  padding: 15px 20px;
+}
+
+/* Floating animation for navbar */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.navbar:hover {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Pulse animation for active link */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.nav-link.active:hover {
+  animation: pulse 2s infinite;
 }
