@@ -1,57 +1,111 @@
-import React, { useLayoutEffect, useRef } from 'react';
+// ScrollText.jsx
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
 import '../styles/ScrollText.css';
 
-gsap.registerPlugin(ScrollTrigger);
-
 const ScrollText = () => {
-  const textRef = useRef(null);
+  const headingRef = useRef(null);
+  const subheadingRef = useRef(null);
+  const cornerTextRef = useRef(null);
+  const containerRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(true);
 
-  useLayoutEffect(() => {
-    if (textRef.current) {
-      // Initial state - hidden
-      gsap.set(textRef.current, { opacity: 1 });
+  const handleScroll = () => {
+    // Get viewport height
+    const viewportHeight = window.innerHeight;
+    // Get current scroll position
+    const scrollPosition = window.scrollY;
+    
+    // Calculate if we're in the hero section (first viewport)
+    // Adding a small buffer (100px) for smoother transition
+    const isInHeroSection = scrollPosition <= (viewportHeight - 100);
+    
+    setIsVisible(isInHeroSection);
+  };
 
-      // Timeline for text appearance and disappearance
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: textRef.current,
-          start: "0%", // Starts animation when text is 20% from top of viewport
-          end: "+=50%", // Ends animation after scrolling 400% of the viewport height
-          scrub: 1, // Smooth animation with 1 second delay
-          markers: true, // Enable this to see the trigger points (helpful for debugging)
-          toggleActions: "play none none reverse", // Controls the animation sequence
-          onEnter: () => console.log("Text entering"),
-          onLeave: () => console.log("Text leaving"),
-        }
-      });
-
-      // Animation sequence
-      tl.to(textRef.current, {
+  useEffect(() => {
+    // Initial fade-in animations
+    gsap.fromTo(
+      headingRef.current,
+      { opacity: 0, y: 20 },
+      { 
         opacity: 1,
-        duration: 1,
-        ease: "power2.inOut"
-      })
-      .to(textRef.current, {
-        opacity: 0,
-        duration: 1,
-        ease: "power2.inOut"
-      }, "+=1"); // Delay before starting to fade out
+        y: 0,
+        duration: 1.5,
+      }
+    );
 
-    }
+    gsap.fromTo(
+      subheadingRef.current,
+      { opacity: 0, y: 20 },
+      { 
+        opacity: 1,
+        y: 0,
+        duration: 1.5,
+        delay: 0.3,
+      }
+    );
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
+    gsap.fromTo(
+      cornerTextRef.current,
+      { opacity: 0 },
+      { 
+        opacity: 1,
+        duration: 1.5,
+      }
+    );
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Staggered fade animations based on section visibility
+    if (!isVisible) {
+      gsap.to(headingRef.current, {
+        opacity: 0,
+        duration: 0.4,
+      });
+      gsap.to(subheadingRef.current, {
+        opacity: 0,
+        duration: 0.4,
+        delay: 0.15,
+      });
+      gsap.to(cornerTextRef.current, {
+        opacity: 0,
+        duration: 0.4,
+      });
+    } else {
+      gsap.to(headingRef.current, {
+        opacity: 1,
+        duration: 0.4,
+      });
+      gsap.to(subheadingRef.current, {
+        opacity: 1,
+        duration: 0.4,
+        delay: 0.15,
+      });
+      gsap.to(cornerTextRef.current, {
+        opacity: 1,
+        duration: 0.4,
+      });
+    }
+  }, [isVisible]);
+
   return (
-    <div ref={textRef} className="scroll-text-container">
-      <h1>Welcome to</h1>
-      <h2 data-text="F.F.R." className="animated-text">
-        F.F.R.
-      </h2>
+    <div className="scroll-text-container" ref={containerRef}>
+      <div className="text-wrapper">
+        <div ref={headingRef} className="scroll-text heading">
+          Facial Feature Recognition
+        </div>
+        <div ref={subheadingRef} className="scroll-text subheading">
+          Get your face scanned. Dive into FFR.
+        </div>
+      </div>
+      <div ref={cornerTextRef} className="corner-text">
+        FFR
+      </div>
     </div>
   );
 };

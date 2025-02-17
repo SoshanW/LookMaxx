@@ -1,0 +1,31 @@
+/* styles/Navbar.css */
+
+.navbar {
+  position: fixed; /* Fix the navbar at the top */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  width: 100%; /* Full width */
+  padding: 10px 20px; /* Add padding for spacing */
+  background-color: transparent; /* Make the background transparent */
+  z-index: 1000; /* Ensure it stays on top */
+  display: flex; /* Use flexbox for alignment */
+  justify-content: center; /* Center the items horizontally */
+}
+
+.navbar a {
+  text-decoration: none; /* Remove underline from links */
+  color: white; /* Set text color */
+  padding: 10px 20px; /* Add padding to links */
+}
+
+.navbar a:hover {
+  color: #007bff; /* Change color on hover */
+}
+
+.nav-item {
+  transition: background-color 0.3s ease;
+}
+
+.nav-item:hover {
+  background-color: rgba(0, 183, 74, 0.5); /* Example color */
+}

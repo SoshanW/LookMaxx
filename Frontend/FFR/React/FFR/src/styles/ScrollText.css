@@ -1,48 +1,58 @@
-*{
-  font-family: 'Poppins', sans-serif;
-
+@font-face {
+  font-family: 'Library3am';
+  src: url('/fonts/Library 3 am.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }
+
 .scroll-text-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding-top: 2rem;
+  height: 100vh;
   display: flex;
-  justify-content: center;
-  z-index: 2;
-  pointer-events: none; /* This allows interaction with elements below */
+  justify-content: flex-start;
+  align-items: center;
+  pointer-events: none;
 }
 
-.animated-text {
+.text-wrapper {
   position: relative;
-  left: 12%;
-  font-size: 8vw;
-  color: #252839;
-  -webkit-text-stroke: 0.3vw #383d52;
-  text-transform: uppercase;
-  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-left: 37%;
+  margin-top: -15vh;
 }
 
-.animated-text::before {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  color: #01fe87;
-  -webkit-text-stroke: 0vw #383d52;
-  border-right: 2px solid #01fe87;
-  overflow: hidden;
-  animation: animate 3s linear infinite;
+.scroll-text {
+  color: white;
+  pointer-events: auto;
+  text-align: left;
 }
 
-@keyframes animate {
-  0%, 10%, 100% {
-    width: 0;
-  }
-  70%, 90% {
-    width: 100%;
-  }
+.heading {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.subheading {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  white-space: nowrap;
+}
+
+.corner-text {
+  position: fixed;
+  bottom: 25vh;
+  left: 1vw;
+  color: white;
+  font-size: clamp(4rem, 4vw, 3rem);
+  transform: rotate(90deg);
+  transform-origin: left bottom;
+  pointer-events: auto;
+  letter-spacing: 0.5rem;
+  font-family: 'Library3am', sans-serif; /* Applied Library 3 am font */
 }
