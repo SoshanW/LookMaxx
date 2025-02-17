@@ -63,5 +63,5 @@ class EvaluationService:
         }
     
     def passes_quality_check(self, scores):
-        return all(scores[category] >= threshold 
+        return all(scores[category] >= threshold
                   for category, threshold in self.thresholds.items())
