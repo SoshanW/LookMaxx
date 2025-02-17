@@ -16,4 +16,4 @@ class AISerivce:
             model="textembedding-gecko@003",
             project=self.project_id
         )
-        self.llm = ChatAnthropic(model="claude-3-5-sonnnet-latest")
+        self.llm = ChatAnthropic(model="claude-3-5-sonnet-latest")
