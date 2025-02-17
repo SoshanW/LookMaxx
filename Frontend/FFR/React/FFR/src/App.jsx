@@ -2,15 +2,17 @@
 import React from 'react';
 import ImageSequence from './components/ImageSequence';
 import ScrollText from './components/ScrollText';
-import Navbar from './components/Navbar'; // Import the Navbar
+import Navbar from './components/Navbar';
+import CustomScrollbar from './components/CustomScrollbar';
 import './App.css';
 
 function App() {
   return (
     <div className="app">
-      <Navbar /> 
+      <Navbar />
       <ImageSequence frameCount={220} imageFormat="jpg" />
       <ScrollText />
+      <CustomScrollbar />
     </div>
   );
 }
