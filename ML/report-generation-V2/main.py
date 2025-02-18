@@ -25,11 +25,20 @@ def encode_pdf(path):
     loader = PyPDFLoader(path)
     # documents = replace_t_with_space(loader.load())
     documents = loader.load()
-    return documents
+    return clean_text(documents)
 
 def replace_t_with_space(list_of_documents):
     for doc in list_of_documents:
         doc.page_content = doc.page_content.replace('\t', ' ')
+    return list_of_documents
+
+def clean_text(list_of_documents):
+    for doc in list_of_documents:
+        text = doc.page_content
+        text = text.replace('\t', ' ')
+        text = text.replace('\n', ' ')
+        text = " ".join(text.split())
+        doc.page_content = text
     return list_of_documents
 
 def main():
