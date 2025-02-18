@@ -10,26 +10,52 @@ const ScrollText = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   const handleScroll = () => {
-    const viewportHeight = window.innerHeight;
     const scrollPosition = window.scrollY;
-    // Changed from 0.2 to 0.05 - now triggers after scrolling just 5% of viewport height
-    const fadeThreshold = viewportHeight * 0.5;
-    const isInHeroSection = scrollPosition <= fadeThreshold;
-    setIsVisible(isInHeroSection);
+    const fadeThreshold = window.innerHeight * 0.02;
+    setIsVisible(scrollPosition <= fadeThreshold);
   };
 
   useEffect(() => {
-    // Initial animations
-    gsap.fromTo(
-      [headingRef.current, subheadingRef.current, buttonRef.current],
-      { opacity: 0, y: 20 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        duration: 1.5,
-        stagger: 0.3
-      }
-    );
+    // First, immediately set the initial positions
+    gsap.set([headingRef.current, subheadingRef.current, buttonRef.current], {
+      opacity: 0,
+      y: 20
+    });
+
+    gsap.set(cornerTextRef.current, {
+      x: -100, // Start offscreen to the left
+      opacity: 0 // Start fully transparent
+    });
+
+    // Then create the animation sequence
+    const tl = gsap.timeline({
+      defaults: { ease: "power2.out" }
+    });
+
+    // First make the corner text visible but still offscreen
+    tl.set(cornerTextRef.current, {
+      opacity: 1
+    })
+    // Then animate everything
+    .to(cornerTextRef.current, {
+      x: 0,
+      duration: 0.6
+    })
+    .to(headingRef.current, {
+      opacity: 1,
+      y: 0,
+      duration: 0.6
+    }, "-=0.3")
+    .to(subheadingRef.current, {
+      opacity: 1,
+      y: 0,
+      duration: 0.6
+    }, "-=0.4")
+    .to(buttonRef.current, {
+      opacity: 1,
+      y: 0,
+      duration: 0.6
+    }, "-=0.4");
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -37,17 +63,21 @@ const ScrollText = () => {
 
   useEffect(() => {
     if (!isVisible) {
-      // Fade out main content faster
+      // Fade out main content
       gsap.to([headingRef.current, subheadingRef.current, buttonRef.current], {
         opacity: 0,
         y: -30,
-        duration: 0.3, // Slightly faster animation
-        stagger: 0.05, // Reduced stagger time
+        duration: 0.2,
+        stagger: 0.03,
         ease: "power2.inOut"
       });
       
-      // Slide out corner text
-      cornerTextRef.current.classList.add('slide-out');
+      // Slide corner text to the left
+      gsap.to(cornerTextRef.current, {
+        x: -100,
+        duration: 0.3,
+        ease: "power2.inOut"
+      });
     } else {
       // Fade in main content
       gsap.to([headingRef.current, subheadingRef.current, buttonRef.current], {
@@ -58,8 +88,12 @@ const ScrollText = () => {
         ease: "power2.inOut"
       });
       
-      // Slide in corner text
-      cornerTextRef.current.classList.remove('slide-out');
+      // Slide corner text back in from the left
+      gsap.to(cornerTextRef.current, {
+        x: 0,
+        duration: 0.3,
+        ease: "power2.inOut"
+      });
     }
   }, [isVisible]);
 

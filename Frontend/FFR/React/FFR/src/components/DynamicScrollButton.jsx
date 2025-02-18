@@ -1,18 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowUp } from 'lucide-react';
+import gsap from 'gsap';
 import '../styles/DynamicScrollButton.css';
 
 const DynamicScrollButton = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const buttonRef = useRef(null);
+  const isFirstScroll = useRef(true);
 
   useEffect(() => {
+    // Faster initial animation
+    gsap.fromTo(buttonRef.current,
+      {
+        y: 100,
+        opacity: 0
+      },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.4, // Faster duration
+        delay: 0.2, // Earlier start
+        ease: "power2.out"
+      }
+    );
+
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
-      
-      setIsScrolled(scrollPosition > windowHeight * 0.5);
+      if (isFirstScroll.current && scrollPosition > 0) {
+        isFirstScroll.current = false;
+      }
+      setIsScrolled(scrollPosition > window.innerHeight * 0.02);
     };
 
+    // Initial check
+    handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -26,6 +47,7 @@ const DynamicScrollButton = () => {
 
   return (
     <button
+      ref={buttonRef}
       onClick={scrollToTop}
       className={`dynamic-scroll-button ${isScrolled ? 'circular' : 'tall'}`}
     >
