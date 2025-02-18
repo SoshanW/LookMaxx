@@ -55,8 +55,8 @@ body {
 }
 
 .dot {
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
   background-color: #00ffa3;
   border-radius: 50%;
   opacity: 0.8;

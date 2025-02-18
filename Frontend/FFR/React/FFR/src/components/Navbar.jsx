@@ -4,7 +4,7 @@ import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeLink, setActiveLink] = useState('home');
+  const [activeLink, setActiveLink] = useState('ffr'); // Set FFR as the default active link
   const navLinksRef = useRef([]);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const Navbar = () => {
       y: 0,
       duration: 1,
       stagger: 0.1,
-      delay: 0.2, // Start slightly before the main content
+      delay: 0.1, // Start slightly before the main content
       ease: "power3.out"
     });
 

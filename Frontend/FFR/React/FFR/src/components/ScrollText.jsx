@@ -16,7 +16,7 @@ const ScrollText = () => {
   };
 
   useEffect(() => {
-    // First, immediately set the initial positions
+    // Set initial positions for the text
     gsap.set([headingRef.current, subheadingRef.current, buttonRef.current], {
       opacity: 0,
       y: 20
@@ -27,35 +27,34 @@ const ScrollText = () => {
       opacity: 0 // Start fully transparent
     });
 
-    // Then create the animation sequence
+    // Create the animation timeline
     const tl = gsap.timeline({
       defaults: { ease: "power2.out" }
     });
 
-    // First make the corner text visible but still offscreen
+    // Initial load animation for corner text
     tl.set(cornerTextRef.current, {
       opacity: 1
     })
-    // Then animate everything
     .to(cornerTextRef.current, {
       x: 0,
-      duration: 0.6
+      duration: 0.8 // Increased duration for slower animation
     })
     .to(headingRef.current, {
       opacity: 1,
       y: 0,
-      duration: 0.6
-    }, "-=0.3")
+      duration: 0.8 // Increased duration for slower animation
+    }, "-=0.4") // Adjusted overlap timing
     .to(subheadingRef.current, {
       opacity: 1,
       y: 0,
-      duration: 0.6
-    }, "-=0.4")
+      duration: 0.8 // Increased duration for slower animation
+    }, "-=0.4") // Adjusted overlap timing
     .to(buttonRef.current, {
       opacity: 1,
       y: 0,
-      duration: 0.6
-    }, "-=0.4");
+      duration: 0.8 // Increased duration for slower animation
+    }, "-=0.4"); // Adjusted overlap timing
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -67,15 +66,15 @@ const ScrollText = () => {
       gsap.to([headingRef.current, subheadingRef.current, buttonRef.current], {
         opacity: 0,
         y: -30,
-        duration: 0.2,
-        stagger: 0.03,
+        duration: 0.3, // Adjusted duration for fade out
+        stagger: 0.05,
         ease: "power2.inOut"
       });
       
       // Slide corner text to the left
       gsap.to(cornerTextRef.current, {
         x: -100,
-        duration: 0.3,
+        duration: 0.4, // Adjusted duration for slide out
         ease: "power2.inOut"
       });
     } else {
@@ -83,7 +82,7 @@ const ScrollText = () => {
       gsap.to([headingRef.current, subheadingRef.current, buttonRef.current], {
         opacity: 1,
         y: 0,
-        duration: 0.3,
+        duration: 0.4, // Adjusted duration for fade in
         stagger: 0.05,
         ease: "power2.inOut"
       });
@@ -91,7 +90,7 @@ const ScrollText = () => {
       // Slide corner text back in from the left
       gsap.to(cornerTextRef.current, {
         x: 0,
-        duration: 0.3,
+        duration: 0.4, // Adjusted duration for slide in
         ease: "power2.inOut"
       });
     }
