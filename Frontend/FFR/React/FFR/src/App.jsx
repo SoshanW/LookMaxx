@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import CustomScrollbar from './components/CustomScrollbar';
 import SectionIndicator from './components/SectionIndicator';
 import DynamicScrollButton from './components/DynamicScrollButton';
-import BottomNavBar from './components/BottomNavBar'; // Import the BottomNavBar
+import DesignCard from './components/DesignCard';
 import './App.css';
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
       <CustomScrollbar />
       <SectionIndicator />
       <DynamicScrollButton />
-      <BottomNavBar /> {/* Add the BottomNavBar here */}
+      <DesignCard />
     </div>
   );
 }
