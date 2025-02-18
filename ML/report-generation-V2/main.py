@@ -6,6 +6,9 @@ from services.evaluation_service import EvaluationService
 from services.vector_store_service import VectorStoreService
 from langchain_core.documents import Document
 import json
+from langchain_community.document_loaders import PyPDFLoader
+
+PATH="data/Facial Aesthetics.pdf"
 
 try:
     with open('report.json', 'r') as file:
@@ -17,6 +20,17 @@ except json.JSONDecodeError:
 
 def find_metric(metric_name):
     return next((item for item in data if item["Metric"] == metric_name), None)
+   
+def encode_pdf(path):
+    loader = PyPDFLoader(path)
+    # documents = replace_t_with_space(loader.load())
+    documents = loader.load()
+    return documents
+
+def replace_t_with_space(list_of_documents):
+    for doc in list_of_documents:
+        doc.page_content = doc.page_content.replace('\t', ' ')
+    return list_of_documents
 
 def main():
     # sample_content = """Paul Graham's essay "Founder Mode," published in September 2024, challenges conventional wisdom about scaling startups, arguing that founders should maintain their unique management style rather than adopting traditional corporate practices as their companies grow.
@@ -49,13 +63,10 @@ def main():
     evaluation_service = EvaluationService(ai_service.llm)
     vector_store_service = VectorStoreService(ai_service.embedding_model)
     
-    docs_list = [Document(
-        page_content=sample_content,
-        metadata={
-            "Title": "Paul Graham's Founder Mode Essay",
-            "Source": "https://www.perplexity.ai/page/paul-graham-s-founder-mode-ess-t9TCyvkqRiyMQJWsHr0fnQ"
-        }
-    )]
+    # docs_list = [Document(page_content=sample_content, metadata={
+    #     "Title": "Paul Graham's Founder Mode Essay", "Source": "https://www.perplexity.ai/page/paul-graham-s-founder-mode-ess-t9TCyvkqRiyMQJWsHr0fnQ"
+    # })]
+    docs_list = encode_pdf(PATH)
     
     doc_splits = text_splitter.split_documents(docs_list)
     
@@ -76,8 +87,8 @@ def main():
     retriever_propositions = vector_store_service.create_vector_store(evaluated_propositions)
     retriever_larger = vector_store_service.create_vector_store(doc_splits)
     
-    query = "Who's management approach served as inspiration for Brian Chesky's \"Founder Mode\" at Airbnb?"
-    test_query = "what is the essay \"Founder Mode\" about?"
+    query = "What is considered as a normal face?"
+    test_query = "What are the different face shapes?"
     
     for query in [query, test_query]:
         print(f"\nQuery: {query}")

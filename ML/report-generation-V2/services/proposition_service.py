@@ -43,8 +43,8 @@ class PropositionService:
                 propositions.append(Document(
                     page_content=proposition,
                     metadata={
-                        "Title": doc.metadata["Title"],
-                        "Source": doc.metadata["Source"],
+                        # "Title": doc.metadata["Title"],
+                        # "Source": doc.metadata["Source"],
                         "chunk_id": i+1
                     }
                 ))
