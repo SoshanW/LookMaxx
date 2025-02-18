@@ -8,7 +8,7 @@ gsap.registerPlugin(ScrollTrigger);
 const DesignCard = ({ 
   isVisible, 
   position = { top: '100px', left: '-200px' },
-  title = "Design Smarter, Not Harder",
+  title = "Design Smarter",
   description = "Unlock powerful tools to create pixel-perfect designs in record time.",
   style = {},
   index = 0,
