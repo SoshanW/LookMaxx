@@ -1,32 +1,94 @@
-/* DesignCard.css */
-@import url("https://fonts.cdnfonts.com/css/mona-sans");
-
-.design-card-section {
-  min-height: 100vh;
+.design-card {
+  position: fixed;
   width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(180deg, #343434 0%, #252525 100%);
-  font-family: "Mona-Sans", sans-serif;
-  position: relative;
-  overflow: hidden;
+  background: transparent;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  overflow: hidden; /* Added for scan effect */
 }
 
+.design-card.visible {
+  opacity: 1;
+}
+
+/* Scan effect elements */
+.design-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+  z-index: 2;
+  animation: scanLine 1.5s ease-out forwards;
+  pointer-events: none;
+}
+
+.design-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  z-index: 1;
+  opacity: 0;
+  animation: scanGlow 1.5s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes scanLine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes scanGlow {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Rest of your existing styles */
 .card {
   position: absolute;
   left: 0;
   right: 0;
   top: 19%;
   margin: auto;
-  width: 320px;
-  height: 200px; /* Reduced height since we removed the image */
+  width: 400px;
+  height: 80px; 
   border-radius: 16px;
   background: linear-gradient(180deg, #292929aa 0%, #191919cc 50%);
   backdrop-filter: blur(4px);
-  box-shadow: inset 0 2px 2px 0 #e7c4a088, inset 0 -2px 2px 0 #0003;
+  box-shadow: inset 0 2px 2px 0 #ffffff88, inset 0 -2px 2px 0 #0003;
   color: #ccc;
   text-shadow: 1px 1px 3px #333a;
   padding: 24px;
@@ -36,6 +98,7 @@
   justify-content: center;
   z-index: 1;
 }
+
 
 .card h2 {
   margin: 8px 0;
@@ -82,7 +145,7 @@
 
 .acc-card {
   width: 330px;
-  height: 200px; /* Reduced height to match main card */
+  height: 90px;
   background: rgba(238, 238, 238, 0.067);
   opacity: 0.8;
   z-index: -1;
@@ -112,14 +175,14 @@
 }
 
 .light {
-  --bgref: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg id='Layer_1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 487 487'%3E%3Ccircle cx='243' cy='243.5' r='233' style='fill:none; opacity:.1; stroke:%23aaa; stroke-linecap:round; stroke-miterlimit:10; stroke-width:18px;'/%3E%3Ccircle cx='243.5' cy='243.5' r='243' style='fill:none; stroke:%23111; stroke-linecap:round; stroke-miterlimit:10;'/%3E%3Ccircle cx='243' cy='243.5' r='222' style='fill:none; stroke:%23111; stroke-linecap:round; stroke-miterlimit:10;'/%3E%3Cpath d='m10,243.5C10,114.82,114.32,10.5,243,10.5' style='fill:none; stroke:%23ddd; stroke-linecap:round; stroke-miterlimit:10; stroke-width:18px;'/%3E%3C/svg%3E");
+  --bgref: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg id='Layer_1' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 487 487'%3E%3Ccircle cx='243' cy='243.5' r='233' style='fill:none; opacity:.1; stroke:%23ffffff; stroke-linecap:round; stroke-miterlimit:10; stroke-width:18px;'/%3E%3Ccircle cx='243.5' cy='243.5' r='243' style='fill:none; stroke:%23ffffff; stroke-linecap:round; stroke-miterlimit:10;'/%3E%3Ccircle cx='243' cy='243.5' r='222' style='fill:none; stroke:%23ffffff; stroke-linecap:round; stroke-miterlimit:10;'/%3E%3Cpath d='m10,243.5C10,114.82,114.32,10.5,243,10.5' style='fill:none; stroke:%23ffffff; stroke-linecap:round; stroke-miterlimit:10; stroke-width:18px;'/%3E%3C/svg%3E");
   position: absolute;
   left: 0;
   right: calc(0% + 300px);
-  top: 64px; /* Adjusted position since card is shorter */
+  top: 64px;
   margin: auto;
-  width: 164px;
-  height: 164px;
+  width: 120px;
+  height: 120px;
   z-index: -2;
   background-image: var(--bgref);
   animation: rotate360 22s linear infinite;
@@ -155,7 +218,7 @@
   height: 100px;
   left: calc(0% + 300px);
   right: 0;
-  top: 42px; /* Adjusted position */
+  top: 42px;
   bottom: 0;
   animation: rotate360 18s linear -10s infinite;
 }
@@ -171,52 +234,23 @@
   border-radius: 10px;
   background: #fffef9;
   box-shadow: 
-    0 0 1px 1px #ffc78e,
-    0 1px 2px 1px rgba(255, 148, 41, 0.467),
-    0 2px 6px 1px rgba(233, 139, 45, 0.467),
-    0 4px 12px 0 rgba(255, 158, 61, 0.6),
-    0 12px 20px 12px rgba(255, 128, 0, 0.267);
+    0 0 1px 1px #ffffff,
+    0 1px 2px 1px rgba(255, 255, 255, 0.467),
+    0 2px 6px 1px rgba(255, 255, 255, 0.467),
+    0 4px 12px 0 rgba(255, 255, 255, 0.6),
+    0 12px 20px 12px rgba(255, 255, 255, 0.267);
 }
 
 @keyframes rotate360 {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes wobble {
-  0% {
-    transform: translateX(10px) translateY(20px) rotate(-3deg) scale(1);
-  }
-  20% {
-    transform: translateX(-44px) translateY(-8px) rotate(6deg) scale(1.02);
-  }
-  60% {
-    transform: translateX(32px) translateY(18px) rotate(-8deg) scale(1);
-  }
-  80% {
-    transform: translateX(-42px) translateY(-22px) rotate(12deg) scale(0.94);
-  }
-  100% {
-    transform: translateX(10px) translateY(20px) rotate(-3deg) scale(1);
-  }
+  0% { transform: translateX(10px) translateY(20px) rotate(-3deg) scale(1); }
+  20% { transform: translateX(-44px) translateY(-8px) rotate(6deg) scale(1.02); }
+  60% { transform: translateX(32px) translateY(18px) rotate(-8deg) scale(1); }
+  80% { transform: translateX(-42px) translateY(-22px) rotate(12deg) scale(0.94); }
+  100% { transform: translateX(10px) translateY(20px) rotate(-3deg) scale(1); }
 }
 
-@media screen and (max-height: 600px) {
-  .card,
-  .accents {
-    top: 30%;
-  }
-  
-  .accents .light {
-    top: 64px;
-    bottom: 0;
-  }
-  
-  .accents .light.sm {
-    top: 42px;
-  }
-}
