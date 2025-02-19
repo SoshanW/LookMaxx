@@ -119,7 +119,7 @@ const DesignCard = ({
         <div className="top-light"></div>
       </div>
 
-      <style jsx>{`
+      <style >{`
         .scan-overlay {
           position: absolute;
           top: 0;

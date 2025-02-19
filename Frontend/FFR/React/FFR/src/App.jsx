@@ -7,25 +7,26 @@ import CustomScrollbar from './components/CustomScrollbar';
 import SectionIndicator from './components/SectionIndicator';
 import DynamicScrollButton from './components/DynamicScrollButton';
 import DesignCard from './components/DesignCard';
+import BlogSlider from './components/BlogSlider'; // Import BlogSlider
 import './App.css';
 import BottomNavBar from './components/BottomNavBar';
 
 function App() {
   const [showDesignCard, setShowDesignCard] = useState(false);
+  const [showBlogSlider, setShowBlogSlider] = useState(false);
 
   useEffect(() => {
-    // Force scroll to top on component mount
     window.scrollTo(0, 0);
     
-    // Prevent any default scroll restoration
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
-      // Show the DesignCard when scrolled past a certain point
-      setShowDesignCard(scrollPosition > window.innerHeight);
+      const viewportHeight = window.innerHeight;
+
+      // Show BlogSlider when scrolled past a certain point
+      setShowBlogSlider(scrollPosition > viewportHeight * 0.5 && scrollPosition < viewportHeight * 1.5);
+      
+      // Show DesignCard when scrolled past a certain point
+      setShowDesignCard(scrollPosition > viewportHeight * 1.5);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -41,7 +42,8 @@ function App() {
       <SectionIndicator />
       <DynamicScrollButton />
       <BottomNavBar />
-      <DesignCard isVisible={showDesignCard} /> 
+      <BlogSlider isVisible={showBlogSlider} /> {/* Pass visibility prop */}
+      <DesignCard isVisible={showDesignCard} /> {/* Render DesignCard */}
     </div>
   );
 }
