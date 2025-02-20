@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
 
   const [isFlipped, setIsFlipped] = useState(false);
   const [formData, setFormData] = useState({
@@ -52,7 +56,14 @@ const SignUpPage = () => {
 
     setSuccess(true);
     console.log('Form submitted:', formData);
+
+    if (gender === 'female') {
+      setTimeout(() => {
+        navigate('/face-model');
+      }, 1500);}
+      
   };
+
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
@@ -260,5 +271,6 @@ const SignUpPage = () => {
     </div>
   );
 };
+
 
 export default SignUpPage;
