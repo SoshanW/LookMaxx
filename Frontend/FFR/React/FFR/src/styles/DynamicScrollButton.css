@@ -21,19 +21,19 @@
   width: 2rem;
   height: 15rem;
   border-radius: 2rem; /* More rounded corners */
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgb(255, 255, 255);
 }
 
 .dynamic-scroll-button.circular {
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgb(255, 255, 255);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .dynamic-scroll-button:hover {
-  background-color: rgba(255, 255, 255, 1);
+  background-color: rgb(255, 255, 255);
   transform: translateY(-2px);
 }
 

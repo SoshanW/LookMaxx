@@ -1,0 +1,100 @@
+/* ./src/styles/BlogCard.css */
+.blog-card {
+  position: fixed; 
+  top: 50%; 
+  left: 35%; 
+  transform: translate(-50%, -50%); 
+  display: flex;
+  align-items: center;
+  background-color: #161616e3; 
+  border-radius: 15px; 
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.518); 
+  padding: 20px; 
+  max-width: 700px; 
+  opacity: 0; 
+  transition: opacity 0.4s ease, transform 0.3s ease; 
+  z-index: 100;
+  cursor: pointer; 
+  overflow: hidden; /* Prevent overflow */
+}
+
+.blog-card:hover {
+  transform: translate(-50%, -50%) scale(1.05); 
+  box-shadow: 0 12px 40px rgb(0, 0, 0); 
+}
+
+.blog-card__img {
+  width: 250px; 
+  flex-shrink: 0;
+  height: 250px; 
+  overflow: hidden;
+  border-radius: 15px; 
+  position: relative; /* For positioning the overlay */
+}
+
+.blog-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease; 
+}
+
+.blog-card__img:hover img {
+  transform: scale(1.1); 
+}
+
+.blog-card__content {
+  padding-left: 20px; 
+  flex-grow: 1; 
+  position: relative; /* For positioning the text animations */
+}
+
+.blog-card__code {
+  color: #ffffff; 
+  margin-bottom: 10px;
+  display: block;
+  font-weight: 500;
+  opacity: 0; /* Start hidden for animation */
+  transform: translateY(10px); /* Start slightly below */
+  transition: opacity 0.4s ease, transform 0.4s ease; /* Animation */
+}
+
+.blog-card__title {
+  font-size: 26px; 
+  font-weight: 700;
+  color: #ffffff; 
+  margin-bottom: 15px;
+  opacity: 0; /* Start hidden for animation */
+  transform: translateY(10px); /* Start slightly below */
+  transition: opacity 0.4s ease, transform 0.4s ease; /* Animation */
+}
+
+.blog-card__text {
+  color: #ffffff; 
+  margin-bottom: 20px;
+  line-height: 1.6em; 
+  opacity: 0; /* Start hidden for animation */
+  transform: translateY(10px); /* Start slightly below */
+  transition: opacity 0.4s ease, transform 0.4s ease; /* Animation */
+}
+
+.blog-card__button {
+  display: inline-flex;
+  background-image: linear-gradient(147deg, #ffffff 0%, #ffffff 74%); 
+  padding: 12px 30px; 
+  border-radius: 50px;
+  color: #000000;
+  box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  font-weight: 500;
+  justify-content: center;
+  text-align: center;
+  letter-spacing: 1px;
+  transition: background-color 0.3s ease, transform 0.3s ease; 
+}
+
+.blog-card__button:hover {
+  background-color: #ff3d3d; 
+  transform: translateY(-2px); 
+}
