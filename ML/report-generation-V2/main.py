@@ -1,4 +1,6 @@
 from config import Config
+import os
+import generate_pdf
 from services.ai_service import AISerivce
 from services.text_splitter_service import TextSplitterService
 from services.proposition_service import PropositionService
@@ -112,6 +114,13 @@ def main():
         print("\nLarger context results:")
         for i, r in enumerate(larger_results):
             print(f"{i+1}) {r.page_content} --- Chunk_id: {r.metadata['chunk_id']}")
+
+    output_dir = "pdf"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "final_output.pdf")
+
+    generate_pdf(larger_results, output_path)
+    print(f"PDF generated and stored at {output_path}")
 
 if __name__ == "__main__":
     main()
