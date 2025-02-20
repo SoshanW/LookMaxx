@@ -1,6 +1,6 @@
 from config import Config
 import os
-import generate_pdf
+from generate_pdf import generate_pdf
 from services.ai_service import AISerivce
 from services.text_splitter_service import TextSplitterService
 from services.proposition_service import PropositionService
