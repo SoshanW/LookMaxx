@@ -11,7 +11,7 @@ def generate_pdf(prop_results, larger_results, output_file):
 
     pdf.set_font("Arial", size=12)
     for results in larger_results:
-        chunk = results.meradata.get('chunk_id', 'N/A')
+        chunk = results.metadata.get('chunk_id', 'N/A')
         content = results.page_content
         pdf.multi_cell(0, 10, f"Chunk {chunk}: {content}")
         pdf.ln(2)

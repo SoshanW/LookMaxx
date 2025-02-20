@@ -119,7 +119,7 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "final_output.pdf")
 
-    generate_pdf(larger_results, output_path)
+    generate_pdf(prop_results, larger_results, output_path)
     print(f"PDF generated and stored at {output_path}")
 
 if __name__ == "__main__":
