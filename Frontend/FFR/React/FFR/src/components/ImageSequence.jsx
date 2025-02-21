@@ -6,7 +6,7 @@ import '../styles/ImageSequence.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ImageSequence = ({ frameCount = 220, imageFormat = 'jpg' }) => {
+const ImageSequence = ({ frameCount = 225, imageFormat = 'jpg' }) => {
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
   const faceRef = useRef({ frame: 0 });

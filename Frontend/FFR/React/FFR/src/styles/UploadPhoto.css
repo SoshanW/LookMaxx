@@ -1,0 +1,165 @@
+/* UploadPhoto.css */
+.upload-photo-overlay {
+  position: fixed; /* Fixed position to overlay on top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.922); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* High z-index to ensure it overlays */
+  padding: 20%;
+}
+
+.upload-photo-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px;
+  background-color: #f9f9f900;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 30px; /* Add space between DesignCard and UploadPhoto */
+}
+
+.upload-area {
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  padding: 140px 40px;
+  text-align: center;
+  width: 60%;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.upload-area:hover {
+  border-color: #0056b3;
+}
+
+.upload-label {
+  display: block;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+
+.upload-button {
+  padding: 12px 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.guide-photo {
+  width: 35%;
+  padding-left: 20px;
+}
+
+.guide-photo h3 {
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.guide-photo img {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for the disclaimer modal */
+.disclaimer-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 90%; 
+  max-width: 850px; 
+  height: auto; 
+  max-height: 70%; 
+  overflow-y: auto; 
+  transform: translate(-50%, -50%) scale(0.5);
+  background: rgb(127, 0, 0);
+  padding: 150px; 
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgb(255, 255, 255);
+  z-index: 10000; 
+  display: flex;
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  opacity: 0; 
+  animation: fadeInScale 0.5s forwards; 
+}
+
+/* Keyframes for fade-in and scale effect */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5); /* Start small */
+  }
+  50% {
+    opacity: 0.5; /* Midway opacity */
+    transform: translate(-50%, -50%) scale(1.05); /* Slightly larger */
+  }
+  100% {
+    opacity: 1; /* Fully visible */
+    transform: translate(-50%, -50%) scale(1); /* Original size */
+  }
+}
+
+.disclaimer-modal h2 {
+  margin-bottom: 15px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.disclaimer-modal p {
+  margin-bottom: 20px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.button-container {
+  display: flex; /* Use flexbox to arrange buttons in a row */
+  justify-content: center; /* Center the buttons */
+  width: 100%; /* Full width for the button container */
+}
+
+.accept-button,
+.decline-button {
+  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.accept-button {
+  background-color: #5cb85c;
+  color: white;
+}
+
+.decline-button {
+  background-color: #d9534f;
+  color: white;
+}
+
+.accept-button:hover {
+  background-color: #4cae4c;
+}
+
+.decline-button:hover {
+  background-color: #c9302c;
+}
