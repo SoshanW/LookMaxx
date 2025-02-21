@@ -10,6 +10,7 @@ import DesignCard from './components/DesignCard';
 import BlogCard from './components/BlogCard'; // Import BlogCard
 import './App.css';
 import BottomNavBar from './components/BottomNavBar';
+import { Upload } from 'lucide-react';
 
 function App() {
   const [showDesignCard, setShowDesignCard] = useState(false);
@@ -42,8 +43,8 @@ function App() {
       <SectionIndicator />
       <DynamicScrollButton />
       <BottomNavBar />
-      <BlogCard isVisible={showBlogCard} /> {/* Render BlogCard */}
-      <DesignCard isVisible={showDesignCard} /> {/* Render DesignCard */}
+      <BlogCard isVisible={showBlogCard} /> 
+      <DesignCard isVisible={showDesignCard} /> 
     </div>
   );
 }

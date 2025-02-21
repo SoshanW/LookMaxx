@@ -1,7 +1,6 @@
-// ./src/components/BlogCard.jsx
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import '../styles/BlogCard.css'; // Import the CSS for the BlogCard
+import '../styles/BlogCard.css';
 
 const BlogCard = ({ isVisible }) => {
   const blogCardRef = useRef(null);
