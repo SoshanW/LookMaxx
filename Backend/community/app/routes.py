@@ -4,6 +4,7 @@ from datetime import datetime
 from . import mongo, app
 from .model import serial_post, serial_comment
 from bson import ObjectId
+from bson.errors import InvalidId
 
 
 @app.route('/')
@@ -38,14 +39,27 @@ def create_post():
         'author': author,
         'created_at': datetime.utcnow(),
     }
-    post_id = mongo.db.posts.insert_one(post).inserted_id
-    return jsonify(serial_post(mongo.db.posts.find_one({'_id': post_id}))), 201
+    try:
+        post_id = mongo.db.posts.insert_one(post).inserted_id
+        return jsonify(serial_post(mongo.db.posts.find_one({'_id': post_id}))), 201
+    except Exception as e:
+        app.logger.error(f'Error while creating post: {str(e)}')
+        return jsonify({'error':'Databse error'}), 500
 
 
 @app.route('/posts/<post_id>/comments', methods=['GET'])
 def get_comments(post_id):
-    comments = mongo.db.comments.find({'post_id': ObjectId(post_id)})
-    return jsonify([serial_comment(comment) for comment in comments]), 200
+    try:
+        comments = mongo.db.comments.find({'post_id': ObjectId(post_id)})
+        return jsonify([serial_comment(comment) for comment in comments]), 200
+    except InvalidId:
+        return jsonify({'error': 'Invalid post ID'}), 400
+    except Exception as e:
+        app.logger.error(f'Error getting comments: {str(e)}')
+        return jsonify({'error':'Internal server error'}), 500
+
+
+    
 
 
 @app.route('/posts/<post_id>/comments', methods=['POST'])

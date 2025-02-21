@@ -1,8 +1,10 @@
+import os
+from dotenv import load_dotenv
 import urllib.parse
 
 # MongoDB credentials and URI setup
-username = "VinukiR"
-password = "rrJ6Q%.k4EqJLG9"
+username = os.getenv('MONGO_USERNAME')
+password = os.getenv('MONGO_PASSWORD')
 encoded_username = urllib.parse.quote_plus(username)
 encoded_password = urllib.parse.quote_plus(password)
 
