@@ -12,7 +12,7 @@ const BlogCard = ({ isVisible }) => {
     date: "26 December 2019",
     title: "Understanding React Hooks",
     text: "React Hooks are functions that let you use state and other React features without writing a class.",
-    imgSrc: "https://res.cloudinary.com/muhammederdem/image/upload/q_60/v1535759872/kuldar-kalvik-799168-unsplash.webp", // Example image
+    imgSrc: "https://res.cloudinary.com/muhammederdem/image/upload/q_60/v1535759872/kuldar-kalvik-799168-unsplash.webp", 
   };
 
   useEffect(() => {

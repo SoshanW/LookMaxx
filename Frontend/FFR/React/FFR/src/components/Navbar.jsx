@@ -4,7 +4,7 @@ import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeLink, setActiveLink] = useState('ffr'); // Set FFR as the default active link
+  const [activeLink, setActiveLink] = useState('ffr');
   const navLinksRef = useRef([]);
 
   useEffect(() => {

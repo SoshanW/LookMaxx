@@ -34,7 +34,7 @@ const SectionIndicator = () => {
 
     // Handle window resize
     const handleResize = () => {
-      // Update section ranges when window is resized
+      
       sections.forEach((section, index) => {
         section.start = window.innerHeight * index;
         section.end = window.innerHeight * (index + 1);

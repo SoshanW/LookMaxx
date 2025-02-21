@@ -24,8 +24,7 @@ const DesignCard = ({
     if (cardRef.current) {
       const viewportHeight = window.innerHeight;
       const appearPoint = scrollTick * viewportHeight;
-      // You can adjust the number (0.5 in this example) to control when the card disappears
-      // Smaller number = disappears sooner, Larger number = disappears later
+
       const disappearPoint = (scrollTick + 0.7) * viewportHeight;
 
       // Initial state
@@ -46,7 +45,7 @@ const DesignCard = ({
             gsap.to(cardRef.current, {
               opacity: 1,
               y: 0,
-              duration: 0.2,  // Reduced from 0.5 to 0.2 seconds
+              duration: 0.2,  
               ease: "power2.out"
             });
           },
@@ -54,7 +53,7 @@ const DesignCard = ({
             gsap.to(cardRef.current, {
               opacity: 0,
               y: -20,
-              duration: 0.2,  // Reduced from 0.5 to 0.2 seconds
+              duration: 0.2,  
               ease: "power2.in"
             });
           },

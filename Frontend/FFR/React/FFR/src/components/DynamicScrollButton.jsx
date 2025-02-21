@@ -18,8 +18,8 @@ const DynamicScrollButton = () => {
       {
         y: 0,
         opacity: 1,
-        duration: 0.4, // Faster duration
-        delay: 0.2, // Earlier start
+        duration: 0.4,
+        delay: 0.2, 
         ease: "power2.out"
       }
     );

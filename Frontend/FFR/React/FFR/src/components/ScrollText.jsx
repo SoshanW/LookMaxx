@@ -44,17 +44,17 @@ const ScrollText = () => {
       opacity: 1,
       y: 0,
       duration: 0.8 // Increased duration for slower animation
-    }, "-=0.4") // Adjusted overlap timing
+    }, "-=0.4") 
     .to(subheadingRef.current, {
       opacity: 1,
       y: 0,
       duration: 0.8 // Increased duration for slower animation
-    }, "-=0.4") // Adjusted overlap timing
+    }, "-=0.4") 
     .to(buttonRef.current, {
       opacity: 1,
       y: 0,
       duration: 0.8 // Increased duration for slower animation
-    }, "-=0.4"); // Adjusted overlap timing
+    }, "-=0.4"); 
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -74,7 +74,7 @@ const ScrollText = () => {
       // Slide corner text to the left
       gsap.to(cornerTextRef.current, {
         x: -100,
-        duration: 0.4, // Adjusted duration for slide out
+        duration: 0.4, 
         ease: "power2.inOut"
       });
     } else {
@@ -82,7 +82,7 @@ const ScrollText = () => {
       gsap.to([headingRef.current, subheadingRef.current, buttonRef.current], {
         opacity: 1,
         y: 0,
-        duration: 0.4, // Adjusted duration for fade in
+        duration: 0.4, 
         stagger: 0.05,
         ease: "power2.inOut"
       });
@@ -90,7 +90,7 @@ const ScrollText = () => {
       // Slide corner text back in from the left
       gsap.to(cornerTextRef.current, {
         x: 0,
-        duration: 0.4, // Adjusted duration for slide in
+        duration: 0.4, 
         ease: "power2.inOut"
       });
     }
