@@ -8,8 +8,8 @@ import os  # Import os to handle directory creation
 with open("./reports/facial_metrics.json", "r") as f:
     calculated_ratios = json.load(f)
 
-# Sample Perfect data for Testing
-perfect_ratios = {
+# Define perfect ratios for males and females
+perfect_ratios_male = {
     "face_ratio": 1.6,
     "upper_ratio": 0.31,
     "middle_ratio": 0.30,
@@ -19,6 +19,26 @@ perfect_ratios = {
     "nasal_ratio": 0.62,
     "lip_ratio": 0.75
 }
+
+perfect_ratios_female = {
+    "face_ratio": 1.5,
+    "upper_ratio": 0.29,
+    "middle_ratio": 0.32,
+    "lower_ratio": 0.39,
+    "left_eye_ratio": 0.33,
+    "interpupillary_ratio": 0.35,
+    "nasal_ratio": 0.60,
+    "lip_ratio": 0.78
+}
+
+# Set the gender for comparison
+gender = "male"  # Change to "female" for female ratios
+
+# Select the appropriate perfect ratios based on gender
+if gender.lower() == "male":
+    perfect_ratios = perfect_ratios_male
+else:
+    perfect_ratios = perfect_ratios_female
 
 # Converting the dictionaries to dataframes
 df = pd.DataFrame({
