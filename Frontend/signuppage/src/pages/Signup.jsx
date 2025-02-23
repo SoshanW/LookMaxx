@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const SignUpPage = () => {
   const navigate = useNavigate();
 
