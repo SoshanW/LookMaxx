@@ -1,5 +1,5 @@
 # Ignore environment files
-.env
+/ML/report-generation-V2/.env
 
 # Ignore Python cache
 __pycache__/
