@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import os
 import json  # Import the json module
+import subprocess
 
 # Define the path for the graphs directory inside the assets folder
 graphs_dir = os.path.join('assets', 'facial_ratio_graphs')
@@ -309,4 +310,9 @@ for source_idx, target_idx in mp_face_mesh.FACEMESH_TESSELATION:
 # Save tessellation image
 save_image(img_tessellation, 'face_mesh_tessellation.png')
 
-print("All images saved in the 'assets/graphs' directory.")
+
+if __name__ == "__main__":
+
+    print("All images saved in the 'assets/graphs' directory.")
+
+    subprocess.run(['python', 'comparison_report.py'])
