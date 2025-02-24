@@ -32,7 +32,7 @@ perfect_ratios_female = {
 }
 
 # Set the gender for comparison
-gender = "male"  # Change to "female" for female ratios
+gender = "male"
 
 # Select the appropriate perfect ratios based on gender
 if gender.lower() == "male":
