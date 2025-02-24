@@ -1,0 +1,11 @@
+# Ignore environment files
+.env
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Google Cloud API key file
+helical-mile-450717-d3-616bca69b639.json
