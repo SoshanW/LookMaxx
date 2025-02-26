@@ -11,7 +11,7 @@ export default function HumanHead(props) {
   const { nodes, materials } = useGLTF('/models/humanHead.glb')
   return (
     <group {...props} dispose={null}>
-      <group position={[-0.003, 2.279, -0.051]} rotation={[Math.PI / 2, 0, 0.227]} scale={0.249}>
+      <group position={[-0.003, 1.279, -0.051]} rotation={[Math.PI / 2, 0, 0.227]} scale={0.249}>
         <mesh
           castShadow
           receiveShadow

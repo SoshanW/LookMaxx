@@ -1,0 +1,60 @@
+/* src/FeatureInfo.css */
+.feature-info-container {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    background: rgba(10, 14, 20, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(77, 155, 255, 0.5);
+    box-shadow: 0 0 20px rgba(77, 155, 255, 0.3),
+                inset 0 0 10px rgba(77, 155, 255, 0.1);
+    color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    z-index: 100;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+  
+  .feature-title {
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #4d9bff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px rgba(77, 155, 255, 0.8);
+  }
+  
+  .feature-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgba(77, 155, 255, 0.2);
+    border: 1px solid rgba(77, 155, 255, 0.5);
+    color: #ffffff;
+    font-size: 1.5rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+  }
+  
+  .close-button:hover {
+    background: rgba(77, 155, 255, 0.5);
+    transform: scale(1.1);
+  }
