@@ -1,11 +1,11 @@
-/* src/index.css */
+/* src/index.css - Updated */
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #0f1025;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -20,6 +20,7 @@ html, body {
   height: 100%;
   min-height: 100vh;
   min-width: 100vw;
+  background: linear-gradient(to bottom, #0f1025 0%, #1a1150 100%);
 }
 
 body {
@@ -35,7 +36,7 @@ body {
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #a94dff;
   text-decoration: inherit;
 }
 

@@ -152,11 +152,13 @@ function App() {
 
   return (
     <div className="canvas-container">
-      <Canvas camera={{ position: [0, 0, 5] }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        {/* Additional rim light for more dramatic effect */}
-        <spotLight position={[-5, 2, 0]} intensity={0.8} color="#4d9bff" distance={20} angle={0.5} />
+      <Canvas camera={{ position: [0, 0, 5] }} style={{ background: 'linear-gradient(to bottom, #0f1025 0%, #1a1150 100%)' }}>
+        <ambientLight intensity={0.2} color="#b8c6ff" />
+        <directionalLight position={[10, 10, 5]} intensity={0.8} color="#ffffff" />
+        {/* Main accent light for blue highlights */}
+        <pointLight position={[-5, 2, 2]} intensity={2} color="#4d9bff" distance={15} />
+        {/* Purple rim light for contrast */}
+        <spotLight position={[5, -2, -2]} intensity={1.5} color="#a94dff" distance={20} angle={0.5} />
         
         {/* Wrap the head model in a group so we can animate it */}
         <group ref={headRef}>
@@ -174,9 +176,9 @@ function App() {
             >
               <sphereGeometry args={[0.1, 32, 32]} />
               <meshStandardMaterial 
-                color="hotpink" 
-                emissive="hotpink" 
-                emissiveIntensity={selectedFeature === feature ? 0.6 : 0.2} 
+                color="#a94dff" 
+                emissive="#a94dff" 
+                emissiveIntensity={selectedFeature === feature ? 0.8 : 0.3} 
               />
             </mesh>
           ))}

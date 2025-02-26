@@ -1,4 +1,3 @@
-/* src/WelcomeText.css */
 .welcome-container {
   position: absolute;
   top: 50%;
@@ -6,7 +5,7 @@
   transform: translateY(-50%);
   width: 40%;
   max-width: 500px;
-  background: rgba(10, 14, 20, 0.85);
+  background: rgba(15, 16, 37, 0.85);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(77, 155, 255, 0.5);
   box-shadow: 0 0 20px rgba(77, 155, 255, 0.3),
@@ -27,16 +26,16 @@
 .welcome-line {
   flex-grow: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(77, 155, 255, 0.8), transparent);
+  background: linear-gradient(90deg, transparent, rgba(169, 77, 255, 0.8), transparent);
 }
 
 .welcome-header h2 {
   margin: 0 1rem;
-  color: #4d9bff;
+  color: #a94dff;
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 1.2rem;
-  text-shadow: 0 0 5px rgba(77, 155, 255, 0.8);
+  text-shadow: 0 0 5px rgba(169, 77, 255, 0.8);
   white-space: nowrap;
 }
 
@@ -62,8 +61,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: rgba(77, 155, 255, 0.8);
-  box-shadow: 0 0 8px rgba(77, 155, 255, 0.8);
+  background-color: rgba(169, 77, 255, 0.8);
+  box-shadow: 0 0 8px rgba(169, 77, 255, 0.8);
   animation: pulse 2s infinite;
 }
 
@@ -71,7 +70,7 @@
   width: 50px;
   height: 1px;
   margin-left: 8px;
-  background: linear-gradient(90deg, rgba(77, 155, 255, 0.8), transparent);
+  background: linear-gradient(90deg, rgba(169, 77, 255, 0.8), transparent);
   animation: scan 2s infinite;
 }
 
