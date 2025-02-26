@@ -43,7 +43,7 @@ function App() {
     jaw: {
       spherePos: [0.73, 0.45, 0.3],
       view: { position: [-0.6, -0.5, -0.4], rotation: [0.2, -0.5, 0.1], scale: 1.6 },
-      description: "The human jaw (mandible) is the strongest bone in the face, capable of exerting up to 171 pounds of force when chewing. It's the only movable bone in the skull and contains the temporomandibular joint (TMJ)."
+      description: "The human jaw (mandible) is the strongest bone in the face, capable of exerting up to 171 pounds of force when chewing. It's the only movable bone in the skull and contains the temporomandibular joint (TMJ).(My rant starts here) The jaw is also the most important when it comes to a lot of features. A ton of features rely on the development of the jaw. Basically if the jaw isn't fully developed properly what is the point in being alive at that point. Everyone wants to be pretty and cute and sexy. This is me adding more and more content to just test out the scroll effect but for some reason the text box is just going down. A bit more texts cmon less go test this baby for a spin shall we. I wanna show all the finer things in life so lets forget about the world we young tonight I'm coming for ya I'm coming for ya. Cause All I need when the music makes you move baby do me like you doooo oo ooo. Take a bow you on the hottest ticket now aye aye we gonna party like its 3012 tonight I wanna show you all the finer things in life so just forget about the world we young tonight Im coming for ya I'm coming for ya"
     }
   }
 
