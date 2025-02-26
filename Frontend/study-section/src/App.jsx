@@ -1,6 +1,7 @@
 // src/App.jsx
 import React, { useState, useRef, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
+import { Environment } from '@react-three/drei'
 import { gsap } from 'gsap'
 import HumanHead from './HumanHead'
 import FeatureInfo from './FeatureInfo'
@@ -160,6 +161,9 @@ function App() {
         {/* Purple rim light for contrast */}
         <spotLight position={[5, -2, -2]} intensity={1.5} color="#a94dff" distance={20} angle={0.5} />
         
+        {/* Environment preset from drei */}
+        <Environment preset="city" />
+
         {/* Wrap the head model in a group so we can animate it */}
         <group ref={headRef}>
           <HumanHead />

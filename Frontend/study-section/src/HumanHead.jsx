@@ -5,10 +5,21 @@
 */
 
 import React from 'react'
+import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 
 export default function HumanHead(props) {
   const { nodes, materials } = useGLTF('/models/humanHead.glb')
+
+  const metallicMaterial = new THREE.MeshStandardMaterial({
+    color: new THREE.Color('#bfcbff'),      // Base color (light blue/silver)
+    metalness: 1,                         // Very metallic
+    roughness: 0.2,                         // Fairly smooth surface
+    envMapIntensity: 1.5,                   // Enhance reflections
+    clearcoat: 0.5,                         // Subtle clearcoat for extra shine
+    clearcoatRoughness: 0.2,                // Slight roughness on clearcoat
+  })
+
   return (
     <group {...props} dispose={null}>
       <group position={[-0.003, 1.279, -0.051]} rotation={[Math.PI / 2, 0, 0.227]} scale={0.249}>
@@ -16,25 +27,25 @@ export default function HumanHead(props) {
           castShadow
           receiveShadow
           geometry={nodes.Object_4.geometry}
-          material={materials['Scene_-_Root']}
+          material={metallicMaterial}
         />
         <mesh
           castShadow
           receiveShadow
           geometry={nodes.Object_5.geometry}
-          material={materials['Scene_-_Root']}
+          material={metallicMaterial}
         />
         <mesh
           castShadow
           receiveShadow
           geometry={nodes.Object_6.geometry}
-          material={materials['Scene_-_Root']}
+          material={metallicMaterial}
         />
         <mesh
           castShadow
           receiveShadow
           geometry={nodes.Object_7.geometry}
-          material={materials['Scene_-_Root']}
+          material={metallicMaterial}
         />
       </group>
     </group>
