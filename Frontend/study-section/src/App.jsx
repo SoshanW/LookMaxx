@@ -79,20 +79,28 @@ function App() {
     }
   }
 
-  // Set initial head position when component mounts
+  // Set initial head position immediately and on component mount
   useEffect(() => {
-    if (headRef.current) {
-      headRef.current.position.set(
-        initialHeadPosition.position[0],
-        initialHeadPosition.position[1],
-        initialHeadPosition.position[2]
-      )
-      headRef.current.rotation.set(
-        initialHeadPosition.rotation[0],
-        initialHeadPosition.rotation[1],
-        initialHeadPosition.rotation[2]
-      )
-    }
+    // Apply initial position immediately
+    resetHeadPosition()
+    
+    // Also ensure it's set after the model is loaded
+    const timer = setTimeout(() => {
+      if (headRef.current) {
+        headRef.current.position.set(
+          initialHeadPosition.position[0],
+          initialHeadPosition.position[1],
+          initialHeadPosition.position[2]
+        )
+        headRef.current.rotation.set(
+          initialHeadPosition.rotation[0],
+          initialHeadPosition.rotation[1],
+          initialHeadPosition.rotation[2]
+        )
+      }
+    }, 100)
+    
+    return () => clearTimeout(timer)
   }, [])
 
   // Handler for sphere clicks
@@ -143,7 +151,7 @@ function App() {
   }, [selectedFeature, featureData])
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    <div className="canvas-container">
       <Canvas camera={{ position: [0, 0, 5] }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />

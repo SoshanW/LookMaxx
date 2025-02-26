@@ -46,29 +46,49 @@ const FeatureInfo = ({ feature, description, onClose }) => {
       textContent.innerHTML = ''
       
       // Process text character by character
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i]
-        const span = document.createElement('span')
-        
-        // Preserve spaces by using non-breaking space for empty spaces
-        if (char === ' ') {
-          span.innerHTML = '&nbsp;'
-        } else {
-          span.textContent = char
+      const words = text.split(' ')
+      let charIndex = 0
+      
+      words.forEach((word, wordIndex) => {
+        // Add space between words (except before first word)
+        if (wordIndex > 0) {
+          const spaceSpan = document.createElement('span')
+          spaceSpan.innerHTML = '&nbsp;'
+          spaceSpan.style.opacity = '0'
+          spaceSpan.style.display = 'inline'
+          textContent.appendChild(spaceSpan)
+          
+          // Animate space
+          gsap.to(spaceSpan, {
+            opacity: 1,
+            duration: 0.03,
+            delay: 0.5 + charIndex * 0.015,
+            ease: "power1.inOut"
+          })
+          
+          charIndex++
         }
         
-        span.style.opacity = '0'
-        span.style.display = 'inline'
-        textContent.appendChild(span)
-        
-        // Animate each character with a slight delay
-        gsap.to(span, {
-          opacity: 1,
-          duration: 0.03,
-          delay: 0.5 + i * 0.015,
-          ease: "power1.inOut"
-        })
-      }
+        // Process each character in the word
+        for (let i = 0; i < word.length; i++) {
+          const char = word[i]
+          const span = document.createElement('span')
+          span.textContent = char
+          span.style.opacity = '0'
+          span.style.display = 'inline'
+          textContent.appendChild(span)
+          
+          // Animate each character with a slight delay
+          gsap.to(span, {
+            opacity: 1,
+            duration: 0.03,
+            delay: 0.5 + charIndex * 0.015,
+            ease: "power1.inOut"
+          })
+          
+          charIndex++
+        }
+      })
     }
   }, [])
   

@@ -1,8 +1,9 @@
 /* src/FeatureInfo.css */
 .feature-info-container {
   position: absolute;
-  bottom: 2rem;
+  top: 50%;
   right: 5%;
+  transform: translateY(-50%);
   width: 40%;
   max-width: 500px;
   background: rgba(10, 14, 20, 0.85);
@@ -15,6 +16,8 @@
   border-radius: 10px;
   z-index: 100;
   font-family: 'Segoe UI', Arial, sans-serif;
+  overflow: hidden;
+  max-height: 80vh;
 }
 
 .feature-header {
