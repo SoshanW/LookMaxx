@@ -1,84 +1,88 @@
 /* src/WelcomeText.css */
 .welcome-container {
-    position: absolute;
-    top: 50%;
-    right: 5%;
-    transform: translateY(-50%);
-    width: 40%;
-    max-width: 500px;
-    background: rgba(10, 14, 20, 0.85);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(77, 155, 255, 0.5);
-    box-shadow: 0 0 20px rgba(77, 155, 255, 0.3),
-                inset 0 0 10px rgba(77, 155, 255, 0.1);
-    color: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    z-index: 90;
-    font-family: 'Segoe UI', Arial, sans-serif;
-  }
-  
-  .welcome-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .welcome-line {
-    flex-grow: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(77, 155, 255, 0.8), transparent);
-  }
-  
-  .welcome-header h2 {
-    margin: 0 1rem;
-    color: #4d9bff;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 1.2rem;
-    text-shadow: 0 0 5px rgba(77, 155, 255, 0.8);
-    white-space: nowrap;
-  }
-  
-  .welcome-text {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    min-height: 60px;
-  }
-  
-  .welcome-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1rem;
-  }
-  
-  .welcome-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: rgba(77, 155, 255, 0.8);
-    box-shadow: 0 0 8px rgba(77, 155, 255, 0.8);
-    animation: pulse 2s infinite;
-  }
-  
-  .welcome-indicator {
-    width: 50px;
-    height: 1px;
-    margin-left: 8px;
-    background: linear-gradient(90deg, rgba(77, 155, 255, 0.8), transparent);
-    animation: scan 2s infinite;
-  }
-  
-  @keyframes pulse {
-    0% { opacity: 0.4; }
-    50% { opacity: 1; }
-    100% { opacity: 0.4; }
-  }
-  
-  @keyframes scan {
-    0% { transform: scaleX(0.5); opacity: 0.4; }
-    50% { transform: scaleX(1); opacity: 1; }
-    100% { transform: scaleX(0.5); opacity: 0.4; }
-  }
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%);
+  width: 40%;
+  max-width: 500px;
+  background: rgba(10, 14, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(77, 155, 255, 0.5);
+  box-shadow: 0 0 20px rgba(77, 155, 255, 0.3),
+              inset 0 0 10px rgba(77, 155, 255, 0.1);
+  color: #ffffff;
+  padding: 2rem;
+  border-radius: 10px;
+  z-index: 90;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.welcome-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(77, 155, 255, 0.8), transparent);
+}
+
+.welcome-header h2 {
+  margin: 0 1rem;
+  color: #4d9bff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 1.2rem;
+  text-shadow: 0 0 5px rgba(77, 155, 255, 0.8);
+  white-space: nowrap;
+}
+
+.welcome-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  min-height: 60px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  text-align: left;
+}
+
+.welcome-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.welcome-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(77, 155, 255, 0.8);
+  box-shadow: 0 0 8px rgba(77, 155, 255, 0.8);
+  animation: pulse 2s infinite;
+}
+
+.welcome-indicator {
+  width: 50px;
+  height: 1px;
+  margin-left: 8px;
+  background: linear-gradient(90deg, rgba(77, 155, 255, 0.8), transparent);
+  animation: scan 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+@keyframes scan {
+  0% { transform: scaleX(0.5); opacity: 0.4; }
+  50% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(0.5); opacity: 0.4; }
+}

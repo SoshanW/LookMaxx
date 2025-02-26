@@ -14,14 +14,26 @@ const WelcomeText = () => {
       // Clear the text first
       textElement.textContent = ''
       
-      // Add each character with a delay for typewriter effect
+      // Create a wrapper span that will contain all the characters
+      const wrapper = document.createElement('div')
+      wrapper.style.display = 'inline'
+      textElement.appendChild(wrapper)
+      
+      // Process text character by character
       text.split('').forEach((char, index) => {
         const span = document.createElement('span')
         span.textContent = char
         span.style.opacity = 0
-        span.style.display = 'inline-block'
         
-        textElement.appendChild(span)
+        // Use display: inline for spaces to preserve them
+        if (char === ' ') {
+          span.style.display = 'inline'
+          span.innerHTML = '&nbsp;'
+        } else {
+          span.style.display = 'inline-block'
+        }
+        
+        wrapper.appendChild(span)
         
         // Typewriter effect
         gsap.to(span, {

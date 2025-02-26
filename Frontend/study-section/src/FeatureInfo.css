@@ -18,6 +18,8 @@
   font-family: 'Segoe UI', Arial, sans-serif;
   overflow: hidden;
   max-height: 80vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .feature-header {
@@ -47,10 +49,33 @@
   margin-bottom: 0.5rem;
   border-left: 2px solid rgba(77, 155, 255, 0.4);
   padding-left: 1rem;
+  max-height: calc(80vh - 120px);
+  overflow-y: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(77, 155, 255, 0.6) rgba(10, 14, 20, 0.4);
+}
+
+.feature-description::-webkit-scrollbar {
+  width: 8px;
+}
+
+.feature-description::-webkit-scrollbar-track {
+  background: rgba(10, 14, 20, 0.4);
+  border-radius: 4px;
+}
+
+.feature-description::-webkit-scrollbar-thumb {
+  background-color: rgba(77, 155, 255, 0.6);
+  border-radius: 4px;
 }
 
 .feature-description p {
   word-spacing: normal;
+  margin: 0 0 1rem 0;
+  width: 100%;
 }
 
 .feature-footer {
