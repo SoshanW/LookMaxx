@@ -1,7 +1,7 @@
 // src/WelcomeText.jsx
 import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import './WelcomeText.css'
+import '../styles/WelcomeText.css'
 
 const WelcomeText = () => {
   const containerRef = useRef(null)

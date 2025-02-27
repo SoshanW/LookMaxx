@@ -1,7 +1,7 @@
 // src/FeatureInfo.jsx
 import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import './FeatureInfo.css'
+import '../styles/FeatureInfo.css'
 
 const FeatureInfo = ({ feature, description, onClose }) => {
   const containerRef = useRef(null)

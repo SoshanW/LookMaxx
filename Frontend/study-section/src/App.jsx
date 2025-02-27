@@ -3,10 +3,11 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Environment } from '@react-three/drei'
 import { gsap } from 'gsap'
-import HumanHead from './HumanHead'
-import FeatureInfo from './FeatureInfo'
-import WelcomeText from './WelcomeText'
+import HumanHead from './components/HumanHead'
+import FeatureInfo from './components/FeatureInfo'
+import WelcomeText from './components/WelcomeText'
 import './App.css'
+import Navbar from './components/Navbar'
 
 function App() {
   // State to track which feature is selected
@@ -153,6 +154,7 @@ function App() {
 
   return (
     <div className="canvas-container">
+      <Navbar />
       <Canvas camera={{ position: [0, 0, 5] }} style={{ background: 'linear-gradient(to bottom, #0f1025 0%, #1a1150 100%)' }}>
         <ambientLight intensity={0.2} color="#b8c6ff" />
         <directionalLight position={[10, 10, 5]} intensity={0.8} color="#ffffff" />
