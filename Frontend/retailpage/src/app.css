@@ -24,3 +24,34 @@ body, html {
     height: auto;
     border-radius: 8px; 
   }
+
+  .bannertxt{
+    font-size: 4rem;
+    font-weight:500;
+    margin: -90px;
+    background: linear-gradient(90deg, pink, purple, rgb(181, 121, 226), rgb(109, 109, 232));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .shopBtn{
+    display: block;
+    margin: 30px 60px;
+    position: fixed;
+    background: transparent;
+      border: 2px solid #be80e7;
+
+    border-radius: 25px;
+    font-size: 1.5rem;
+    padding: 15px;
+    color: #b692ea;
+  }
+
+ .shopBtn:hover {
+    background: linear-gradient(135deg, #2c0047, #441b7d); 
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    color: #d6bcfb;
+}

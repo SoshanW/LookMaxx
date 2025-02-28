@@ -1,16 +1,17 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Retailpage from "./components/retail";
-import Header from "./components/Header";
+import Navbar from "./components/Navbar";
+
 
 
 function App() {
   return (
     <Router>
-      <Header />
+      <Navbar/>
       <Routes>
-        <Route path="/retail" element={<Retailpage />} />
-        {/* Add other routes here */}
+      <Route path="/" element={<Retailpage />} />
+      <Route path="/retail" element={<Retailpage />} />
       </Routes>
     </Router>
   );

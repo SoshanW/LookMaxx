@@ -48,9 +48,12 @@ const Retailpage = () => {
           className='title'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.5, delay: 5.2 }}
+          transition={{ duration: 1.5, delay: 1 }}
         >
-          <p>Find your fit</p>
+          <button className='shopBtn'>Shop Now</button>
+          <p className='bannertxt'>FIND YOUR FIT</p>
+          
+          
         </motion.div>
 
         <motion.div
