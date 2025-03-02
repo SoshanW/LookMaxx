@@ -21,7 +21,7 @@ perfect_ratios_male = {
 }
 
 perfect_ratios_female = {
-    "face_ratio": 0.6,
+    "face_ratio": 0.7,
     "upper_ratio": 0.29,
     "middle_ratio": 0.32,
     "lower_ratio": 0.39,
