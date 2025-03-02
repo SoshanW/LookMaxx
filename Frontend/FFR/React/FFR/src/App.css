@@ -1,10 +1,17 @@
-/* App.css or styles.css */
 @font-face {
   font-family: 'Nasalization';
   src: url('/fonts/Nasalization Rg.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'Library3am';
+  src: url('/fonts/Library 3 am.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 * {
   margin: 0;
@@ -32,7 +39,6 @@ body {
 body {
   overflow-x: hidden;
   font-family: 'Nasalization', sans-serif;
-
 }
 
 

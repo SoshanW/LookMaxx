@@ -1,11 +1,3 @@
-/* styles/ScrollText.css */
-
-@font-face {
-  font-family: 'Library3am';
-  src: url('/fonts/Library 3 am.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
 
 .scroll-text-container {
   position: fixed;
