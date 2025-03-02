@@ -10,7 +10,7 @@ with open("./reports/facial_metrics.json", "r") as f:
 
 # Define perfect ratios for males and females
 perfect_ratios_male = {
-    "face_ratio": 1.6,
+    "face_ratio": 0.8,
     "upper_ratio": 0.31,
     "middle_ratio": 0.30,
     "lower_ratio": 0.38,
@@ -21,7 +21,7 @@ perfect_ratios_male = {
 }
 
 perfect_ratios_female = {
-    "face_ratio": 1.5,
+    "face_ratio": 0.6,
     "upper_ratio": 0.29,
     "middle_ratio": 0.32,
     "lower_ratio": 0.39,
