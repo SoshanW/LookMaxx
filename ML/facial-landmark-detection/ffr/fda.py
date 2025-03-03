@@ -7,6 +7,7 @@ import subprocess
 
 # Define the path for the graphs directory inside the assets folder
 graphs_dir = os.path.join('assets', 'facial_ratio_graphs')
+os.makedirs(graphs_dir, exist_ok=True)
 
 # Create a directory for graphs if it doesn't exist
 if not os.path.exists(graphs_dir):
@@ -20,7 +21,7 @@ def save_image(image, filename):
     plt.savefig(os.path.join(graphs_dir, filename), bbox_inches='tight')
     plt.close()  # Close the figure to free memory
 
-def calculate_face_ratio(landmarks, img_shape):
+def calculate_face_ratio(landmarks, img_shape,img_base):
     # Create a fresh copy of the base image
     img_ratio = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
     
@@ -40,7 +41,7 @@ def calculate_face_ratio(landmarks, img_shape):
     
     return ratio
 
-def calculate_facial_thirds(landmarks, img_shape):
+def calculate_facial_thirds(landmarks, img_shape,img_base):
     # Create a fresh copy of the base image
     img_thirds = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
     
@@ -93,7 +94,7 @@ def calculate_facial_thirds(landmarks, img_shape):
     
     return upper_ratio, middle_ratio, lower_ratio
 
-def calculate_eye_ratios(landmarks, img_shape):
+def calculate_eye_ratios(landmarks, img_shape,img_base):
     # Create a fresh copy of the base image
     img_eyes = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
     
@@ -144,7 +145,7 @@ def calculate_eye_ratios(landmarks, img_shape):
     
     return left_eye_ratio, interpupillary_ratio
 
-def calculate_nasal_index(landmarks, img_shape):
+def calculate_nasal_index(landmarks, img_shape,img_base):
     img_nasal = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
 
     # Updated landmarks for nasal width (alae)
@@ -184,7 +185,7 @@ def calculate_nasal_index(landmarks, img_shape):
     
     return nasal_index
 
-def calculate_lip_ratio(landmarks, img_shape):
+def calculate_lip_ratio(landmarks, img_shape,img_base):
     img_lips = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
 
     # Using philtrum point for upper lip top
@@ -222,97 +223,3 @@ def calculate_lip_ratio(landmarks, img_shape):
 
     save_image(img_lips, 'lip_ratio.png')
     return lip_ratio
-
-# Load image with error checking
-img_base = cv2.imread('./assets/naflan.jpg')
-if img_base is None:
-    raise Exception("Error: Could not load image 'naflan.jpg'. Please check if the file exists and the path is correct.")
-
-# Initialize face mesh
-mp_face_mesh = mediapipe.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, min_detection_confidence=0.5)
-
-# Convert BGR to RGB for MediaPipe
-img_rgb = cv2.cvtColor(img_base, cv2.COLOR_BGR2RGB)
-
-# Process the image
-results = face_mesh.process(img_rgb)
-
-# Check if any face was detected
-if results.multi_face_landmarks is None:
-    print("No face detected in the image")
-    plt.figure(figsize=(15, 15))
-    plt.imshow(cv2.cvtColor(img_base, cv2.COLOR_BGR2RGB))
-    plt.title('Original Image - No Face Detected')
-    plt.axis('off')
-    plt.savefig(os.path.join(graphs_dir, 'no_face_detected.png'), bbox_inches='tight')
-    plt.close()
-    exit()
-
-# Get landmarks
-landmarks = results.multi_face_landmarks[0]
-
-# Calculate and display measurements
-if results.multi_face_landmarks:
-    # Calculate face ratio
-    ratio = calculate_face_ratio(landmarks, img_rgb.shape)
-    print(f'Face width-to-height ratio: {ratio:.2f}')
-    
-    # Calculate facial thirds
-    upper, middle, lower = calculate_facial_thirds(landmarks, img_rgb.shape)
-    print(f'Facial thirds ratios - Upper: {upper:.2f}, Middle: {middle:.2f}, Lower: {lower:.2f}')
-    
-    # Calculate eye ratios
-    left_eye_ratio, interpupillary_ratio = calculate_eye_ratios(landmarks, img_rgb.shape)
-    print(f'Left eye width ratio: {left_eye_ratio:.3f}')
-    print(f'Interpupillary to total width ratio: {interpupillary_ratio:.3f}')
-
-    #Calulcate nasal index
-    nasal_index = calculate_nasal_index(landmarks, img_rgb.shape)
-    print(f'Nasal Index: {nasal_index:.3f}')
-
-    # Calculate lip ratio
-    lip_ratio = calculate_lip_ratio(landmarks, img_rgb.shape)
-    print(f'Lip Ratio (Upper to Lower): {lip_ratio:.3f}')
-
-    # Create a dictionary to store the results
-    results_dict = {
-        "face_ratio": round(ratio, 2),
-        "upper_ratio": round(upper, 2),
-        "middle_ratio": round(middle, 2),
-        "lower_ratio": round(lower, 2),
-        "left_eye_ratio": round(left_eye_ratio, 2),
-        "interpupillary_ratio": round(interpupillary_ratio, 2),
-        "nasal_index": round(nasal_index, 2),
-        "lip_ratio": round(lip_ratio, 2)
-    }
-
-    # Save the results to a JSON file
-    with open('./reports/facial_metrics.json', 'w') as json_file:
-        json.dump(results_dict, json_file, indent=4)
-    print("Results saved to 'facial_metrics.json'.")
-
-# Create tessellation image
-img_tessellation = cv2.cvtColor(img_base.copy(), cv2.COLOR_BGR2RGB)
-
-# Draw tessellation
-for source_idx, target_idx in mp_face_mesh.FACEMESH_TESSELATION:
-    source = landmarks.landmark[source_idx]
-    target = landmarks.landmark[target_idx]
-
-    relative_source = (int(source.x * img_tessellation.shape[1]), 
-                      int(source.y * img_tessellation.shape[0]))
-    relative_target = (int(target.x * img_tessellation.shape[1]), 
-                      int(target.y * img_tessellation.shape[0]))
-
-    cv2.line(img_tessellation, relative_source, relative_target, (0, 255, 0), 1)
-
-# Save tessellation image
-save_image(img_tessellation, 'face_mesh_tessellation.png')
-
-
-if __name__ == "__main__":
-
-    print("All images saved in the 'assets/graphs' directory.")
-
-    subprocess.run(['python', 'comparison_report.py'])
