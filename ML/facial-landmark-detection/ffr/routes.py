@@ -39,6 +39,17 @@ def analyze_face():
     
     file = request.files['image']
     username = request.form['username']
+    try:
+        user = mongo.db.users.find_one({'username': username})
+        if user:
+            # Extract gender from user document
+            gender = "unknown"
+            if 'gender' in user:
+                gender = user['gender']            
+    except Exception as e:
+        return jsonify({
+            "error": f"Error retrieving gender: {str(e)}"
+        }), 500
 
     #read the file once
     file_content = file.read()
@@ -137,7 +148,7 @@ def analyze_face():
 
     print("All images saved in the 'assets/graphs' directory.")
 
-    comparison_results = generate_comparison_report(results_dict, username)
+    comparison_results = generate_comparison_report(results_dict, username, gender)
 
     # Save FFR results to MongoDB
     ffr_data = {

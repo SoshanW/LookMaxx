@@ -5,7 +5,7 @@ import json
 import os  # Import os to handle directory creation
 
 # Load calculated ratios from JSON file
-def generate_comparison_report(facial_metrics, username):
+def generate_comparison_report(facial_metrics, username, gender):
     # Load calculated ratios from JSON file
     calculated_ratios = facial_metrics
 
@@ -31,9 +31,6 @@ def generate_comparison_report(facial_metrics, username):
         "nasal_ratio": 0.60,
         "lip_ratio": 0.78
     }
-
-    # Set the gender for comparison
-    gender = "male"
 
     # Select the appropriate perfect ratios based on gender
     if gender.lower() == "male":
