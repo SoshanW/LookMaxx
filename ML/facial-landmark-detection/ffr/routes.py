@@ -91,24 +91,24 @@ def analyze_face():
     # Calculate and display measurements
     if results.multi_face_landmarks:
         # Calculate face ratio
-        ratio = calculate_face_ratio(landmarks, img_rgb.shape)
+        ratio = calculate_face_ratio(landmarks, img_rgb.shape,img_base)
         print(f'Face width-to-height ratio: {ratio:.2f}')
         
         # Calculate facial thirds
-        upper, middle, lower = calculate_facial_thirds(landmarks, img_rgb.shape)
+        upper, middle, lower = calculate_facial_thirds(landmarks, img_rgb.shape, img_base)
         print(f'Facial thirds ratios - Upper: {upper:.2f}, Middle: {middle:.2f}, Lower: {lower:.2f}')
         
         # Calculate eye ratios
-        left_eye_ratio, interpupillary_ratio = calculate_eye_ratios(landmarks, img_rgb.shape)
+        left_eye_ratio, interpupillary_ratio = calculate_eye_ratios(landmarks, img_rgb.shape, img_base)
         print(f'Left eye width ratio: {left_eye_ratio:.3f}')
         print(f'Interpupillary to total width ratio: {interpupillary_ratio:.3f}')
 
         #Calulcate nasal index
-        nasal_index = calculate_nasal_index(landmarks, img_rgb.shape)
+        nasal_index = calculate_nasal_index(landmarks, img_rgb.shape, img_base)
         print(f'Nasal Index: {nasal_index:.3f}')
 
         # Calculate lip ratio
-        lip_ratio = calculate_lip_ratio(landmarks, img_rgb.shape)
+        lip_ratio = calculate_lip_ratio(landmarks, img_rgb.shape, img_base)
         print(f'Lip Ratio (Upper to Lower): {lip_ratio:.3f}')
 
         # Create a dictionary to store the results
