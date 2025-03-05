@@ -43,6 +43,7 @@ def upload_file_to_s3(file, username):
     s3_path = AWS.S3_FFR_PICTURES_UPLOAD + filename
     
     try:
+        file_content = file.read()
         # Upload the file to S3
         s3_client.upload_fileobj(
             file,
@@ -205,13 +206,11 @@ def analyze_face():
             "error": f"Error retrieving gender: {str(e)}"
         }), 500
 
+    file_content = file.read()
+
     FFR_url = upload_file_to_s3(file, username)
     if not FFR_url:
         return jsonify({"error": "Failed to upload input image"}), 500
-        
-    # Reset file pointer and read the file
-    file.seek(0)
-    file_content = file.read()
     
     # Read image file into numpy array
     file_bytes = np.frombuffer(file_content, np.uint8)
