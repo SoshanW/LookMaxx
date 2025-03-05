@@ -7,4 +7,6 @@ class AWS:
     AWS_SECRET_ACCESS_KEY = "5oj5H6RTqeScB4Kj6EatAhqM0wNtSSXJW6ZD9NUb"
     AWS_REGION = "ap-south-1"  # Add your region (default is us-east-1)
     S3_BUCKET = "looksci-user-data"
+    S3_PROFILE_PICTURES_PREFIX = "profile-pictures/"
     S3_FFR_PICTURES_UPLOAD = "ffr-pic-upload/" 
+    S3_FFR_PICTURES_GENERATED = "ffr-pic-output/"

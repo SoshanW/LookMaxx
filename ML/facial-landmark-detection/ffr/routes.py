@@ -19,6 +19,7 @@ from botocore.exceptions import ClientError
 from werkzeug.utils import secure_filename
 from .config import AWS
 import json
+import io
 
 ffr_bp = Blueprint('ffr', __name__)
 
@@ -59,6 +60,85 @@ def upload_file_to_s3(file, username):
     except ClientError as e:
         print(f"Error uploading to S3: {e}")
         return None
+    
+def upload_image_to_s3(img_array, filename, username, content_type='image/png'):
+    """
+    Upload an image numpy array to S3
+    
+    :param img_array: Image as numpy array
+    :param filename: Name of the file
+    :param username: Username for folder structure
+    :param content_type: Content type of the image
+    :return: S3 URL of the uploaded file
+    """
+    # Format full path with username folder
+    s3_path = f"{AWS.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    
+    try:
+        # Convert numpy array to bytes
+        is_success, buffer = cv2.imencode(".png", img_array)
+        if not is_success:
+            return None
+            
+        # Convert to BytesIO object
+        io_buf = io.BytesIO(buffer)
+        
+        # Upload to S3
+        s3_client.upload_fileobj(
+            io_buf,
+            AWS.S3_BUCKET,
+            s3_path,
+            ExtraArgs={
+                'ContentType': content_type
+            }
+        )
+        
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
+
+def save_plot_to_s3(fig, filename, username):
+    """
+    Save a matplotlib figure to S3
+    
+    :param fig: Matplotlib figure
+    :param filename: Name of the file
+    :param username: Username for folder structure
+    :return: S3 URL of the uploaded file
+    """
+
+    s3_path = f"{AWS.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    
+    try:
+        # Save figure to BytesIO object
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        
+        # Upload to S3
+        s3_client.upload_fileobj(
+            buf,
+            AWS.S3_BUCKET,
+            s3_path,
+            ExtraArgs={
+                'ContentType': 'image/png'
+            }
+        )
+        
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
+    finally:
+        plt.close(fig)
+
 
 # Define the path for the graphs directory inside the assets folder
 graphs_dir = os.path.join('assets', 'facial_ratio_graphs')
