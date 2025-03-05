@@ -1,8 +1,12 @@
-import '../app.css'
+import React from 'react';
+import '../app.css';
+import '../styles/Slider.css';
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
 
-const Retailpage = () => {
+const RetailpageWithSlider = () => {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
+  // Animations for hero section
   const slideLeft = {
     hidden: { x: 0, opacity: 0 },
     visible: {
@@ -21,38 +25,46 @@ const Retailpage = () => {
     }
   };
 
-  // Image slider state
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const images = [
-    { src: "kellyfelder.jpg", alt: "Kelly Felder" },
-    { src: "r.jpg", alt: "R Store" },
-    { src: "a.png", alt: "A Store" },
-    { src: "r.jpg", alt: "Store 4" }
+  // Slider data
+  const slides = [
+
+    {
+      image: 'carnage.jpg',
+      title: 'Mimosa',
+      subtitle: 'Fashion',
+      description: 'Trendy collections for you'
+    },
+    
+    {
+      image: 'kellyfelder.jpg',
+      title: 'Kelly Felder',
+      subtitle: 'Clothing',
+      description: 'Find your perfect style'
+    },
+    
+    {
+      image: 'kellyfelder.jpg',
+      title: 'A Store',
+      subtitle: 'Accessories',
+      description: 'Complete your look'
+    }
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
-
-    
-    return () => clearInterval(interval);
-  }, [images.length]); 
-
-  const goToSlide = (index) => {
-    setCurrentIndex(index);
+  const changeSlide = (direction) => {
+    const newIndex = (currentIndex + direction + slides.length) % slides.length;
+    setCurrentIndex(newIndex);
   };
 
-  const goToPrevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-  };
-
-  const goToNextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  const getSlideClass = (index) => {
+    if (index === currentIndex) return 'slide current';
+    if (index === (currentIndex + 1) % slides.length) return 'slide next';
+    if (index === (currentIndex - 1 + slides.length) % slides.length) return 'slide previous';
+    return 'slide';
   };
 
   return (
     <>
+      {/* Hero Section */}
       <div className="hero-content">
         <motion.div
           className='side-image left'
@@ -83,42 +95,95 @@ const Retailpage = () => {
         </motion.div>
       </div>
 
-      <div className='slider'>
-        <h1 className='slider-header'>Featured Stores</h1>
-        <div className='slider-wrapper'>
-        <button className='slider-arrow prev' onClick={goToPrevSlide}>
-            &lt;
-          </button>
-          <div className='slider-content'>
-            {images.map((image, index) => (
-              <div 
-                key={index} 
-                className={`slider-slide ${index === currentIndex ? 'active' : ''}`}
-                style={{ 
-                  transform: `translateX(${100 * (index - currentIndex)}%)`,
-                  opacity: index === currentIndex ? 1 : 0.5
-                }}
-              >
-                <img src={image.src} alt={image.alt} className='store-image' />
-              </div>
-            ))}
-          </div>
-          <button className='slider-arrow next' onClick={goToNextSlide}>
-            &gt;
-          </button>
+      {/* Slider Section */}
+      <div className="slider-section">
+        <div className='titlecontainer'>
+          <div className='line'></div>
+          <h2>Featured Stores</h2>
+          <div className='line'></div>
         </div>
-        <div className='slider-dots'>
-          {images.map((_, index) => (
-            <span 
-              key={index} 
-              className={`slider-dot ${index === currentIndex ? 'active' : ''}`}
-              onClick={() => goToSlide(index)}
+        
+        <div className="slider">
+          <button 
+            className="slider--btn slider--btn__prev" 
+            onClick={() => changeSlide(-1)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+
+          <div className="slides__wrapper">
+            <div className="slides">
+              {slides.map((slide, index) => (
+                <div 
+                  key={index} 
+                  className={getSlideClass(index)} 
+                  data-current={index === currentIndex ? '' : null}
+                  data-next={index === (currentIndex + 1) % slides.length ? '' : null}
+                  data-previous={index === (currentIndex - 1 + slides.length) % slides.length ? '' : null}
+                >
+                  <div className="slide__inner">
+                    <div className="slide--image__wrapper">
+                      <img 
+                        className="slide--image" 
+                        src={slide.image} 
+                        alt={slide.title} 
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="slides--infos">
+              {slides.map((slide, index) => (
+                <div 
+                  key={index} 
+                  className="slide-info"
+                  data-current={index === currentIndex ? '' : null}
+                  data-next={index === (currentIndex + 1) % slides.length ? '' : null}
+                  data-previous={index === (currentIndex - 1 + slides.length) % slides.length ? '' : null}
+                >
+                  <div className="slide-info__inner">
+                    <div className="slide-info--text__wrapper">
+                      <div data-title className="slide-info--text">
+                        <span>{slide.title}</span>
+                      </div>
+                      <div data-subtitle className="slide-info--text">
+                        <span>{slide.subtitle}</span>
+                      </div>
+                      <div data-description className="slide-info--text">
+                        <span>{slide.description}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div 
+              className="slide__bg" 
+              style={{ 
+                backgroundImage: `url(${slides[currentIndex].image})`,
+                opacity: 1 
+              }}
+              data-current
             />
-          ))}
+          </div>
+
+          <button 
+            className="slider--btn slider--btn__next" 
+            onClick={() => changeSlide(1)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
         </div>
       </div>
     </>
   );
-}
+};
 
-export default Retailpage;
+export default RetailpageWithSlider;

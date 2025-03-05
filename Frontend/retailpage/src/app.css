@@ -21,7 +21,7 @@ body, html {
   }
   
   .left img, .right img {
-    width: 95%;
+    width: 98%;
     height: auto;
     border-radius: 8px; 
   }
@@ -35,6 +35,7 @@ body, html {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     color: transparent;
+    font-family: 'Nasalization', sans-serif;
   }
 
   .shopBtn{
@@ -43,7 +44,7 @@ body, html {
     position: absolute;
     background: transparent;
     border: 2px solid #be80e7;
-
+    font-family: 'Nasalization', sans-serif;;
     border-radius: 25px;
     font-size: 1.5rem;
     padding: 15px;
@@ -59,94 +60,3 @@ body, html {
     transition: 0.5s;
 }
 
-.slider{
-  width: 100%;
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 20px;
-}
-
-.slider-heading {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 28px;
-}
-
-.slider-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 300px;
-  overflow: hidden;
-}
-
-.slider-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.slider-slide {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transition: all 0.5s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.store-image {
-  max-width: 80%;
-  max-height: 250px;
-  object-fit: contain;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-}
-
-.slider-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 10;
-  border: none;
-  font-size: 18px;
-}
-
-.slider-arrow.prev {
-  left: 10px;
-}
-
-.slider-arrow.next {
-  right: 10px;
-}
-
-.slider-dots {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.slider-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #ccc;
-  margin: 0 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.slider-dot.active {
-  background-color: #333;
-}
