@@ -13,11 +13,52 @@ import numpy as np
 import cv2
 import mediapipe
 import matplotlib.pyplot as plt
+import boto3
 import os
+from botocore.exceptions import ClientError
+from werkzeug.utils import secure_filename
+from .config import AWS
 import json
-import base64
 
 ffr_bp = Blueprint('ffr', __name__)
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS.AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS.AWS_SECRET_ACCESS_KEY,
+    region_name=AWS.AWS_REGION
+)
+
+def upload_file_to_s3(file, username):
+    """
+    Upload a file to the S3 bucket
+    
+    :param file: File to upload
+    :param username: Username to create filename with
+    :return: S3 URL of the uploaded file
+    """
+    # Create a filename based on username
+    filename = f"{username}_ffr.jpg"
+    s3_path = AWS.S3_FFR_PICTURES_UPLOAD + filename
+    
+    try:
+        # Upload the file to S3
+        s3_client.upload_fileobj(
+            file,
+            AWS.S3_BUCKET,
+            s3_path,
+            ExtraArgs={
+                'ContentType': file.content_type
+            }
+        )
+        
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
 
 # Define the path for the graphs directory inside the assets folder
 graphs_dir = os.path.join('assets', 'facial_ratio_graphs')
@@ -53,9 +94,6 @@ def analyze_face():
 
     #read the file once
     file_content = file.read()
-
-    #image storing and conversion of image to base64 string
-    encoded_image = base64.b64encode(file_content).decode('utf-8')
     
     # Read image file into numpy array
     file_bytes = np.frombuffer(file_content, np.uint8)
@@ -151,42 +189,54 @@ def analyze_face():
     comparison_results = generate_comparison_report(results_dict, username, gender)
 
     # Save FFR results to MongoDB
-    ffr_data = {
-            'FFR_pic' : encoded_image,
-            'facial_metrics': results_dict,
-            'comparison_data': comparison_results['comparison_data']
-        }
-        
-    # Update user document with FFR results
-    update_result = mongo.db.users.update_one(
-            {'username': username},
-            {
-                '$push': {
-                    'ffr_results': ffr_data
-                }
-            }
-        )
-    
-    if not update_result.modified_count:
-        return jsonify({'error': 'Failed to save FFR results to database'}), 500
+    try:
+        FFR_url = None
+        if file and file.filename:
+            file.seek(0)
 
-    # Return success response with results
-    return jsonify({
-            'message': 'Analysis completed successfully',
-            'results': results_dict,
-            'files': {
-                'metrics': 'reports/facial_metrics.json',
-                'comparison_report': 'reports/comparison_report.json',
-                'visualizations': [
-                    'facial_ratio_graphs/face_ratio.png',
-                    'facial_ratio_graphs/facial_thirds.png',
-                    'facial_ratio_graphs/eye_measurements.png',
-                    'facial_ratio_graphs/nasal_index.png',
-                    'facial_ratio_graphs/lip_ratio.png',
-                    'facial_ratio_graphs/face_mesh_tessellation.png'
-                ]
+            #Upload to S3
+            FFR_url = upload_file_to_s3(file, username)
+            if not FFR_url:
+                return jsonify({"error": "Failed to upload profile picture"}), 500
+            
+        ffr_data = {
+                'FFR_pic' : FFR_url,
+                'facial_metrics': results_dict,
+                'comparison_data': comparison_results['comparison_data']
             }
-        }), 200    
+        
+        # Update user document with FFR results
+        update_result = mongo.db.users.update_one(
+                {'username': username},
+                {
+                    '$push': {
+                        'ffr_results': ffr_data
+                    }
+                }
+            )
+        
+        if not update_result.modified_count:
+            return jsonify({'error': 'Failed to save FFR results to database'}), 500
+
+        # Return success response with results
+        return jsonify({
+                'message': 'Analysis completed successfully',
+                'results': results_dict,
+                'files': {
+                    'metrics': 'reports/facial_metrics.json',
+                    'comparison_report': 'reports/comparison_report.json',
+                    'visualizations': [
+                        'facial_ratio_graphs/face_ratio.png',
+                        'facial_ratio_graphs/facial_thirds.png',
+                        'facial_ratio_graphs/eye_measurements.png',
+                        'facial_ratio_graphs/nasal_index.png',
+                        'facial_ratio_graphs/lip_ratio.png',
+                        'facial_ratio_graphs/face_mesh_tessellation.png'
+                    ]
+                }
+            }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500  
     
 # If you need to retrieve FFR results later
 @ffr_bp.route('/get-ffr-results/<username>', methods=['GET'])
