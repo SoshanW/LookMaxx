@@ -119,7 +119,9 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "final_output.pdf")
 
-    generate_pdf(prop_results,larger_results, output_path)
+    images = [("images/face_mesh_tessellation.png", "Face Tessellation"), ("images/face_ratio.png", "Face Width to Height Ratio"), ("images/facial_thirds.png", "Facial Thirds"), ("images/eye_measurements.png", "Interpupilary Ratios"), ("images/lip_ratio.png", "Vermillion Ratios"), ("images/nasal_index.png", "Nasal Index")]
+
+    generate_pdf(prop_results,larger_results, output_path, images)
     print(f"PDF generated and stored at {output_path}")
 
 if __name__ == "__main__":
