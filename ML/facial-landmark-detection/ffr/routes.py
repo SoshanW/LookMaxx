@@ -139,6 +139,39 @@ def save_plot_to_s3(fig, filename, username):
     finally:
         plt.close(fig)
 
+def upload_local_image_to_s3(local_path, filename, username):
+    """
+    Upload a local image file to S3
+    
+    :param local_path: Path to local image file
+    :param filename: Base filename for S3
+    :param username: Username for folder structure
+    :return: S3 URL of the uploaded file
+    """
+    s3_path = f"{AWS.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    
+    try:
+        with open(local_path, 'rb') as file_data:
+            s3_client.upload_fileobj(
+                file_data,
+                AWS.S3_BUCKET,
+                s3_path,
+                ExtraArgs={
+                    'ContentType': 'image/png'
+                }
+            )
+            
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
+    except FileNotFoundError:
+        print(f"Local file not found: {local_path}")
+        return None        
+
 
 # Define the path for the graphs directory inside the assets folder
 graphs_dir = os.path.join('assets', 'facial_ratio_graphs')
@@ -172,7 +205,12 @@ def analyze_face():
             "error": f"Error retrieving gender: {str(e)}"
         }), 500
 
-    #read the file once
+    FFR_url = upload_file_to_s3(file, username)
+    if not FFR_url:
+        return jsonify({"error": "Failed to upload input image"}), 500
+        
+    # Reset file pointer and read the file
+    file.seek(0)
     file_content = file.read()
     
     # Read image file into numpy array
@@ -191,6 +229,11 @@ def analyze_face():
 
     # Process the image
     results = face_mesh.process(img_rgb)
+
+    #Dictionary to store s3 URLS of all the visualization files
+    s3_files ={
+        'visualizations' : {}
+    }
 
     # Check if any face was detected
     if results.multi_face_landmarks is None:
@@ -266,23 +309,30 @@ def analyze_face():
 
     print("All images saved in the 'assets/graphs' directory.")
 
+    tessellation_url = upload_image_to_s3(img_tessellation, 'face_mesh_tessellation', username)
+    s3_files['visualizations']['tessellations'] = tessellation_url
+
+    for filename in os.listdir(graphs_dir):
+        if filename.endswith('.png') and filename != 'face_mesh_tessellation.png' and filename != 'no_face_detected.png':
+            local_path = os.path.join(graphs_dir, filename)
+            # Get the base filename without extension
+            base_name = os.path.splitext(filename)[0]
+            # Upload to S3
+            s3_url = upload_local_image_to_s3(local_path, base_name, username)
+            if s3_url:
+                s3_files['visualizations'][base_name] = s3_url
+
+    print("All images saved to S3.")
+
     comparison_results = generate_comparison_report(results_dict, username, gender)
 
     # Save FFR results to MongoDB
-    try:
-        FFR_url = None
-        if file and file.filename:
-            file.seek(0)
-
-            #Upload to S3
-            FFR_url = upload_file_to_s3(file, username)
-            if not FFR_url:
-                return jsonify({"error": "Failed to upload profile picture"}), 500
-            
+    try:    
         ffr_data = {
                 'FFR_pic' : FFR_url,
                 'facial_metrics': results_dict,
-                'comparison_data': comparison_results['comparison_data']
+                'comparison_data': comparison_results['comparison_data'],
+                'Graphs_and_Images' : s3_files['visualizations']
             }
         
         # Update user document with FFR results
@@ -305,14 +355,7 @@ def analyze_face():
                 'files': {
                     'metrics': 'reports/facial_metrics.json',
                     'comparison_report': 'reports/comparison_report.json',
-                    'visualizations': [
-                        'facial_ratio_graphs/face_ratio.png',
-                        'facial_ratio_graphs/facial_thirds.png',
-                        'facial_ratio_graphs/eye_measurements.png',
-                        'facial_ratio_graphs/nasal_index.png',
-                        'facial_ratio_graphs/lip_ratio.png',
-                        'facial_ratio_graphs/face_mesh_tessellation.png'
-                    ]
+                    'visualizations': s3_files['visualizations']
                 }
             }), 200
     except Exception as e:
