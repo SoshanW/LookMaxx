@@ -1,11 +1,11 @@
 
 :root {
-  --dark-bg: #121212;
+  --dark-bg: #000000;
   --darker-bg: #0a0a0a;
   --card-bg: #1e1e1e;
-  --primary: #9c27b0;
-  --primary-light: #bb86fc;
-  --primary-dark: #6a0dad;
+  --primary: #2e005c;
+  --primary-light: hsl(261, 19%, 53%);
+  --primary-dark: #060115;
   --accent: #03dac6;
   --text-primary: #ffffff;
   --text-secondary: #b0b0b0;
@@ -27,4 +27,16 @@ body {
   position: relative;
   min-height: 100vh;
   padding: 20px;
+}
+
+.profile-header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+  z-index: -1;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
