@@ -359,19 +359,3 @@
   transition-delay: calc(var(--slide-transition-duration) / 3);
 }
 
-/* Animation for button appearance */
-.slide-info[data-current] .visit-store-btn {
-  animation: buttonFadeIn 0.5s ease forwards;
-  animation-delay: 0.6s;
-}
-
-@keyframes buttonFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
