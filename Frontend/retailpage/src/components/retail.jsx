@@ -182,6 +182,9 @@ const RetailpageWithSlider = () => {
           </button>
         </div>
       </div>
+      <div className='fit-on-section'>
+              
+      </div>
     </>
   );
 };

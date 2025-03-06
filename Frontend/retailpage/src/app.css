@@ -29,7 +29,7 @@ body, html {
   .bannertxt{
     font-size: 4rem;
     font-weight:500;
-    margin: -90px;
+    margin: -100px;
     background: linear-gradient(90deg, pink, purple, rgb(181, 121, 226), rgb(109, 109, 232));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
