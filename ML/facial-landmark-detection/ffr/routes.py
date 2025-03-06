@@ -13,11 +13,166 @@ import numpy as np
 import cv2
 import mediapipe
 import matplotlib.pyplot as plt
+import boto3
 import os
+from botocore.exceptions import ClientError
+from werkzeug.utils import secure_filename
+from .config import AWS
 import json
-import base64
+import io
 
 ffr_bp = Blueprint('ffr', __name__)
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS.AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS.AWS_SECRET_ACCESS_KEY,
+    region_name=AWS.AWS_REGION
+)
+
+def upload_file_to_s3(file, username):
+    """
+    Upload a file to the S3 bucket
+    
+    :param file: File to upload
+    :param username: Username to create filename with
+    :return: S3 URL of the uploaded file
+    """
+    # Create a filename based on username
+    filename = f"{username}_ffr.jpg"
+    s3_path = AWS.S3_FFR_PICTURES_UPLOAD + filename
+    
+    try:
+        file_content = file.read()
+        # Upload the file to S3
+        s3_client.upload_fileobj(
+            file,
+            AWS.S3_BUCKET,
+            s3_path,
+            ExtraArgs={
+                'ContentType': file.content_type
+            }
+        )
+        
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
+    
+def upload_image_to_s3(img_array, filename, username, content_type='image/png'):
+    """
+    Upload an image numpy array to S3
+    
+    :param img_array: Image as numpy array
+    :param filename: Name of the file
+    :param username: Username for folder structure
+    :param content_type: Content type of the image
+    :return: S3 URL of the uploaded file
+    """
+    # Format full path with username folder
+    s3_path = f"{AWS.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    
+    try:
+        # Convert numpy array to bytes
+        is_success, buffer = cv2.imencode(".png", img_array)
+        if not is_success:
+            return None
+            
+        # Convert to BytesIO object
+        io_buf = io.BytesIO(buffer)
+        
+        # Upload to S3
+        s3_client.upload_fileobj(
+            io_buf,
+            AWS.S3_BUCKET,
+            s3_path,
+            ExtraArgs={
+                'ContentType': content_type
+            }
+        )
+        
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
+
+def save_plot_to_s3(fig, filename, username):
+    """
+    Save a matplotlib figure to S3
+    
+    :param fig: Matplotlib figure
+    :param filename: Name of the file
+    :param username: Username for folder structure
+    :return: S3 URL of the uploaded file
+    """
+
+    s3_path = f"{AWS.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    
+    try:
+        # Save figure to BytesIO object
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', bbox_inches='tight')
+        buf.seek(0)
+        
+        # Upload to S3
+        s3_client.upload_fileobj(
+            buf,
+            AWS.S3_BUCKET,
+            s3_path,
+            ExtraArgs={
+                'ContentType': 'image/png'
+            }
+        )
+        
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
+    finally:
+        plt.close(fig)
+
+def upload_local_image_to_s3(local_path, filename, username):
+    """
+    Upload a local image file to S3
+    
+    :param local_path: Path to local image file
+    :param filename: Base filename for S3
+    :param username: Username for folder structure
+    :return: S3 URL of the uploaded file
+    """
+    s3_path = f"{AWS.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    
+    try:
+        with open(local_path, 'rb') as file_data:
+            s3_client.upload_fileobj(
+                file_data,
+                AWS.S3_BUCKET,
+                s3_path,
+                ExtraArgs={
+                    'ContentType': 'image/png'
+                }
+            )
+            
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
+    except FileNotFoundError:
+        print(f"Local file not found: {local_path}")
+        return None        
+
 
 # Define the path for the graphs directory inside the assets folder
 graphs_dir = os.path.join('assets', 'facial_ratio_graphs')
@@ -51,11 +206,11 @@ def analyze_face():
             "error": f"Error retrieving gender: {str(e)}"
         }), 500
 
-    #read the file once
     file_content = file.read()
 
-    #image storing and conversion of image to base64 string
-    encoded_image = base64.b64encode(file_content).decode('utf-8')
+    FFR_url = upload_file_to_s3(file, username)
+    if not FFR_url:
+        return jsonify({"error": "Failed to upload input image"}), 500
     
     # Read image file into numpy array
     file_bytes = np.frombuffer(file_content, np.uint8)
@@ -74,6 +229,11 @@ def analyze_face():
     # Process the image
     results = face_mesh.process(img_rgb)
 
+    #Dictionary to store s3 URLS of all the visualization files
+    s3_files ={
+        'visualizations' : {}
+    }
+
     # Check if any face was detected
     if results.multi_face_landmarks is None:
         print("No face detected in the image")
@@ -91,24 +251,24 @@ def analyze_face():
     # Calculate and display measurements
     if results.multi_face_landmarks:
         # Calculate face ratio
-        ratio = calculate_face_ratio(landmarks, img_rgb.shape)
+        ratio = calculate_face_ratio(landmarks, img_rgb.shape,img_base)
         print(f'Face width-to-height ratio: {ratio:.2f}')
         
         # Calculate facial thirds
-        upper, middle, lower = calculate_facial_thirds(landmarks, img_rgb.shape)
+        upper, middle, lower = calculate_facial_thirds(landmarks, img_rgb.shape, img_base)
         print(f'Facial thirds ratios - Upper: {upper:.2f}, Middle: {middle:.2f}, Lower: {lower:.2f}')
         
         # Calculate eye ratios
-        left_eye_ratio, interpupillary_ratio = calculate_eye_ratios(landmarks, img_rgb.shape)
+        left_eye_ratio, interpupillary_ratio = calculate_eye_ratios(landmarks, img_rgb.shape, img_base)
         print(f'Left eye width ratio: {left_eye_ratio:.3f}')
         print(f'Interpupillary to total width ratio: {interpupillary_ratio:.3f}')
 
         #Calulcate nasal index
-        nasal_index = calculate_nasal_index(landmarks, img_rgb.shape)
+        nasal_index = calculate_nasal_index(landmarks, img_rgb.shape, img_base)
         print(f'Nasal Index: {nasal_index:.3f}')
 
         # Calculate lip ratio
-        lip_ratio = calculate_lip_ratio(landmarks, img_rgb.shape)
+        lip_ratio = calculate_lip_ratio(landmarks, img_rgb.shape, img_base)
         print(f'Lip Ratio (Upper to Lower): {lip_ratio:.3f}')
 
         # Create a dictionary to store the results
@@ -148,45 +308,57 @@ def analyze_face():
 
     print("All images saved in the 'assets/graphs' directory.")
 
+    tessellation_url = upload_image_to_s3(img_tessellation, 'face_mesh_tessellation', username)
+    s3_files['visualizations']['tessellations'] = tessellation_url
+
+    for filename in os.listdir(graphs_dir):
+        if filename.endswith('.png') and filename != 'face_mesh_tessellation.png' and filename != 'no_face_detected.png':
+            local_path = os.path.join(graphs_dir, filename)
+            # Get the base filename without extension
+            base_name = os.path.splitext(filename)[0]
+            # Upload to S3
+            s3_url = upload_local_image_to_s3(local_path, base_name, username)
+            if s3_url:
+                s3_files['visualizations'][base_name] = s3_url
+
+    print("All images saved to S3.")
+
     comparison_results = generate_comparison_report(results_dict, username, gender)
 
     # Save FFR results to MongoDB
-    ffr_data = {
-            'FFR_pic' : encoded_image,
-            'facial_metrics': results_dict,
-            'comparison_data': comparison_results['comparison_data']
-        }
+    try:    
+        ffr_data = {
+                'FFR_pic' : FFR_url,
+                'facial_metrics': results_dict,
+                'comparison_data': comparison_results['comparison_data'],
+                'Graphs_and_Images' : s3_files['visualizations']
+            }
         
-    # Update user document with FFR results
-    update_result = mongo.db.users.update_one(
-            {'username': username},
-            {
-                '$push': {
-                    'ffr_results': ffr_data
+        # Update user document with FFR results
+        update_result = mongo.db.users.update_one(
+                {'username': username},
+                {
+                    '$push': {
+                        'ffr_results': ffr_data
+                    }
                 }
-            }
-        )
-    
-    if not update_result.modified_count:
-        return jsonify({'error': 'Failed to save FFR results to database'}), 500
+            )
+        
+        if not update_result.modified_count:
+            return jsonify({'error': 'Failed to save FFR results to database'}), 500
 
-    # Return success response with results
-    return jsonify({
-            'message': 'Analysis completed successfully',
-            'results': results_dict,
-            'files': {
-                'metrics': 'reports/facial_metrics.json',
-                'comparison_report': 'reports/comparison_report.json',
-                'visualizations': [
-                    'facial_ratio_graphs/face_ratio.png',
-                    'facial_ratio_graphs/facial_thirds.png',
-                    'facial_ratio_graphs/eye_measurements.png',
-                    'facial_ratio_graphs/nasal_index.png',
-                    'facial_ratio_graphs/lip_ratio.png',
-                    'facial_ratio_graphs/face_mesh_tessellation.png'
-                ]
-            }
-        }), 200    
+        # Return success response with results
+        return jsonify({
+                'message': 'Analysis completed successfully',
+                'results': results_dict,
+                'files': {
+                    'metrics': 'reports/facial_metrics.json',
+                    'comparison_report': 'reports/comparison_report.json',
+                    'visualizations': s3_files['visualizations']
+                }
+            }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500  
     
 # If you need to retrieve FFR results later
 @ffr_bp.route('/get-ffr-results/<username>', methods=['GET'])
