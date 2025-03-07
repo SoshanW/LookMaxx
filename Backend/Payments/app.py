@@ -8,7 +8,7 @@ import requests
 import json
 from bson.objectid import ObjectId
 from config import app, mongo
-from config import MERCHANT_ID, MERCHANT_SECRET, API_KEY, SANDBOX_URL, SANDBOX_API_URL, RETURN_URL, CANCEL_URL, NOTIFY_URL
+from config import MERCHANT_ID, MERCHANT_SECRET, SANDBOX_URL, SANDBOX_API_URL, RETURN_URL, CANCEL_URL, NOTIFY_URL
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -368,91 +368,58 @@ def payment_notification():
 @app.route('/api/verify-payment/<order_id>', methods=['GET'])
 def verify_payment(order_id):
     """
-    Verify payment status using PayHere API
+    Verify payment status from our database
     """
     try:
         # Determine if this is a subscription or one-time payment
         is_subscription = order_id.startswith('SUB_')
         
-        # Set the correct API endpoint
-        endpoint = f"{SANDBOX_API_URL}/payment/search?order_id={order_id}"
-        
-        # Create headers with API key
-        headers = {
-            'Authorization': f'Bearer {API_KEY}',
-            'Content-Type': 'application/json'
-        }
-        
-        # Send request to PayHere
-        response = requests.get(endpoint, headers=headers)
-        
-        if response.status_code == 200:
-            payment_data = response.json()
+        # Find the user with this payment/subscription record
+        if is_subscription:
+            user_data = mongo.db.users.find_one({"subscription_records.subscription_id": order_id})
+            if not user_data:
+                return jsonify({'success': False, 'error': 'Subscription record not found'}), 404
             
-            # Find the user with this payment/subscription record
-            if is_subscription:
-                user_data = mongo.db.users.find_one({"subscription_records.subscription_id": order_id})
-                if not user_data:
-                    return jsonify({'success': False, 'error': 'Subscription record not found'}), 404
-                
-                user_id = user_data['_id']
-                
-                if payment_data.get('data') and len(payment_data['data']) > 0:
-                    payment_status = determine_payment_status(payment_data['data'][0]['status_code'])
-                    
-                    mongo.db.users.update_one(
-                        {
-                            "_id": ObjectId(user_id),
-                            "subscription_records.subscription_id": order_id
-                        },
-                        {
-                            "$set": {
-                                "subscription_records.$.status": payment_status,
-                                "subscription_records.$.verified_at": time.time(),
-                                "subscription_records.$.payment_data": payment_data
-                            }
-                        }
-                    )
-            else:
-                user_data = mongo.db.users.find_one({"payment_records.order_id": order_id})
-                if not user_data:
-                    return jsonify({'success': False, 'error': 'Payment record not found'}), 404
-                
-                user_id = user_data['_id']
-                
-                if payment_data.get('data') and len(payment_data['data']) > 0:
-                    payment_status = determine_payment_status(payment_data['data'][0]['status_code'])
-                    
-                    mongo.db.users.update_one(
-                        {
-                            "_id": ObjectId(user_id),
-                            "payment_records.order_id": order_id
-                        },
-                        {
-                            "$set": {
-                                "payment_records.$.status": payment_status,
-                                "payment_records.$.verified_at": time.time(),
-                                "payment_records.$.payment_data": payment_data
-                            }
-                        }
-                    )
+            # Find the specific subscription record
+            subscription_record = None
+            for record in user_data.get('subscription_records', []):
+                if record.get('subscription_id') == order_id:
+                    subscription_record = record
+                    break
+            
+            if not subscription_record:
+                return jsonify({'success': False, 'error': 'Subscription record details not found'}), 404
             
             return jsonify({
                 'success': True,
-                'payment_data': payment_data
+                'subscription_data': subscription_record
             })
         else:
+            user_data = mongo.db.users.find_one({"payment_records.order_id": order_id})
+            if not user_data:
+                return jsonify({'success': False, 'error': 'Payment record not found'}), 404
+            
+            # Find the payment record
+            payment_record = None
+            for record in user_data.get('payment_records', []):
+                if record.get('order_id') == order_id:
+                    payment_record = record
+                    break
+            
+            if not payment_record:
+                return jsonify({'success': False, 'error': 'Payment record details not found'}), 404
+            
             return jsonify({
-                'success': False,
-                'error': f"Failed to verify payment: {response.status_code}"
-            }), 400
+                'success': True,
+                'payment_data': payment_record
+            })
     
     except Exception as e:
         return jsonify({
             'success': False,
             'error': str(e)
         }), 500
-
+    
 def determine_payment_status(status_code):
     """Convert PayHere status code to readable status"""
     status_codes = {
