@@ -1,8 +1,24 @@
+/* Base styling for the entire page */
 body {
   margin: 0;
   padding: 0;
   background: radial-gradient(circle, rgb(39, 10, 93) 10%, rgb(0, 0, 0) 100%);
   color: #ffffff;
+  /* Remove any height limitations if they exist */
+  min-height: 100%;
+  height: auto;
+}
+
+/* Container to enable scrolling for the entire page */
+.scrollable-container {
+  /* Allow content to be as tall as needed */
+  height: auto;
+  /* Add space at top (after navbar) and bottom of the page */
+  padding-top: 5rem;
+  padding-bottom: 2rem;
+  /* Ensure page scrolling works */
+  overflow-y: auto;
+  width: 100%;
 }
 
 .casting-form-container {
@@ -13,6 +29,8 @@ body {
   border-radius: 12px;
   box-shadow: 0 0px 12px #84ffff61;
   color: #e5f7ff;
+  /* Allow container to expand as needed */
+  height: auto;
 }
 
 .form-title {
@@ -32,6 +50,7 @@ body {
   font-weight: 700;
 }
 
+/* Form layout with flex for better responsiveness */
 .casting-form {
   display: flex;
   flex-direction: column;
@@ -62,6 +81,7 @@ label {
   color: #bfe5ff;
 }
 
+/* Styling for all form input elements */
 input, select, textarea {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -73,6 +93,7 @@ input, select, textarea {
   transition: all 0.2s ease;
 }
 
+/* Focus states for better accessibility */
 input:focus, select:focus, textarea:focus {
   outline: none;
   background: #003d3d52;
@@ -92,7 +113,7 @@ input:focus, select:focus, textarea:focus {
 
 .error-message {
   color: #ff8ca1;
-  font-size: 1rem;
+  font-size: 0.85rem;
   margin-top: 0.25rem;
   display: block;
 }
@@ -105,7 +126,8 @@ input:focus, select:focus, textarea:focus {
   margin-top: 1rem;
 }
 
-.primary-button, .secondary-button, .return-button {
+/* Common button styling */
+.primary-button, .secondary-button, .return-button, .ffr-toggle-button {
   background-color: #4466e2;
   color: white;
   border: none;
@@ -116,8 +138,6 @@ input:focus, select:focus, textarea:focus {
   transition: background-color 0.3s ease;
   font-family: 'Neuropolitical Rg', sans-serif;
 }
-
-
 
 .primary-button:hover {
   background-color: #1c99d8;
@@ -174,6 +194,76 @@ input:focus, select:focus, textarea:focus {
   text-shadow: 0 0 10px #7fdca6;
 }
 
+/* FFR notification styling */
+/* FFR notification styling - positioned with adequate space from navbar */
+.ffr-notification {
+  max-width: 900px;
+  margin: 0 auto 2rem auto;
+  padding: 1.5rem;
+  background: #88fff117;
+  border-radius: 8px;
+  box-shadow: 0 0px 20px #ff848442;
+  color: #ffffff;
+  font-family: 'Helvetica', sans-serif;
+}
+
+.ffr-notification-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.ffr-notification-content p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.ffr-toggle-button:hover {
+  background-color: #1c99d8;
+  text-shadow: 0 0 10px #7fdca6;
+}
+
+/* FFR Results Preview */
+.ffr-results-preview {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.312);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.ffr-results-preview h3 {
+  color: #84ffff;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.ffr-pdf-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ffr-sample-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1rem;
+}
+
+.ffr-disclaimer {
+  font-size: 0.85rem;
+  color: #cccccc;
+  text-align: center;
+  max-width: 90%;
+}
+
 /* Responsive design adjustments */
 @media (max-width: 768px) {
   .casting-form-container {
@@ -198,10 +288,21 @@ input:focus, select:focus, textarea:focus {
   .primary-button, .secondary-button {
     width: 100%;
   }
+  
+  /* Adjust for mobile scrolling */
+  .scrollable-container {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
 }
 
 /* Custom font loading for form elements */
 @font-face {
   font-family: 'Nasalization Rg';
   src: url('/fonts/Nasalization Rg.otf') format('opentype');
+}
+
+/* Ensure html and body take full height */
+html, body {
+  height: 100%;
+  overflow-y: auto;
 }

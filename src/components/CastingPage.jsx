@@ -3,13 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../styles/CastingPage.css";
 
-/**
- * NeonMist Component
- * Creates an interactive glowing mist effect that follows cursor movement
- * Adds depth and interactivity to section backgrounds
- * 
- * @param {boolean} isActive - Whether the mist effect should be active
- */
+
 const NeonMist = ({ isActive }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const mistRef = useRef(null);
