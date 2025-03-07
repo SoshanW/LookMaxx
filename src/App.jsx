@@ -1,15 +1,20 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import CastingPage from "./components/CastingPage";
+import CastingApplicationForm from "./components/CastingApplicationForm";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer"; // Import Footer component
+import Footer from "./components/Footer";
 import './App.css';
 
 function App() {
   return (
     <>
+      
       <Navbar />
-      <CastingPage />
+      <Routes>
+        <Route path="/" element={<CastingPage />} />
+        <Route path="/apply" element={<CastingApplicationForm />} />
+      </Routes>
       <Footer />
     </>
   );

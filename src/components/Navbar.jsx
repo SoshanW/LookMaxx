@@ -48,7 +48,7 @@ const Navbar = () => {
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="nav-links">
-        {['Home', 'Retail', 'Community', 'Study', 'About', 'FFR'].map((link, index) => (
+        {['Home', 'FFR', 'Study', 'Community', 'Retail'].map((link, index) => (
           <a
             key={link.toLowerCase()}
             ref={addToRefs}
