@@ -8,8 +8,7 @@ import requests
 import json
 from flask import Blueprint
 from bson.objectid import ObjectId
-from config import Config
-from config import mongo
+from app import mongo
 from config import MERCHANT_ID, MERCHANT_SECRET, SANDBOX_URL, SANDBOX_API_URL, RETURN_URL, CANCEL_URL, NOTIFY_URL
 
 # Configure logging
