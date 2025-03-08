@@ -20,6 +20,37 @@ def get_mongodb_connection():
     db = client.Cluster0  # Use the same database name as in your Flask app
     return db
 
+def get_user_metrics(username):
+    """Fetch facial Metrics for a user from MongoDB"""
+    db = get_mongodb_connection()
+    user = db.users.find_one({'username':username})
+
+    if user and 'ffr_results' in user and len(user['ffr_results']) > 0:
+        # Get the most recent FFR result
+        latest_ffr = user['ffr_results'][-1]
+        metrics = latest_ffr['facial_metrics']
+        
+        # Convert to the format expected by the report generation code
+        data = [
+            {"Metric": key, "Value": value} 
+            for key, value in metrics.items()
+        ]
+        
+        # Also retrieve the image paths
+        images = []
+        if 'Graphs_and_Images' in latest_ffr:
+            visualization_urls = latest_ffr['Graphs_and_Images']
+            images = [
+                (visualization_urls.get('face_mesh_tessellation', ''), "Face Tessellation"),
+                (visualization_urls.get('face_ratio', ''), "Face Width to Height Ratio"),
+                (visualization_urls.get('facial_thirds', ''), "Facial Thirds"),
+                (visualization_urls.get('eye_measurements', ''), "Interpupilary Ratios"),
+                (visualization_urls.get('lip_ratio', ''), "Vermillion Ratios"),
+                (visualization_urls.get('nasal_index', ''), "Nasal Index")
+            ]
+            
+        return data, images
+    return None, None
 try:
     with open('report.json', 'r') as file:
         data = json.load(file) 
