@@ -51,13 +51,6 @@ def get_user_metrics(username):
             
         return data, images
     return None, None
-try:
-    with open('report.json', 'r') as file:
-        data = json.load(file) 
-except FileNotFoundError:
-    print("File not found!")
-except json.JSONDecodeError:
-    print("Error decoding JSON!")
 
 def find_metric(metric_name):
     return next((item for item in data if item["Metric"] == metric_name), None)
