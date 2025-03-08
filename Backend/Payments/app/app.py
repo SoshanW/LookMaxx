@@ -6,23 +6,38 @@ import logging
 import time
 import requests
 import json
+from flask import Blueprint
 from bson.objectid import ObjectId
-from config import app, mongo
+from config import Config
+from config import mongo
 from config import MERCHANT_ID, MERCHANT_SECRET, SANDBOX_URL, SANDBOX_API_URL, RETURN_URL, CANCEL_URL, NOTIFY_URL
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Enable CORS for React frontend
-CORS(app)
-
+payment_bp = Blueprint('payment', __name__)
 
 # Premium package details (update these as needed)
 PREMIUM_AMOUNT = 15
 PREMIUM_CURRENCY = "USD"
 PREMIUM_DESCRIPTION = "Premium Membership Upgrade"
 
-@app.route('/api/create-payment', methods=['POST'])
+def generate_hash(order_id, amount, currency):
+    """
+    Generate the hash required by PayHere
+    Format: MD5(merchant_id + order_id + amount + currency + MD5(merchant_secret))
+    """
+    # Format amount with 2 decimal places
+    formatted_amount = "{:.2f}".format(float(amount))
+    
+    # Generate MD5 of merchant secret first
+    hashed_secret = hashlib.md5(MERCHANT_SECRET.encode()).hexdigest().upper()
+    
+    # Now generate the full hash
+    hash_string = f"{MERCHANT_ID}{order_id}{formatted_amount}{currency}{hashed_secret}"
+    return hashlib.md5(hash_string.encode()).hexdigest().upper()
+
+@payment_bp.route('/api/create-payment', methods=['POST'])
 def create_payment():
     """
     Create a one-time payment for premium upgrade
@@ -103,7 +118,7 @@ def create_payment():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/create-subscription', methods=['POST'])
+@payment_bp.route('/api/create-subscription', methods=['POST'])
 def create_subscription():
     """
     Create a recurring subscription for premium features (quarterly)
@@ -222,16 +237,14 @@ def update_premium_status(user_id, is_subscription=False, period='month'):
         {'$set': update_data}
     )
 
-@app.route('/api/payment/notify', methods=['POST'])
+@payment_bp.route('/api/payment/notify', methods=['POST'])
 def payment_notification():
     """
     Handle PayHere payment notifications (webhook)
     """
     # PayHere sends data as form data, not JSON
     data = request.form.to_dict()
-    
-    # Log the notification data for debugging
-    app.logger.info(f"Payment notification received: {data}")
+
     
     # Verify the notification is legitimate
     if verify_payment_notification(data):
@@ -262,7 +275,7 @@ def payment_notification():
             if is_subscription:
                 user_data = mongo.db.users.find_one({"subscription_records.subscription_id": order_id})
                 if not user_data:
-                    app.logger.error(f"Subscription record not found for order_id: {order_id}")
+                    print(f"Subscription record not found for order_id: {order_id}")
                     return "Subscription record not found", 404
                 
                 # Find the specific subscription record
@@ -273,7 +286,7 @@ def payment_notification():
                         break
                 
                 if not subscription_record:
-                    app.logger.error(f"Subscription record details not found for order_id: {order_id}")
+                    print(f"Subscription record details not found for order_id: {order_id}")
                     return "Subscription record details not found", 404
                 
                 user_id = user_data['_id']
@@ -281,7 +294,7 @@ def payment_notification():
             else:
                 user_data = mongo.db.users.find_one({"payment_records.order_id": order_id})
                 if not user_data:
-                    app.logger.error(f"Payment record not found for order_id: {order_id}")
+                    print(f"Payment record not found for order_id: {order_id}")
                     return "Payment record not found", 404
                 
                 user_id = user_data['_id']
@@ -355,17 +368,17 @@ def payment_notification():
                         }
                     )
             
-            app.logger.info(f"Payment notification processed successfully for order_id: {order_id}, status: {payment_status}")
+            print(f"Payment notification processed successfully for order_id: {order_id}, status: {payment_status}")
             return "Payment notification processed", 200
         
         except Exception as e:
-            app.logger.error(f"Error processing payment notification: {str(e)}")
+            print(f"Error processing payment notification: {str(e)}")
             return f"Error processing notification: {str(e)}", 500
     else:
-        app.logger.warning(f"Invalid notification signature received: {data.get('md5sig', 'No signature')}")
+        print(f"Invalid notification signature received: {data.get('md5sig', 'No signature')}")
         return "Invalid notification signature", 400
 
-@app.route('/api/verify-payment/<order_id>', methods=['GET'])
+@payment_bp.route('/api/verify-payment/<order_id>', methods=['GET'])
 def verify_payment(order_id):
     """
     Verify payment status from our database
@@ -431,7 +444,7 @@ def determine_payment_status(status_code):
     }
     return status_codes.get(str(status_code), 'unknown')
 
-@app.route('/api/check-premium/<user_id>', methods=['GET'])
+@payment_bp.route('/api/check-premium/<user_id>', methods=['GET'])
 def check_premium(user_id):
     """
     Check if a user has premium status
@@ -471,20 +484,6 @@ def check_premium(user_id):
             'error': str(e)
         }), 500
 
-def generate_hash(order_id, amount, currency):
-    """
-    Generate the hash required by PayHere
-    Format: MD5(merchant_id + order_id + amount + currency + MD5(merchant_secret))
-    """
-    # Format amount with 2 decimal places
-    formatted_amount = "{:.2f}".format(float(amount))
-    
-    # Generate MD5 of merchant secret first
-    hashed_secret = hashlib.md5(MERCHANT_SECRET.encode()).hexdigest().upper()
-    
-    # Now generate the full hash
-    hash_string = f"{MERCHANT_ID}{order_id}{formatted_amount}{currency}{hashed_secret}"
-    return hashlib.md5(hash_string.encode()).hexdigest().upper()
 
 def verify_payment_notification(data):
     """
@@ -515,6 +514,3 @@ def verify_payment_notification(data):
     
     # Compare the calculated hash with the received hash
     return calculated_hash == received_hash
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
