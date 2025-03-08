@@ -8,9 +8,17 @@ from services.evaluation_service import EvaluationService
 from services.vector_store_service import VectorStoreService
 from langchain_core.documents import Document
 import json
+from pymongo import MongoClient
 from langchain_community.document_loaders import PyPDFLoader
 
 PATH="data/Facial Aesthetics.pdf"
+
+# MongoDB connection setup
+def get_mongodb_connection():
+    mongo_uri = "mongodb+srv://robertshemeshi:FC34K9IcO7uw6DES@cluster0.mp7jz.mongodb.net/authdb?retryWrites=true&w=majority&appName=Cluster0"  # Use the same connection string as in your Flask app
+    client = MongoClient(mongo_uri)
+    db = client.Cluster0  # Use the same database name as in your Flask app
+    return db
 
 try:
     with open('report.json', 'r') as file:
@@ -22,7 +30,7 @@ except json.JSONDecodeError:
 
 def find_metric(metric_name):
     return next((item for item in data if item["Metric"] == metric_name), None)
-   
+
 def encode_pdf(path):
     loader = PyPDFLoader(path)
     # documents = replace_t_with_space(loader.load())

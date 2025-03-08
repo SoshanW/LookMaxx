@@ -20,6 +20,8 @@ from werkzeug.utils import secure_filename
 from .config import AWS
 import json
 import io
+import sys
+import subprocess
 
 ffr_bp = Blueprint('ffr', __name__)
 
@@ -346,6 +348,23 @@ def analyze_face():
         
         if not update_result.modified_count:
             return jsonify({'error': 'Failed to save FFR results to database'}), 500
+        
+        # After successfully saving to MongoDB, trigger report generation
+        # Get the project root directory
+        current_dir = os.path.dirname(os.path.abspath(__file__))  # Current directory
+        project_root = os.path.dirname(os.path.dirname(current_dir))  # Root directory
+        
+        # Path to the report-generation-V2 directory
+        report_gen_path = os.path.join(project_root, 'report-generation-V2')
+        
+        # Run the report generation script with the username as an argument
+        subprocess.Popen([
+            sys.executable, 
+            os.path.join(report_gen_path, 'main.py'), 
+            username  # Pass username as parameter
+        ], cwd=report_gen_path)
+        
+        print(f"Report generation triggered for user: {username}")
 
         # Return success response with results
         return jsonify({
