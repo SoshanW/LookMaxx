@@ -1,15 +1,15 @@
 /* UploadPhoto.css */
 .upload-photo-overlay {
-  position: fixed; /* Fixed position to overlay on top */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.922); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.922);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* High z-index to ensure it overlays */
+  z-index: 9999;
   padding: 20%;
 }
 
@@ -21,7 +21,7 @@
   background-color: #f9f9f900;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-top: 30px; /* Add space between DesignCard and UploadPhoto */
+  margin-top: 30px;
 }
 
 .upload-area {
@@ -83,22 +83,37 @@
   left: 50%;
   width: 90%; 
   max-width: 850px; 
-  height: auto; 
-  max-height: 70%; 
-  overflow-y: auto; 
-  transform: translate(-50%, -50%) scale(0.5);
+  max-height: 80vh; /* Maximum height with viewport units */
+  transform: translate(-50%, -50%);
   background: rgb(127, 0, 0);
-  padding: 150px; 
+  padding: 50px; /* Reduced top padding from 150px to 50px */
   border: 2px solid #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgb(255, 255, 255);
-  z-index: 10000; 
+  z-index: 10001;
   display: flex;
   flex-direction: column; 
-  justify-content: center; 
+  justify-content: flex-start;
   align-items: center; 
-  opacity: 0; 
-  animation: fadeInScale 0.5s forwards; 
+  animation: fadeInScale 0.5s forwards;
+  overflow-y: auto; /* Keep the scrollbar */
+  /* Styling for scrollbar in modern browsers */
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff #7f0000;
+}
+
+.disclaimer-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.disclaimer-modal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.disclaimer-modal::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
 }
 
 /* Keyframes for fade-in and scale effect */
@@ -118,7 +133,8 @@
 }
 
 .disclaimer-modal h2 {
-  margin-bottom: 15px;
+  margin-top: 0; /* Remove top margin to reduce space */
+  margin-bottom: 20px;
   color: #ffffff;
   text-align: center;
 }
@@ -126,23 +142,35 @@
 .disclaimer-modal p {
   margin-bottom: 20px;
   color: #ffffff;
-  text-align: center;
+  text-align: left;
+  line-height: 1.6;
+  width: 100%;
+}
+
+.disclaimer-content-wrapper {
+  width: 100%;
+  margin-bottom: 30px;
 }
 
 .button-container {
-  display: flex; /* Use flexbox to arrange buttons in a row */
-  justify-content: center; /* Center the buttons */
-  width: 100%; /* Full width for the button container */
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative; /* Changed from sticky to relative */
+  padding-bottom: 10px;
 }
 
 .accept-button,
 .decline-button {
   margin: 5px;
-  padding: 10px 15px;
+  padding: 12px 25px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
   transition: background-color 0.3s ease;
 }
 
@@ -162,4 +190,33 @@
 
 .decline-button:hover {
   background-color: #c9302c;
+}
+
+/* Make sure body doesn't scroll when disclaimer is visible */
+body.no-scroll {
+  overflow: hidden;
+}
+
+/* Additional styles for disclaimer modal visibility */
+.disclaimer-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 10000;
+}
+
+/* Container to ensure the disclaimer stays fixed on the screen */
+#disclaimerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

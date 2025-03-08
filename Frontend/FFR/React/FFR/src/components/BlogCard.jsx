@@ -10,8 +10,8 @@ const BlogCard = ({ isVisible }) => {
 
   const blogPost = {
     date: "26 December 2019",
-    title: "Understanding React Hooks",
-    text: "React Hooks are functions that let you use state and other React features without writing a class.",
+    title: "Dive Deep in Facial Aesthetics",
+    text: "Curious about the science behind facial analysis? Explore research-backed insights that reveal the fascinating connections between facial features and perception. Tap below to dive into the studies!",
     imgSrc: "https://res.cloudinary.com/muhammederdem/image/upload/q_60/v1535759872/kuldar-kalvik-799168-unsplash.webp", 
   };
 
