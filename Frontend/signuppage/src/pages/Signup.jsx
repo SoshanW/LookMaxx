@@ -13,10 +13,12 @@ const SignUpPage = () => {
     password: '',
     confirmPassword: '',
     loginEmail: '',
-    loginPassword: ''
+    loginPassword: '',
+    profilePicture: null
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,12 +30,65 @@ const SignUpPage = () => {
     return emailRegex.test(email);
   };
 
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+};
+
+const handleLoginSubmit = (e) => {
+  e.preventDefault();
+  const { loginEmail, loginPassword } = formData;
+
+  if (!loginEmail || !loginPassword) {
+    setError('All fields are required.');
+    return;
+  }
+
+  if (!validateEmail(loginEmail)) {
+    setError('Please enter a valid email address.');
+    return;
+  }
+
+  console.log('Login form submitted:', { email: loginEmail, password: loginPassword });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      // Check if the file is an image
+      if (!file.type.match('image.*')) {
+        setError('Please select an image file (jpg, png, etc)');
+        return;
+      }
+      
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size should be less than 5MB');
+        return;
+      }
+      
+      // Update form data with the file
+      setFormData({ ...formData, profilePicture: file });
+      
+      // Create a preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Clear any errors
+      setError('');
+    }
+  };
+
   const handleSignUpSubmit = (e) => {
     e.preventDefault();
-    const { fullName, email, gender, password, confirmPassword } = formData;
+    const { fullName, email, gender, password, confirmPassword, profilePicture } = formData;
 
-    if (!fullName || !email || !gender || !password || !confirmPassword) {
-      setError('All fields are required.');
+    if (!fullName || !email || !gender || !password || !confirmPassword || !profilePicture) {
+      setError('All fields including profile picture are required.');
       return;
     }
 
@@ -42,53 +97,52 @@ const SignUpPage = () => {
       return;
     }
 
+    if (!validatePassword(password)) {
+      setError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
     }
-
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long.');
-      return;
-    }
-
+  
     setSuccess(true);
     console.log('Form submitted:', formData);
-
+  
     if (gender === 'female') {
       setTimeout(() => {
         navigate('/face-model');
-      }, 1500);}
+      }, 1500);
+    }
+
+    if (gender === 'male') {
+      setTimeout(() => {
+        navigate('/face-model');
+      }, 1500);
+    }
       
   };
 
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    const { loginEmail, loginPassword } = formData;
-
-    if (!loginEmail || !loginPassword) {
-      setError('All fields are required.');
-      return;
-    }
-
-    if (!validateEmail(loginEmail)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-
-    console.log('Login form submitted:', { email: loginEmail, password: loginPassword });
-  };
-
   return (
     <div className="auth-container">
+
+      <div className="back-home-button-container">
+        <button 
+          className="back-home-button"
+          onClick={() => navigate('/')} // This will navigate to your home route
+        >
+          Back to Home
+        </button>
+      </div>
       
       <div className="auth-content">
         {/* Static Header */}
         <div className="header-content">
           <h1 className="logo-text">
             <span className="logo-look">Look</span>
-            <span className="logo-maxx">Maxx</span>
+            <span className="logo-maxx">Sci</span>
           </h1>
           <p className="slogan">Beauty Redefined</p>
         </div>
@@ -111,7 +165,8 @@ const SignUpPage = () => {
         </div>
 
         {/* Flip Cards Container */}
-        <div className={`auth-wrapper ${isFlipped ? 'flipped' : ''}`}>
+        
+        <div className={`auth-wrapper ${isFlipped ? 'flipped' : ''} ${error ? 'with-error' : ''}`}> 
 
           {/* Login Form */}
           <div className="auth-card back">
@@ -228,7 +283,34 @@ const SignUpPage = () => {
                     </div>
                   </div>
                 </div>
-
+                
+                <div className="form-group">
+                    <label className="form-label">Profile Picture</label>
+                    <div className="profile-upload-container">
+                      <div className="profile-preview">
+                        {imagePreview ? (
+                          <img src={imagePreview} alt="Profile preview" className="profile-image-preview" />
+                        ) : (
+                          <div className="profile-placeholder">
+                            <User size={40} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="upload-button-container">
+                        <label htmlFor="profilePicture" className="upload-button">
+                          {imagePreview ? 'Change Photo' : 'Upload Photo'}
+                        </label>
+                        <input
+                          type="file"
+                          id="profilePicture"
+                          name="profilePicture"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="file-input"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 <div className="form-group">
                   <label htmlFor="password" className="form-label">Password</label>
                   <div className="input-container">
@@ -271,6 +353,7 @@ const SignUpPage = () => {
           
         </div>
       </div>
+
     </div>
   );
 };
