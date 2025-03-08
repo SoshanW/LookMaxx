@@ -351,18 +351,24 @@ def analyze_face():
         
         # After successfully saving to MongoDB, trigger report generation
         # Get the project root directory
-        current_dir = os.path.dirname(os.path.abspath(__file__))  # Current directory
-        project_root = os.path.dirname(os.path.dirname(current_dir))  # Root directory
-        
-        # Path to the report-generation-V2 directory
-        report_gen_path = os.path.join(project_root, 'report-generation-V2')
-        
-        # Run the report generation script with the username as an argument
-        subprocess.Popen([
-            sys.executable, 
-            os.path.join(report_gen_path, 'main.py'), 
-            username  # Pass username as parameter
-        ], cwd=report_gen_path)
+        try:
+            # Get the project root directory
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            project_root = os.path.dirname(os.path.dirname(current_dir))
+            
+            # Path to the report-generation-V2 directory
+            report_gen_path = os.path.join(project_root, 'report-generation-V2')
+            
+            # Run the report generation script with the username as an argument
+            subprocess.Popen([
+                sys.executable, 
+                os.path.join(report_gen_path, 'main.py'), 
+                username
+            ], cwd=report_gen_path)
+            
+            print(f"Report generation triggered for user: {username}")
+        except Exception as e:
+            print(f"Error triggering report generation: {str(e)}")
         
         print(f"Report generation triggered for user: {username}")
 
