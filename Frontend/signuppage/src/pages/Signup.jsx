@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-
 
 const SignUpPage = () => {
   const navigate = useNavigate();
 
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(true);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -84,6 +82,7 @@ const SignUpPage = () => {
 
   return (
     <div className="auth-container">
+      
       <div className="auth-content">
         {/* Static Header */}
         <div className="header-content">
@@ -96,22 +95,67 @@ const SignUpPage = () => {
 
         {/* Navigation Tabs */}
         <div className="slider-tabs">
+        <button 
+            className={`tab-button ${isFlipped ? 'active' : ''}`}
+            onClick={() => setIsFlipped(true)}
+          >
+            Login
+          </button>
           <button 
             className={`tab-button ${!isFlipped ? 'active' : ''}`}
             onClick={() => setIsFlipped(false)}
           >
             Sign Up
           </button>
-          <button 
-            className={`tab-button ${isFlipped ? 'active' : ''}`}
-            onClick={() => setIsFlipped(true)}
-          >
-            Login
-          </button>
+         
         </div>
 
         {/* Flip Cards Container */}
         <div className={`auth-wrapper ${isFlipped ? 'flipped' : ''}`}>
+
+          {/* Login Form */}
+          <div className="auth-card back">
+            {error && <div className="error-alert">{error}</div>}
+            
+            <form onSubmit={handleLoginSubmit} className="auth-form">
+              <div className="form-group">
+                <label htmlFor="loginEmail" className="form-label">Email</label>
+                <div className="input-container">
+                  <Mail className="input-icon" />
+                  <input
+                    id="loginEmail"
+                    name="loginEmail"
+                    type="email"
+                    className="form-input"
+                    value={formData.loginEmail}
+                    onChange={handleChange}
+                    placeholder="your.email@example.com"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="loginPassword" className="form-label">Password</label>
+                <div className="input-container">
+                  <Lock className="input-icon" />
+                  <input
+                    id="loginPassword"
+                    name="loginPassword"
+                    type="password"
+                    className="form-input"
+                    value={formData.loginPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="submit-button">
+                Login
+              </button>
+            </form>
+          </div>
+          
           {/* Sign Up Form */}
           <div className="auth-card front">
             {error && <div className="error-alert">{error}</div>}
@@ -224,48 +268,7 @@ const SignUpPage = () => {
             )}
           </div>
 
-          {/* Login Form */}
-          <div className="auth-card back">
-            {error && <div className="error-alert">{error}</div>}
-            
-            <form onSubmit={handleLoginSubmit} className="auth-form">
-              <div className="form-group">
-                <label htmlFor="loginEmail" className="form-label">Email</label>
-                <div className="input-container">
-                  <Mail className="input-icon" />
-                  <input
-                    id="loginEmail"
-                    name="loginEmail"
-                    type="email"
-                    className="form-input"
-                    value={formData.loginEmail}
-                    onChange={handleChange}
-                    placeholder="your.email@example.com"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="loginPassword" className="form-label">Password</label>
-                <div className="input-container">
-                  <Lock className="input-icon" />
-                  <input
-                    id="loginPassword"
-                    name="loginPassword"
-                    type="password"
-                    className="form-input"
-                    value={formData.loginPassword}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              <button type="submit" className="submit-button">
-                Login
-              </button>
-            </form>
-          </div>
+          
         </div>
       </div>
     </div>
