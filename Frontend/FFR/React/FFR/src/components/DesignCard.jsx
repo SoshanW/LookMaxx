@@ -132,22 +132,22 @@ const DesignCards = () => {
     <>
       <DesignCard 
         position={{ top: '100px', left: '-350px' }}
-        title="Design Smarter"
-        description="Create pixel-perfect designs in record time"
+        title="Research-Backed Insights"
+        description="Evidence-based analysis from peer-reviewed clinical studies"
         index={0}
         scrollTick={4.2}
       />
       <DesignCard 
         position={{ top: '180px', left: '300px' }}
-        title="Create Faster"
-        description="Speed up your workflow with powerful tools"
+        title="Advanced Facial Scanning"
+        description="Precision diagnostics with cutting-edge biometric technology"
         index={1}
         scrollTick={4.3}
       />
       <DesignCard 
         position={{ top: '300px', left: '-200px' }}
-        title="Build Better"
-        description="Craft exceptional user experiences"
+        title="Visual Pattern Analysis"
+        description="Detailed reports with annotated imagery and custom insights"
         index={2}
         scrollTick={4.4}
       />

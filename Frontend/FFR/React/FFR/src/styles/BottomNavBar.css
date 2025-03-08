@@ -1,3 +1,4 @@
+/* BottomNavBar.css */
 .bottom-nav {
   position: fixed;
   bottom: 20px;
@@ -23,4 +24,16 @@
   opacity: 1;
   transform: translateY(0); /* Slide up effect */
   pointer-events: auto; /* Allow interaction when visible */
+}
+
+/* Add styles for clickable links */
+.bottom-nav a {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.bottom-nav a:hover {
+  opacity: 0.8;
 }
