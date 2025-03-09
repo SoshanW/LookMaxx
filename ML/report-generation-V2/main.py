@@ -53,7 +53,7 @@ def get_user_metrics(username):
         return data, images
     return None, None
 
-def find_metric(metric_name):
+def find_metric(metric_name,data):
     return next((item for item in data if item["Metric"] == metric_name), None)
 
 def encode_pdf(path):
