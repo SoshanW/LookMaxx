@@ -7,6 +7,7 @@ import { gsap } from 'gsap'
 
 const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnimationComplete, onFeatureClick }) => {
   const headRef = useRef()
+  const sphereRefs = useRef({})
   const { nodes } = useGLTF('/models/humanHead.glb')
 
   const metallicMaterial = new THREE.MeshStandardMaterial({
@@ -48,6 +49,71 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
       ease: "power3.inOut"
     }, 0)
   }
+
+  // Animate feature spheres when feature selection changes
+  useEffect(() => {
+    // Animate all spheres based on selection state
+    Object.entries(featureData).forEach(([feature, data]) => {
+      const sphereRef = sphereRefs.current[feature]
+      if (!sphereRef) return
+      
+      // Reset any existing animations
+      gsap.killTweensOf(sphereRef.scale)
+      gsap.killTweensOf(sphereRef.material)
+      
+      if (selectedFeature === feature) {
+        // Selected sphere - pulse animation
+        gsap.to(sphereRef.scale, {
+          x: 1.5,
+          y: 1.5,
+          z: 1.5,
+          duration: 0.5,
+          ease: "back.out(1.7)"
+        })
+        
+        // Increase emissive intensity
+        gsap.to(sphereRef.material, {
+          emissiveIntensity: 0.8,
+          duration: 0.5
+        })
+        
+        // Add continuous pulse animation
+        const pulseTl = gsap.timeline({
+          repeat: -1,
+          yoyo: true
+        })
+        
+        pulseTl.to(sphereRef.scale, {
+          x: 1.3,
+          y: 1.3,
+          z: 1.3,
+          duration: 0.8,
+          ease: "sine.inOut"
+        })
+        
+        pulseTl.to(sphereRef.material, {
+          emissiveIntensity: 0.6,
+          duration: 0.8,
+          ease: "sine.inOut"
+        }, 0)
+      } else {
+        // Non-selected spheres - return to normal size with subtle animation
+        gsap.to(sphereRef.scale, {
+          x: 1,
+          y: 1,
+          z: 1,
+          duration: 0.5,
+          ease: "power2.out"
+        })
+        
+        // Dim emissive intensity
+        gsap.to(sphereRef.material, {
+          emissiveIntensity: 0.3,
+          duration: 0.5
+        })
+      }
+    })
+  }, [selectedFeature, featureData])
 
   // Animate head when feature is selected
   useEffect(() => {
@@ -114,6 +180,7 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
       {Object.entries(featureData).map(([feature, data]) => (
         <mesh
           key={feature}
+          ref={(el) => { if (el) sphereRefs.current[feature] = el }}
           position={data.spherePos}
           onClick={(e) => {
             e.stopPropagation()
@@ -121,11 +188,39 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
           }}
           onPointerOver={(e) => {
             e.stopPropagation()
-            e.object.scale.set(1.2, 1.2, 1.2)
+            if (selectedFeature !== feature) {
+              // Only apply hover effect if not selected
+              gsap.to(e.object.scale, {
+                x: 1.2, 
+                y: 1.2, 
+                z: 1.2,
+                duration: 0.3,
+                ease: "back.out(1.5)"
+              })
+              
+              gsap.to(e.object.material, {
+                emissiveIntensity: 0.5,
+                duration: 0.3
+              })
+            }
           }}
           onPointerOut={(e) => {
             e.stopPropagation()
-            e.object.scale.set(1, 1, 1)
+            if (selectedFeature !== feature) {
+              // Only reset if not selected
+              gsap.to(e.object.scale, {
+                x: 1, 
+                y: 1, 
+                z: 1,
+                duration: 0.3,
+                ease: "power2.out"
+              })
+              
+              gsap.to(e.object.material, {
+                emissiveIntensity: 0.3,
+                duration: 0.3
+              })
+            }
           }}
         >
           <sphereGeometry args={[0.1, 32, 32]} />

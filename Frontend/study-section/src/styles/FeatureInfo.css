@@ -1,3 +1,5 @@
+/* src/styles/FeatureInfo.css - Complete file with base styles and animations */
+
 .feature-info-container {
   position: absolute;
   top: 50%;
@@ -19,6 +21,13 @@
   max-height: 80vh;
   display: flex;
   flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-info-container:hover {
+  transform: translateY(-53%) scale(1.02);
+  box-shadow: 0 10px 30px rgba(77, 155, 255, 0.5),
+              inset 0 0 15px rgba(77, 155, 255, 0.3);
 }
 
 .feature-header {
@@ -33,6 +42,11 @@
   background: linear-gradient(90deg, transparent, rgba(169, 77, 255, 0.8), transparent);
 }
 
+.feature-info-container:hover .feature-line {
+  background: linear-gradient(90deg, transparent, rgba(169, 77, 255, 1), transparent);
+  animation: pulse-line 2s infinite;
+}
+
 .feature-title {
   margin: 0 1rem;
   font-size: 1.5rem;
@@ -40,6 +54,10 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   text-shadow: 0 0 5px rgba(169, 77, 255, 0.8);
+}
+
+.feature-info-container:hover .feature-title {
+  text-shadow: 0 0 10px rgba(169, 77, 255, 1);
 }
 
 .feature-description {
@@ -55,6 +73,10 @@
   white-space: normal;
   scrollbar-width: thin;
   scrollbar-color: rgba(169, 77, 255, 0.6) rgba(15, 16, 37, 0.4);
+}
+
+.feature-info-container:hover .feature-description {
+  border-left: 2px solid rgba(169, 77, 255, 0.8);
 }
 
 .feature-description::-webkit-scrollbar {
@@ -92,10 +114,26 @@
   animation: pulse 2s infinite;
 }
 
+.feature-info-container:hover .feature-dot {
+  animation: pulse-dot 1.5s infinite;
+}
+
 @keyframes pulse {
   0% { transform: scale(0.8); opacity: 0.4; }
   50% { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(0.8); opacity: 0.4; }
+}
+
+@keyframes pulse-line {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.8); opacity: 0.4; box-shadow: 0 0 8px rgba(169, 77, 255, 0.8); }
+  50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 15px rgba(169, 77, 255, 1); }
+  100% { transform: scale(0.8); opacity: 0.4; box-shadow: 0 0 8px rgba(169, 77, 255, 0.8); }
 }
 
 .close-button {
@@ -119,7 +157,7 @@
 }
 
 .close-button:hover {
-  background: rgba(169, 77, 255, 0.5);
+  background: rgba(169, 77, 255, 0.6);
   transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(169, 77, 255, 0.8);
+  box-shadow: 0 0 15px rgba(169, 77, 255, 0.8);
 }

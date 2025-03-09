@@ -14,6 +14,9 @@ const AnatomyExplorer = () => {
   const [selectedFeature, setSelectedFeature] = useState(null)
   const [showInfo, setShowInfo] = useState(false)
   const [showWelcome, setShowWelcome] = useState(true)
+  const [isExiting, setIsExiting] = useState(false)
+  const [welcomeExiting, setWelcomeExiting] = useState(false)
+  const [nextFeature, setNextFeature] = useState(null)
 
   // Initial head position (left side of the screen facing forward)
   const initialHeadPosition = { 
@@ -23,15 +26,49 @@ const AnatomyExplorer = () => {
   }
 
   const handleFeatureClick = (feature) => {
-    setShowInfo(false)
-    setShowWelcome(false)
-    setSelectedFeature(feature)
+    if (isExiting || feature === selectedFeature) return
+    
+    if (selectedFeature) {
+      // Start exit animation and set the next feature
+      setIsExiting(true)
+      setNextFeature(feature)
+    } else if (showWelcome) {
+      // Exit the welcome panel first, then show the feature
+      setWelcomeExiting(true)
+      setNextFeature(feature)
+    } else {
+      // Directly set the feature if none is currently selected
+      setShowWelcome(false)
+      setSelectedFeature(feature)
+    }
   }
 
   const handleCloseInfo = () => {
-    setShowInfo(false)
-    setShowWelcome(true)
-    setSelectedFeature(null)
+    setIsExiting(true)
+    setNextFeature(null)
+  }
+  
+  const handleExitComplete = () => {
+    if (nextFeature) {
+      // Transition to next feature
+      setShowInfo(false)
+      setSelectedFeature(nextFeature)
+      setNextFeature(null)
+      setIsExiting(false)
+    } else {
+      // Return to welcome state
+      setShowInfo(false)
+      setShowWelcome(true)
+      setSelectedFeature(null)
+      setIsExiting(false)
+    }
+  }
+  
+  const handleWelcomeExitComplete = () => {
+    setShowWelcome(false)
+    setWelcomeExiting(false)
+    setSelectedFeature(nextFeature)
+    setNextFeature(null)
   }
 
   return (
@@ -46,18 +83,22 @@ const AnatomyExplorer = () => {
           initialPosition={initialHeadPosition}
           selectedFeature={selectedFeature}
           featureData={featureData}
-          onAnimationComplete={() => setShowInfo(true)}
+          onAnimationComplete={() => !isExiting && setShowInfo(true)}
           onFeatureClick={handleFeatureClick}
         />
       </Canvas>
       
-      {showWelcome && <WelcomePanel />}
+      {(showWelcome || welcomeExiting) && (
+        <WelcomePanel 
+          isExiting={welcomeExiting}
+          onExitComplete={handleWelcomeExitComplete}
+        />
+      )}
       
-      {showInfo && selectedFeature && (
+      {(showInfo || isExiting) && selectedFeature && (
         <>
           {selectedFeature === 'lips' ? (
             <>
-              {/* Split the description for lips into two parts */}
               {(() => {
                 const fullDescription = featureData[selectedFeature].description;
                 const midpoint = Math.ceil(fullDescription.length / 2);
@@ -71,12 +112,16 @@ const AnatomyExplorer = () => {
                       description={firstHalf}
                       onClose={handleCloseInfo}
                       style={{ right: 'auto', left: '5%', width: '30%', maxWidth: '300px' }}
+                      isExiting={isExiting}
+                      onExitComplete={null} // Only the second panel triggers completion
                     />
                     <FeatureInfoPanel 
                       feature={`${selectedFeature} (2/2)`}
                       description={secondHalf}
                       onClose={handleCloseInfo}
                       style={{ right: '5%', left: 'auto', width: '30%', maxWidth: '300px' }}
+                      isExiting={isExiting}
+                      onExitComplete={handleExitComplete} // This one triggers the completion
                     />
                   </>
                 );
@@ -92,6 +137,8 @@ const AnatomyExplorer = () => {
                   ? { right: 'auto', left: '5%' } 
                   : {}
               }
+              isExiting={isExiting}
+              onExitComplete={handleExitComplete}
             />
           )}
         </>

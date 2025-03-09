@@ -1,3 +1,4 @@
+/* Updated styles for WelcomeText.css */
 .welcome-container {
   position: absolute;
   top: 50%;
@@ -15,6 +16,13 @@
   border-radius: 10px;
   z-index: 90;
   font-family: 'Segoe UI', Arial, sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.welcome-container:hover {
+  transform: translateY(-53%) scale(1.02);
+  box-shadow: 0 10px 30px rgba(77, 155, 255, 0.5),
+              inset 0 0 15px rgba(77, 155, 255, 0.3);
 }
 
 .welcome-header {
@@ -27,6 +35,18 @@
   flex-grow: 1;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(169, 77, 255, 0.8), transparent);
+  transition: all 0.3s ease;
+}
+
+.welcome-container:hover .welcome-line {
+  background: linear-gradient(90deg, transparent, rgba(169, 77, 255, 1), transparent);
+  animation: pulse-line 2s infinite;
+}
+
+@keyframes pulse-line {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
 }
 
 .welcome-header h2 {
@@ -37,6 +57,11 @@
   font-size: 1.2rem;
   text-shadow: 0 0 5px rgba(169, 77, 255, 0.8);
   white-space: nowrap;
+  transition: text-shadow 0.3s ease;
+}
+
+.welcome-container:hover .welcome-header h2 {
+  text-shadow: 0 0 10px rgba(169, 77, 255, 1);
 }
 
 .welcome-text {
@@ -66,6 +91,10 @@
   animation: pulse 2s infinite;
 }
 
+.welcome-container:hover .welcome-dot {
+  animation: pulse-dot 1.5s infinite;
+}
+
 .welcome-indicator {
   width: 50px;
   height: 1px;
@@ -74,14 +103,30 @@
   animation: scan 2s infinite;
 }
 
+.welcome-container:hover .welcome-indicator {
+  animation: hover-scan 1.5s infinite;
+}
+
 @keyframes pulse {
   0% { opacity: 0.4; }
   50% { opacity: 1; }
   100% { opacity: 0.4; }
 }
 
+@keyframes pulse-dot {
+  0% { transform: scale(0.8); opacity: 0.4; box-shadow: 0 0 8px rgba(169, 77, 255, 0.8); }
+  50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 15px rgba(169, 77, 255, 1); }
+  100% { transform: scale(0.8); opacity: 0.4; box-shadow: 0 0 8px rgba(169, 77, 255, 0.8); }
+}
+
 @keyframes scan {
   0% { transform: scaleX(0.5); opacity: 0.4; }
   50% { transform: scaleX(1); opacity: 1; }
   100% { transform: scaleX(0.5); opacity: 0.4; }
+}
+
+@keyframes hover-scan {
+  0% { transform: scaleX(0.5); opacity: 0.4; width: 50px; }
+  50% { transform: scaleX(1); opacity: 1; width: 70px; }
+  100% { transform: scaleX(0.5); opacity: 0.4; width: 50px; }
 }
