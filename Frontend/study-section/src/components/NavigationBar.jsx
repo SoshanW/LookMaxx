@@ -1,6 +1,4 @@
-// src/components/NavigationBar.jsx (renamed from Navbar.jsx)
 import React, { useState, useEffect, useRef } from 'react'
-import PropTypes from 'prop-types'
 import { gsap } from 'gsap'
 import '../styles/Navbar.css'
 
@@ -10,42 +8,33 @@ const NavigationBar = () => {
   const navLinksRef = useRef([])
 
   useEffect(() => {
-    // Set initial state
-    gsap.set(navLinksRef.current, {
-      opacity: 0,
-      y: -20
-    })
-
-    // Create entrance animation
+    gsap.set(navLinksRef.current, { opacity: 0, y: -20 })
     gsap.to(navLinksRef.current, {
       opacity: 1,
       y: 0,
       duration: 1,
       stagger: 0.1,
       delay: 0.1,
-      ease: "power3.out"
+      ease: 'power3.out'
     })
 
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      setIsScrolled(scrollPosition > 50)
-    }
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Add links to ref array
   const addToRefs = (el) => {
     if (el && !navLinksRef.current.includes(el)) {
       navLinksRef.current.push(el)
     }
   }
 
+  const navLinks = ['Home', 'Retail', 'Community', 'Study', 'About', 'FFR']
+
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="nav-links">
-        {['Home', 'Retail', 'Community', 'Study', 'About', 'FFR'].map((link) => (
+        {navLinks.map(link => (
           <NavLink 
             key={link.toLowerCase()}
             ref={addToRefs}
@@ -72,12 +61,6 @@ const NavLink = React.forwardRef(({ link, isActive, onClick }, ref) => (
     {link}
   </a>
 ))
-
-NavLink.propTypes = {
-  link: PropTypes.string.isRequired,
-  isActive: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired
-}
 
 NavLink.displayName = 'NavLink'
 

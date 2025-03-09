@@ -1,4 +1,3 @@
-// src/components/FeatureInfoPanel.jsx
 import React, { useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { gsap } from 'gsap'
@@ -12,15 +11,11 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
   
   useEffect(() => {
     if (!panelRef.current) return
-    
-    // Determine if panel is on the left or right side
+
     const isLeftSide = style.left !== undefined && style.right === undefined
-    
-    // Create the animation timeline
     const tl = gsap.timeline()
-    
+
     if (!isExiting) {
-      // Set initial state for entrance animation
       gsap.set(panelRef.current, {
         opacity: 0,
         x: isLeftSide ? -100 : 100,
@@ -29,8 +24,7 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
         rotationY: isLeftSide ? -15 : 15,
         transformOrigin: isLeftSide ? 'left center' : 'right center'
       })
-      
-      // Entrance animation - futuristic slide in with 3D rotation
+
       tl.to(panelRef.current, {
         opacity: 1,
         x: 0,
@@ -38,22 +32,17 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
         scale: 1,
         rotationY: 0,
         duration: 0.8,
-        ease: "power3.out"
+        ease: 'power3.out'
       })
-      
-      // Add a subtle flash effect on the border after panel appears
       tl.to(panelRef.current, {
-        boxShadow: "0 0 30px rgba(77, 155, 255, 0.8), inset 0 0 15px rgba(77, 155, 255, 0.4)",
-        duration: 0.3,
-      }, "+=0.1")
-      
-      // Return to normal shadow
+        boxShadow: '0 0 30px rgba(77, 155, 255, 0.8), inset 0 0 15px rgba(77, 155, 255, 0.4)',
+        duration: 0.3
+      }, '+=0.1')
       tl.to(panelRef.current, {
-        boxShadow: "0 0 20px rgba(77, 155, 255, 0.3), inset 0 0 10px rgba(77, 155, 255, 0.1)",
-        duration: 0.5,
-      }, "+=0.1")
+        boxShadow: '0 0 20px rgba(77, 155, 255, 0.3), inset 0 0 10px rgba(77, 155, 255, 0.1)',
+        duration: 0.5
+      }, '+=0.1')
     } else {
-      // Exit animation - reverse of entrance with faster timing
       tl.to(panelRef.current, {
         opacity: 0,
         x: isLeftSide ? -100 : 100,
@@ -61,8 +50,8 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
         scale: 0.9,
         rotationY: isLeftSide ? -15 : 15,
         duration: 0.6,
-        ease: "power2.in",
-        onComplete: onExitComplete // Call the completion handler when done
+        ease: 'power2.in',
+        onComplete: onExitComplete
       })
     }
   }, [style, isExiting, onExitComplete])

@@ -1,4 +1,3 @@
-// src/components/HumanHeadModel.jsx
 import React, { useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import * as THREE from 'three'
@@ -21,93 +20,74 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
 
   const resetHeadPosition = () => {
     if (!headRef.current) return
-    
-    // Create a single timeline for reset to ensure animations are synchronized
+
     const tl = gsap.timeline()
-    
     tl.to(headRef.current.position, {
       duration: 1,
       x: initialPosition.position[0],
       y: initialPosition.position[1],
       z: initialPosition.position[2],
-      ease: "power3.inOut"
+      ease: 'power3.inOut'
     }, 0)
-    
     tl.to(headRef.current.rotation, {
       duration: 1,
       x: initialPosition.rotation[0],
       y: initialPosition.rotation[1],
       z: initialPosition.rotation[2],
-      ease: "power3.inOut"
+      ease: 'power3.inOut'
     }, 0)
-    
     tl.to(headRef.current.scale, {
       duration: 1,
       x: initialPosition.scale,
       y: initialPosition.scale,
       z: initialPosition.scale,
-      ease: "power3.inOut"
+      ease: 'power3.inOut'
     }, 0)
   }
 
-  // Animate feature spheres when feature selection changes
   useEffect(() => {
-    // Animate all spheres based on selection state
     Object.entries(featureData).forEach(([feature, data]) => {
-      const sphereRef = sphereRefs.current[feature]
-      if (!sphereRef) return
-      
-      // Reset any existing animations
-      gsap.killTweensOf(sphereRef.scale)
-      gsap.killTweensOf(sphereRef.material)
+      const sphere = sphereRefs.current[feature]
+      if (!sphere) return
+
+      gsap.killTweensOf(sphere.scale)
+      gsap.killTweensOf(sphere.material)
       
       if (selectedFeature === feature) {
-        // Selected sphere - pulse animation
-        gsap.to(sphereRef.scale, {
+        gsap.to(sphere.scale, {
           x: 1.5,
           y: 1.5,
           z: 1.5,
           duration: 0.5,
-          ease: "back.out(1.7)"
+          ease: 'back.out(1.7)'
         })
-        
-        // Increase emissive intensity
-        gsap.to(sphereRef.material, {
+        gsap.to(sphere.material, {
           emissiveIntensity: 0.8,
           duration: 0.5
         })
-        
-        // Add continuous pulse animation
-        const pulseTl = gsap.timeline({
-          repeat: -1,
-          yoyo: true
-        })
-        
-        pulseTl.to(sphereRef.scale, {
+
+        const pulseTl = gsap.timeline({ repeat: -1, yoyo: true })
+        pulseTl.to(sphere.scale, {
           x: 1.3,
           y: 1.3,
           z: 1.3,
           duration: 0.8,
-          ease: "sine.inOut"
+          ease: 'sine.inOut'
         })
-        
-        pulseTl.to(sphereRef.material, {
+        pulseTl.to(sphere.material, {
           emissiveIntensity: 0.6,
           duration: 0.8,
-          ease: "sine.inOut"
+          ease: 'sine.inOut'
         }, 0)
       } else {
-        // Non-selected spheres - return to normal size with subtle animation
-        gsap.to(sphereRef.scale, {
+        gsap.to(sphere.scale, {
           x: 1,
           y: 1,
           z: 1,
           duration: 0.5,
-          ease: "power2.out"
+          ease: 'power2.out'
         })
-        
-        // Dim emissive intensity
-        gsap.to(sphereRef.material, {
+        gsap.to(sphere.material, {
           emissiveIntensity: 0.3,
           duration: 0.5
         })
@@ -115,46 +95,36 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
     })
   }, [selectedFeature, featureData])
 
-  // Animate head when feature is selected
   useEffect(() => {
-    // Skip if ref isn't ready
     if (!headRef.current) return
-    
-    // Clear any existing GSAP animations to prevent conflicts
+
     gsap.killTweensOf(headRef.current.position)
     gsap.killTweensOf(headRef.current.rotation)
     gsap.killTweensOf(headRef.current.scale)
     
     if (selectedFeature) {
       const { view } = featureData[selectedFeature]
-      
-      const tl = gsap.timeline({
-        onComplete: onAnimationComplete
-      })
-      
-      // Run all animations in parallel from position 0 on the timeline
+      const tl = gsap.timeline({ onComplete: onAnimationComplete })
       tl.to(headRef.current.position, {
         duration: 0.8,
         x: view.position[0],
         y: view.position[1],
         z: view.position[2],
-        ease: "power4.out"
+        ease: 'power4.out'
       }, 0)
-      
       tl.to(headRef.current.rotation, {
         duration: 0.8,
         x: view.rotation[0],
         y: view.rotation[1],
         z: view.rotation[2],
-        ease: "power4.out"
+        ease: 'power4.out'
       }, 0)
-      
       tl.to(headRef.current.scale, {
         duration: 0.8,
         x: view.scale,
         y: view.scale,
         z: view.scale,
-        ease: "back.out(1.2)"
+        ease: 'back.out(1.2)'
       }, 0)
     } else {
       resetHeadPosition()
@@ -163,7 +133,7 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
 
   return (
     <group ref={headRef}>
-      {/* Head model */}
+      {/* Head model parts */}
       <group position={[-0.003, 1.279, -0.051]} rotation={[Math.PI / 2, 0, 0.227]} scale={0.249}>
         {[...Array(4)].map((_, index) => (
           <mesh
@@ -176,7 +146,7 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
         ))}
       </group>
       
-      {/* Feature spheres - now included inside the head group */}
+      {/* Feature spheres */}
       {Object.entries(featureData).map(([feature, data]) => (
         <mesh
           key={feature}
@@ -189,15 +159,13 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
           onPointerOver={(e) => {
             e.stopPropagation()
             if (selectedFeature !== feature) {
-              // Only apply hover effect if not selected
               gsap.to(e.object.scale, {
                 x: 1.2, 
                 y: 1.2, 
                 z: 1.2,
                 duration: 0.3,
-                ease: "back.out(1.5)"
+                ease: 'back.out(1.5)'
               })
-              
               gsap.to(e.object.material, {
                 emissiveIntensity: 0.5,
                 duration: 0.3
@@ -207,15 +175,13 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
           onPointerOut={(e) => {
             e.stopPropagation()
             if (selectedFeature !== feature) {
-              // Only reset if not selected
               gsap.to(e.object.scale, {
                 x: 1, 
                 y: 1, 
                 z: 1,
                 duration: 0.3,
-                ease: "power2.out"
+                ease: 'power2.out'
               })
-              
               gsap.to(e.object.material, {
                 emissiveIntensity: 0.3,
                 duration: 0.3

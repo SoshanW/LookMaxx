@@ -1,4 +1,3 @@
-// src/components/FeatureFooter.jsx
 import React from 'react'
 
 const FeatureFooter = () => (
