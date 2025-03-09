@@ -5,6 +5,11 @@ import json
 import matplotlib
 matplotlib.use('Agg')
 import os  # Import os to handle directory creation
+import boto3
+import os
+from botocore.exceptions import ClientError
+from werkzeug.utils import secure_filename
+from .config import AWS
 
 def upload_to_s3(local_file, s3_file, aws_config):
     """
@@ -29,8 +34,6 @@ def upload_to_s3(local_file, s3_file, aws_config):
     except FileNotFoundError:
         print(f"The file {local_file} was not found")
         return False
-    except NoCredentialsError:
-        print("Credentials not available")
         return False
     except Exception as e:
         print(f"Error uploading to S3: {str(e)}")
@@ -128,10 +131,25 @@ def generate_comparison_report(facial_metrics, username, gender):
     with open("./reports/comparison_report.json", "w") as f:
         json.dump(comparison_report, f, indent=4)
 
+    # Upload to S3
+    aws_config = AWS()
+    s3_file_path = f"{aws_config.S3_FFR_PICTURES_GENERATED}{username}_comparison_report.png"
+    
+    # Upload the graph to S3
+    upload_success = upload_to_s3(viz_path, s3_file_path, aws_config)
+    
+    if upload_success:
+        s3_url = f"https://{aws_config.S3_BUCKET}.s3.{aws_config.AWS_REGION}.amazonaws.com/{s3_file_path}"
+        print(f"Graph uploaded to S3: {s3_url}")
+    else:
+        s3_url = None
+        print("Failed to upload graph to S3")
+
     print("Comparison report saved to 'comparison_report.json'")
     print("Graph saved to 'assets/comparison_graph/comparison_report.png'")
 
     return{
         'comparison_data': comparison_report,
-        'visualization_path': viz_path
+        'visualization_path': viz_path,
+        's3_visualization_path': s3_url
     }
