@@ -364,7 +364,9 @@ def analyze_face():
                 sys.executable, 
                 os.path.join(report_gen_path, 'main.py'), 
                 username
-            ], cwd=report_gen_path)
+            ], cwd=report_gen_path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
             
             print(f"Report generation triggered for user: {username}")
         except Exception as report_error:
