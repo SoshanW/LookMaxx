@@ -1,5 +1,7 @@
+// ./src/components/PricingCard.jsx
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
+import PaymentPopup from "./PaymentPopup";
 
 const PricingCard = ({ 
   title, 
@@ -14,6 +16,7 @@ const PricingCard = ({
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { hovered, ref } = useHover();
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // State to manage popup visibility
   
   // Animation controls for each border
   const topControls = useAnimationControls();
@@ -53,6 +56,28 @@ const PricingCard = ({
     startAnimations();
   }, []);
   
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleButtonClick = () => {
+    if (buttonText === "Get Started") {
+      // Redirect to home page for the free plan
+      window.location.href = '/';
+    } else {
+      // Open the payment popup for the pro plan
+      setIsPopupOpen(true);
+    }
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false); // Close the payment popup
+  };
+
   // Card entrance animation variants
   const cardVariants = {
     hidden: { 
@@ -67,7 +92,7 @@ const PricingCard = ({
         damping: 25,
         stiffness: 400,
         duration: 0.3,
-        delay: 0.1,
+        delay: 0.1, // Small delay to ensure content animates together with card
         delayChildren: 0.02,
         staggerChildren: 0.04
       }
@@ -87,17 +112,9 @@ const PricingCard = ({
         type: "spring",
         damping: 30,
         stiffness: 500,
-        duration: 0.5
+        duration: 0.5  // Slower duration for text animations
       }
     }
-  };
-  
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMousePosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
   };
 
   return (
@@ -235,10 +252,10 @@ const PricingCard = ({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ 
-                  duration: 0.5,
+                  duration: 0.5,  // Slower duration
                   delay: 0.2,
                   type: "spring",
-                  stiffness: 200
+                  stiffness: 200  // Lower stiffness for smoother motion
                 }}
               >
                 {price === "0" && !showOriginalPrice ? "Free" : price}
@@ -248,7 +265,7 @@ const PricingCard = ({
                   className="text-gray-400 text-lg line-through ml-2"
                   initial={{ opacity: 0, x: -5 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}  // Slower duration
                 >
                   ${originalPrice}
                 </motion.span>
@@ -274,6 +291,7 @@ const PricingCard = ({
               stiffness: 400,
               damping: 15
             }}
+            onClick={handleButtonClick} // Open the payment popup on click
           >
             <motion.span
               className="absolute inset-0 bg-white opacity-10"
@@ -289,7 +307,7 @@ const PricingCard = ({
               hidden: {},
               visible: {
                 transition: {
-                  staggerChildren: 0.05,
+                  staggerChildren: 0.05,  // Slightly longer stagger delay
                   delayChildren: 0.3
                 }
               }
@@ -307,8 +325,8 @@ const PricingCard = ({
                     transition: {
                       type: "spring",
                       damping: 30,
-                      stiffness: 400,
-                      duration: 0.4
+                      stiffness: 400,  // Lower stiffness for smoother motion
+                      duration: 0.4    // Slower duration
                     }
                   }
                 }}
@@ -322,8 +340,8 @@ const PricingCard = ({
                       type: "spring",
                       damping: 20,
                       stiffness: 400,
-                      duration: 0.4,
-                      delay: 0.45 + (index * 0.08)
+                      duration: 0.4,   // Slower duration
+                      delay: 0.45 + (index * 0.08)  // Longer delays between items
                     }}
                   ></motion.i> : 
                   <motion.i 
@@ -334,8 +352,8 @@ const PricingCard = ({
                       type: "spring",
                       damping: 20,
                       stiffness: 400,
-                      duration: 0.4,
-                      delay: 0.45 + (index * 0.08)
+                      duration: 0.4,   // Slower duration
+                      delay: 0.45 + (index * 0.08)  // Longer delays between items
                     }}
                   ></motion.i>
                 }
@@ -345,6 +363,7 @@ const PricingCard = ({
           </motion.ul>
         </div>
       </motion.div>
+      {isPopupOpen && <PaymentPopup onClose={closePopup} />} {/* Render the PaymentPopup if open */}
     </motion.div>
   );
 };

@@ -1,4 +1,3 @@
-// src/components/PaymentPopup.jsx (initial version)
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
