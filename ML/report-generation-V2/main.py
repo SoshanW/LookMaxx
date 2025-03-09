@@ -18,7 +18,7 @@ PATH="data/Facial Aesthetics.pdf"
 def get_mongodb_connection():
     mongo_uri = "mongodb+srv://robertshemeshi:FC34K9IcO7uw6DES@cluster0.mp7jz.mongodb.net/authdb?retryWrites=true&w=majority&appName=Cluster0"  # Use the same connection string as in your Flask app
     client = MongoClient(mongo_uri)
-    db = client.Cluster0  # Use the same database name as in your Flask app
+    db = client.authdb # Use the same database name as in your Flask app
     return db
 
 def get_user_metrics(username):
