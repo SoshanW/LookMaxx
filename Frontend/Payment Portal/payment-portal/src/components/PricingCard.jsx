@@ -1,6 +1,5 @@
-// ./src/components/PricingCard.jsx
-import React, { useState, useEffect } from 'react';
-import { motion, useAnimationControls } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import PaymentPopup from "./PaymentPopup";
 
 const PricingCard = ({ 
@@ -18,43 +17,10 @@ const PricingCard = ({
   const { hovered, ref } = useHover();
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State to manage popup visibility
   
-  // Animation controls for each border
-  const topControls = useAnimationControls();
-  const rightControls = useAnimationControls();
-  const bottomControls = useAnimationControls();
-  const leftControls = useAnimationControls();
-  
   // Color variations based on card type
   const borderColor = variant === 'pro' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(156, 163, 175, 0.4)';
   const glowColor = variant === 'pro' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(156, 163, 175, 0.2)';
   const gradientColor = variant === 'pro' ? '#3b82f6' : '#9CA3AF';
-  
-  // Start animations on component mount
-  useEffect(() => {
-    const startAnimations = async () => {
-      topControls.start({
-        left: ['-100%', '100%'],
-        transition: { duration: 8, ease: "linear", repeat: Infinity }
-      });
-      
-      rightControls.start({
-        top: ['-100%', '100%'],
-        transition: { duration: 8, ease: "linear", repeat: Infinity }
-      });
-      
-      bottomControls.start({
-        right: ['-100%', '100%'],
-        transition: { duration: 8, ease: "linear", repeat: Infinity }
-      });
-      
-      leftControls.start({
-        bottom: ['-100%', '100%'],
-        transition: { duration: 8, ease: "linear", repeat: Infinity }
-      });
-    };
-    
-    startAnimations();
-  }, []);
   
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -132,14 +98,19 @@ const PricingCard = ({
           className="absolute h-1 opacity-60 blur-[1px]"
           style={{ 
             width: '100%', 
-            top: 0, 
-            left: 0, 
+            top: 0,
             backgroundImage: `linear-gradient(90deg, transparent 0%, ${gradientColor} 50%, transparent 100%)`,
             boxShadow: `0 0 6px 0 ${borderColor}`
           }}
-          initial={{ left: '-100%', opacity: 0 }}
-          animate={{ left: '-100%', opacity: 1 }}
-          transition={{ opacity: { duration: 0.4, delay: 0.15 } }}
+          animate={{
+            left: ['-100%', '100%']
+          }}
+          transition={{ 
+            duration: 8, 
+            ease: "linear", 
+            repeat: Infinity,
+            repeatType: "loop"
+          }}
         />
         
         {/* Right border */}
@@ -147,14 +118,19 @@ const PricingCard = ({
           className="absolute w-1 opacity-60 blur-[1px]"
           style={{ 
             height: '100%', 
-            top: 0, 
-            right: 0, 
+            right: 0,
             backgroundImage: `linear-gradient(180deg, transparent 0%, ${gradientColor} 50%, transparent 100%)`,
             boxShadow: `0 0 6px 0 ${borderColor}`
           }}
-          initial={{ top: '-100%', opacity: 0 }}
-          animate={{ top: '-100%', opacity: 1 }}
-          transition={{ opacity: { duration: 0.4, delay: 0.2 } }}
+          animate={{
+            top: ['-100%', '100%']
+          }}
+          transition={{ 
+            duration: 8, 
+            ease: "linear", 
+            repeat: Infinity,
+            repeatType: "loop"
+          }}
         />
         
         {/* Bottom border */}
@@ -162,14 +138,19 @@ const PricingCard = ({
           className="absolute h-1 opacity-60 blur-[1px]"
           style={{ 
             width: '100%', 
-            bottom: 0, 
-            right: 0, 
+            bottom: 0,
             backgroundImage: `linear-gradient(90deg, transparent 0%, ${gradientColor} 50%, transparent 100%)`,
             boxShadow: `0 0 6px 0 ${borderColor}`
           }}
-          initial={{ right: '-100%', opacity: 0 }}
-          animate={{ right: '-100%', opacity: 1 }}
-          transition={{ opacity: { duration: 0.4, delay: 0.25 } }}
+          animate={{
+            right: ['100%', '-100%']
+          }}
+          transition={{ 
+            duration: 8, 
+            ease: "linear", 
+            repeat: Infinity,
+            repeatType: "loop"
+          }}
         />
         
         {/* Left border */}
@@ -177,14 +158,19 @@ const PricingCard = ({
           className="absolute w-1 opacity-60 blur-[1px]"
           style={{ 
             height: '100%', 
-            bottom: 0, 
-            left: 0, 
+            left: 0,
             backgroundImage: `linear-gradient(180deg, transparent 0%, ${gradientColor} 50%, transparent 100%)`,
             boxShadow: `0 0 6px 0 ${borderColor}`
           }}
-          initial={{ bottom: '-100%', opacity: 0 }}
-          animate={{ bottom: '-100%', opacity: 1 }}
-          transition={{ opacity: { duration: 0.4, delay: 0.3 } }}
+          animate={{
+            bottom: ['100%', '-100%']
+          }}
+          transition={{ 
+            duration: 8, 
+            ease: "linear", 
+            repeat: Infinity,
+            repeatType: "loop"
+          }}
         />
         
         {/* Subtle ambient glow effect */}
