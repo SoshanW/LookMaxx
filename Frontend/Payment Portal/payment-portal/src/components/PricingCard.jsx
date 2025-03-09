@@ -8,11 +8,12 @@ const PricingCard = ({
   features, 
   buttonColor, 
   variant = 'pro', 
-  buttonText = 'Get Started',
+  buttonText = 'Get PRO',
   showOriginalPrice = true,
   tagline
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { hovered, ref } = useHover();
   
   // Animation controls for each border
   const topControls = useAnimationControls();
@@ -101,6 +102,7 @@ const PricingCard = ({
 
   return (
     <motion.div 
+      ref={ref} 
       className="relative w-96"
       variants={cardVariants}
       initial="hidden"
@@ -345,6 +347,30 @@ const PricingCard = ({
       </motion.div>
     </motion.div>
   );
+};
+
+// Add useHover hook directly in this file to avoid dependency
+const useHover = () => {
+  const [hovered, setHovered] = useState(false);
+  const ref = React.useRef(null);
+  
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    
+    const handleMouseOver = () => setHovered(true);
+    const handleMouseOut = () => setHovered(false);
+    
+    el.addEventListener('mouseover', handleMouseOver);
+    el.addEventListener('mouseout', handleMouseOut);
+    
+    return () => {
+      el.removeEventListener('mouseover', handleMouseOver);
+      el.removeEventListener('mouseout', handleMouseOut);
+    };
+  }, []);
+  
+  return { hovered, ref };
 };
 
 export default PricingCard;
