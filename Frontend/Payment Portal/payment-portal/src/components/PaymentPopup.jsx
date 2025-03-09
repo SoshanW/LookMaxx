@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+// Improved Card Logo Components
 const VisaLogo = () => (
   <svg 
     xmlns="http://www.w3.org/2000/svg" 
@@ -65,18 +66,18 @@ const AmexLogo = () => (
 const PaymentPopup = ({ onClose }) => {
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('+94');
+  const [selectedCountryCode, setSelectedCountryCode] = useState('+94');
   const [cardNumber, setCardNumber] = useState('');
   const [cardHolder, setCardHolder] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
   const [cardType, setCardType] = useState('');
+  const [error, setError] = useState('');
 
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({ email, mobile, cardNumber, cardHolder, expiryDate, cvv });
-    onClose();
-  };
+  useEffect(() => {
+    // Clear any previous errors when card number or type changes
+    setError('');
+  }, [cardNumber, cardType]);
 
   const handleCardNumberChange = (e) => {
     const value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
@@ -95,8 +96,61 @@ const PaymentPopup = ({ onClose }) => {
       setCardType('');
     }
   };
-  
-  // Add a function to render the appropriate card logo
+
+  const handleCvvChange = (e) => {
+    if (!cardType) {
+      setError('Please enter card number first');
+      return;
+    }
+
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    
+    if (cardType === 'amex') {
+      // Allow up to 4 digits for Amex
+      setCvv(value.slice(0, 4));
+    } else {
+      // Limit to 3 digits for Visa and Mastercard
+      setCvv(value.slice(0, 3));
+    }
+  };
+
+  const handleExpiryDateChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    
+    if (value.length <= 2) {
+      // First two digits (month)
+      setExpiryDate(value);
+    } else if (value.length > 2) {
+      // Auto-insert slash and keep subsequent digits
+      const month = value.slice(0, 2);
+      const year = value.slice(2);
+      setExpiryDate(`${month}/${year}`);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Additional validation before submission
+    if (!cardType) {
+      setError('Please enter a valid card number');
+      return;
+    }
+
+    // CVV validation
+    if (cardType === 'amex' && cvv.length !== 4) {
+      setError('American Express CVV must be 4 digits');
+      return;
+    }
+    if ((cardType === 'visa' || cardType === 'mastercard') && cvv.length !== 3) {
+      setError('CVV must be 3 digits');
+      return;
+    }
+
+    console.log({ email, mobile, cardNumber, cardHolder, expiryDate, cvv });
+    onClose();
+  };
+
   const renderCardLogo = () => {
     switch(cardType) {
       case 'visa':
@@ -123,7 +177,9 @@ const PaymentPopup = ({ onClose }) => {
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className="w-[500px] bg-gradient-to-br from-[rgb(31,41,55)] to-[rgb(55,65,81)] rounded-xl shadow-2xl p-8 relative overflow-hidden"
       >
+        {/* Header Section with Balanced Spacing */}
         <div className="flex justify-between items-center mb-6">
+          {/* Secure Indicator */}
           <div className="flex items-center space-x-2">
             <span className="text-sm text-green-300 font-medium mr-2">Secure</span>
             <svg 
@@ -136,6 +192,7 @@ const PaymentPopup = ({ onClose }) => {
             </svg>
           </div>
 
+          {/* Cancel Icon with Enhanced Design */}
           <button 
             onClick={onClose}
             className="group transition-all duration-300 hover:bg-gray-700 p-1.5 rounded-full"
@@ -154,6 +211,12 @@ const PaymentPopup = ({ onClose }) => {
         <div className="relative z-10">
           <h2 className="text-3xl font-bold text-white text-center mb-6">Complete Your Purchase</h2>
           
+          {error && (
+            <div className="bg-red-600 text-white p-3 rounded-md mb-4 text-center">
+              {error}
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
               <input
@@ -167,14 +230,65 @@ const PaymentPopup = ({ onClose }) => {
             </div>
 
             <div className="relative">
-              <input
-                type="text"
-                placeholder="Mobile Number"
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-                required
-                className="w-full p-3 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-500"
-              />
+              <div className="flex space-x-2">
+                <div className="relative" style={{ width: "80px" }}>
+                  {/* Custom select with visible country code */}
+                  <div className="relative">
+                    {/* Displayed country code */}
+                    <div className="p-3 bg-gray-800 text-white rounded-md border border-gray-700 flex justify-between items-center cursor-pointer">
+                      <span>{selectedCountryCode}</span>
+                      <svg className="h-4 w-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    
+                    {/* Hidden actual select element for functionality */}
+                    <select
+                      className="absolute opacity-0 top-0 left-0 h-full w-full cursor-pointer"
+                      onChange={(e) => {
+                        const countryCode = e.target.value;
+                        setSelectedCountryCode(countryCode);
+                        // Only update the country code part of the mobile number
+                        setMobile(countryCode + mobile.substring(selectedCountryCode.length));
+                      }}
+                      defaultValue="+94"
+                    >
+                      <option value="+94">Sri Lanka</option>
+                      <option value="+1">United States</option>
+                      <option value="+44">United Kingdom</option>
+                      <option value="+61">Australia</option>
+                      <option value="+33">France</option>
+                      <option value="+49">Germany</option>
+                      <option value="+81">Japan</option>
+                      <option value="+86">China</option>
+                      <option value="+91">India</option>
+                      <option value="+7">Russia</option>
+                      <option value="+55">Brazil</option>
+                      <option value="+52">Mexico</option>
+                      <option value="+82">South Korea</option>
+                      <option value="+39">Italy</option>
+                      <option value="+34">Spain</option>
+                      <option value="+31">Netherlands</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <input
+                  type="text"
+                  placeholder="Mobile Number"
+                  value={mobile.substring(selectedCountryCode.length)}
+                  onChange={(e) => {
+                    // Extract only the number part (without country code)
+                    let numericInput = e.target.value.replace(/[^0-9]/g, '');
+                    // Limit to 9 digits maximum
+                    numericInput = numericInput.slice(0, 9);
+                    // Set the mobile state with the country code + new number input
+                    setMobile(selectedCountryCode + numericInput);
+                  }}
+                  required
+                  className="flex-1 p-3 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-500"
+                />
+              </div>
             </div>
 
             <div className="relative">
@@ -182,10 +296,16 @@ const PaymentPopup = ({ onClose }) => {
                 type="text"
                 placeholder="Card Number"
                 value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
+                onChange={handleCardNumberChange}
+                maxLength="19"
                 required
                 className="w-full p-3 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-500"
               />
+              {cardType && (
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  {renderCardLogo()}
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-5">
@@ -193,17 +313,21 @@ const PaymentPopup = ({ onClose }) => {
                 type="text"
                 placeholder="Expiry (MM/YY)"
                 value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
+                onChange={handleExpiryDateChange}
+                maxLength="5"
                 required
                 className="p-3 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-500"
               />
               <input
                 type="text"
-                placeholder="CVV"
+                placeholder={cardType === 'amex' ? 'CVV (4 digits)' : 'CVV (3 digits)'}
                 value={cvv}
-                onChange={(e) => setCvv(e.target.value)}
+                onChange={handleCvvChange}
+                maxLength={cardType === 'amex' ? '4' : '3'}
                 required
-                className="p-3 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-500"
+                disabled={!cardType}
+                className={`p-3 bg-gray-800 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-500 
+                  ${!cardType ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
 
