@@ -32,7 +32,6 @@ body::before {
 
 .auth-container {
   display: flex;
-  
   justify-content: center;
   padding: 1.5rem;
   min-height: 100vh;
@@ -180,7 +179,7 @@ body::before {
 /* Card Container */
 .auth-wrapper {
   width: 100%;
-  height: 650px;
+  height: 760px;
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
   position: relative;
@@ -200,7 +199,7 @@ body::before {
 }
 
 .auth-wrapper.with-error {
-  height: 690px; 
+  height: 800px; 
 }
 
 /* Cards */
