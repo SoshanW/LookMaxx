@@ -1,17 +1,26 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import SignUp from './components/Signup'; 
+import FaceModelPage from './components/FaceModelPage';
 
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SignUpPage from "./components/Signup";
-import "./styles.css";
-
-function App() {
+const App = () => {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<SignUpPage />} />
+        {/* Make SignUp the default landing page */}
+        <Route path="/" element={<SignUp />} />
+        
+        {/* Keep the named route as well for explicit navigation */}
+        <Route path="/signup" element={<SignUp />} /> {/* Fix this to use SignUp, not SignupPage */}
+        
+        {/* Face model page route */}
+        <Route path="/face-model" element={<FaceModelPage />} />
+        
+        {/* Redirect any unknown routes to signup */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
