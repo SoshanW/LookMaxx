@@ -17,8 +17,8 @@ const AnatomyExplorer = () => {
 
   // Initial head position (left side of the screen facing forward)
   const initialHeadPosition = { 
-    position: [-2, 0, 0], 
-    rotation: [0, 0.5, 0], 
+    position: [-3, -1, 0], 
+    rotation: [0, 0.7, 0], 
     scale: 1 
   }
 
@@ -49,18 +49,40 @@ const AnatomyExplorer = () => {
           onAnimationComplete={() => setShowInfo(true)}
           onFeatureClick={handleFeatureClick}
         />
-        
-        {/* FeatureSpheres component removed as it's now part of HumanHeadModel */}
       </Canvas>
       
       {showWelcome && <WelcomePanel />}
       
       {showInfo && selectedFeature && (
-        <FeatureInfoPanel 
-          feature={selectedFeature}
-          description={featureData[selectedFeature].description}
-          onClose={handleCloseInfo}
-        />
+        <>
+          {selectedFeature === 'lips' ? (
+            <>
+              <FeatureInfoPanel 
+                feature={selectedFeature}
+                description={featureData[selectedFeature].description}
+                onClose={handleCloseInfo}
+                style={{ right: 'auto', left: '5%', width: '30%', maxWidth: '300px' }}
+              />
+              <FeatureInfoPanel 
+                feature={selectedFeature}
+                description={featureData[selectedFeature].description}
+                onClose={handleCloseInfo}
+                style={{ right: '5%', left: 'auto', width: '30%', maxWidth: '300px' }}
+              />
+            </>
+          ) : (
+            <FeatureInfoPanel 
+              feature={selectedFeature}
+              description={featureData[selectedFeature].description}
+              onClose={handleCloseInfo}
+              style={
+                selectedFeature === 'nose' || selectedFeature === 'cheekbone' 
+                  ? { right: 'auto', left: '5%' } 
+                  : {}
+              }
+            />
+          )}
+        </>
       )}
     </div>
   )

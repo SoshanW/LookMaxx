@@ -6,8 +6,8 @@ import FeatureContent from './FeatureContent'
 import FeatureFooter from './FeatureFooter'
 import '../styles/FeatureInfo.css'
 
-const FeatureInfoPanel = ({ feature, description, onClose }) => (
-  <div className="feature-info-container">
+const FeatureInfoPanel = ({ feature, description, onClose, style = {} }) => (
+  <div className="feature-info-container" style={style}>
     <CloseButton onClose={onClose} />
     <FeatureHeader title={feature} />
     <FeatureContent description={description} />
@@ -18,7 +18,8 @@ const FeatureInfoPanel = ({ feature, description, onClose }) => (
 FeatureInfoPanel.propTypes = {
   feature: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  style: PropTypes.object
 }
 
 const CloseButton = ({ onClose }) => (
