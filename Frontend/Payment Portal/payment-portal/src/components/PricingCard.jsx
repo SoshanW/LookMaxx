@@ -1,6 +1,5 @@
-// src/components/PricingCard.jsx
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, useAnimationControls } from 'framer-motion';
 
 const PricingCard = ({ 
   title, 
@@ -14,6 +13,44 @@ const PricingCard = ({
   tagline
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  
+  // Animation controls for each border
+  const topControls = useAnimationControls();
+  const rightControls = useAnimationControls();
+  const bottomControls = useAnimationControls();
+  const leftControls = useAnimationControls();
+  
+  // Color variations based on card type
+  const borderColor = variant === 'pro' ? 'rgba(59, 130, 246, 0.4)' : 'rgba(156, 163, 175, 0.4)';
+  const glowColor = variant === 'pro' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(156, 163, 175, 0.2)';
+  const gradientColor = variant === 'pro' ? '#3b82f6' : '#9CA3AF';
+  
+  // Start animations on component mount
+  useEffect(() => {
+    const startAnimations = async () => {
+      topControls.start({
+        left: ['-100%', '100%'],
+        transition: { duration: 8, ease: "linear", repeat: Infinity }
+      });
+      
+      rightControls.start({
+        top: ['-100%', '100%'],
+        transition: { duration: 8, ease: "linear", repeat: Infinity }
+      });
+      
+      bottomControls.start({
+        right: ['-100%', '100%'],
+        transition: { duration: 8, ease: "linear", repeat: Infinity }
+      });
+      
+      leftControls.start({
+        bottom: ['-100%', '100%'],
+        transition: { duration: 8, ease: "linear", repeat: Infinity }
+      });
+    };
+    
+    startAnimations();
+  }, []);
   
   // Card entrance animation variants
   const cardVariants = {
@@ -69,6 +106,81 @@ const PricingCard = ({
       initial="hidden"
       animate="visible"
     >
+      {/* Animated neon border */}
+      <div className="absolute inset-0 overflow-hidden rounded-lg z-10 pointer-events-none">
+        {/* Top border */}
+        <motion.div 
+          className="absolute h-1 opacity-60 blur-[1px]"
+          style={{ 
+            width: '100%', 
+            top: 0, 
+            left: 0, 
+            backgroundImage: `linear-gradient(90deg, transparent 0%, ${gradientColor} 50%, transparent 100%)`,
+            boxShadow: `0 0 6px 0 ${borderColor}`
+          }}
+          initial={{ left: '-100%', opacity: 0 }}
+          animate={{ left: '-100%', opacity: 1 }}
+          transition={{ opacity: { duration: 0.4, delay: 0.15 } }}
+        />
+        
+        {/* Right border */}
+        <motion.div 
+          className="absolute w-1 opacity-60 blur-[1px]"
+          style={{ 
+            height: '100%', 
+            top: 0, 
+            right: 0, 
+            backgroundImage: `linear-gradient(180deg, transparent 0%, ${gradientColor} 50%, transparent 100%)`,
+            boxShadow: `0 0 6px 0 ${borderColor}`
+          }}
+          initial={{ top: '-100%', opacity: 0 }}
+          animate={{ top: '-100%', opacity: 1 }}
+          transition={{ opacity: { duration: 0.4, delay: 0.2 } }}
+        />
+        
+        {/* Bottom border */}
+        <motion.div 
+          className="absolute h-1 opacity-60 blur-[1px]"
+          style={{ 
+            width: '100%', 
+            bottom: 0, 
+            right: 0, 
+            backgroundImage: `linear-gradient(90deg, transparent 0%, ${gradientColor} 50%, transparent 100%)`,
+            boxShadow: `0 0 6px 0 ${borderColor}`
+          }}
+          initial={{ right: '-100%', opacity: 0 }}
+          animate={{ right: '-100%', opacity: 1 }}
+          transition={{ opacity: { duration: 0.4, delay: 0.25 } }}
+        />
+        
+        {/* Left border */}
+        <motion.div 
+          className="absolute w-1 opacity-60 blur-[1px]"
+          style={{ 
+            height: '100%', 
+            bottom: 0, 
+            left: 0, 
+            backgroundImage: `linear-gradient(180deg, transparent 0%, ${gradientColor} 50%, transparent 100%)`,
+            boxShadow: `0 0 6px 0 ${borderColor}`
+          }}
+          initial={{ bottom: '-100%', opacity: 0 }}
+          animate={{ bottom: '-100%', opacity: 1 }}
+          transition={{ opacity: { duration: 0.4, delay: 0.3 } }}
+        />
+        
+        {/* Subtle ambient glow effect */}
+        <motion.div 
+          className="absolute inset-0 rounded-lg opacity-20" 
+          style={{ 
+            boxShadow: `inset 0 0 15px 1px ${glowColor}`,
+            background: `radial-gradient(circle at center, ${glowColor.replace(')', ', 0.03)')}, transparent 70%)`
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        />
+      </div>
+      
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
