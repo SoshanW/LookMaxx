@@ -1,5 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+
+const VisaLogo = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 80 50" 
+    className="w-10 h-6"
+  >
+    {/* Blue background */}
+    <rect width="80" height="50" rx="4" fill="#1434CB"/>
+    
+    {/* VISA Text in white */}
+    <text 
+      x="40" 
+      y="32" 
+      textAnchor="middle" 
+      fontFamily="Arial, sans-serif" 
+      fontWeight="bold" 
+      fontSize="22"  
+      fill="white" 
+      letterSpacing="1"
+    >
+      VISA
+    </text>
+  </svg>
+);
+
+const MastercardLogo = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 100 60" 
+    className="w-10 h-6"
+  >
+    <rect width="100" height="60" rx="10" fill="#FF5F00"/>
+    <circle cx="50" cy="30" r="20" fill="#EB001B"/>
+    <circle cx="70" cy="30" r="20" fill="#F79E1B"/>
+    <path 
+      d="M60 30c0-8.284 3.744-15.622 9.5-20C65.744 4.622 58.284 1 50 1S34.256 4.622 30.5 10C36.256 14.378 40 21.716 40 30s-3.744 15.622-9.5 20c3.756 5.378 11.216 9 19.5 9s15.744-3.622 19.5-9C63.744 45.622 60 38.284 60 30z"
+      fill="transparent"
+    />
+  </svg>
+);
+
+const AmexLogo = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 100 60" 
+    className="w-10 h-6"
+  >
+    <rect width="100" height="60" rx="10" fill="#016FD0"/>
+    <text 
+      x="50" 
+      y="35" 
+      textAnchor="middle" 
+      fontWeight="bold" 
+      fontSize="24" 
+      fill="white"
+    >
+      AMEX
+    </text>
+  </svg>
+);
 
 const PaymentPopup = ({ onClose }) => {
   const [email, setEmail] = useState('');
@@ -8,11 +69,45 @@ const PaymentPopup = ({ onClose }) => {
   const [cardHolder, setCardHolder] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
+  const [cardType, setCardType] = useState('');
+
   
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ email, mobile, cardNumber, cardHolder, expiryDate, cvv });
     onClose();
+  };
+
+  const handleCardNumberChange = (e) => {
+    const value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
+    // Format card number with spaces every 4 digits
+    const formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+    setCardNumber(formattedValue);
+
+    // Validate card type
+    if (/^4[0-9]{3}\s?[0-9]{4}\s?[0-9]{4}\s?[0-9]{4}$/.test(formattedValue)) {
+      setCardType('visa');
+    } else if (/^5[1-5][0-9]{2}\s?[0-9]{4}\s?[0-9]{4}\s?[0-9]{4}$/.test(formattedValue)) {
+      setCardType('mastercard');
+    } else if (/^3[47][0-9]{2}\s?[0-9]{4}\s?[0-9]{4}\s?[0-9]{3}$/.test(formattedValue)) {
+      setCardType('amex');
+    } else {
+      setCardType('');
+    }
+  };
+  
+  // Add a function to render the appropriate card logo
+  const renderCardLogo = () => {
+    switch(cardType) {
+      case 'visa':
+        return <VisaLogo />;
+      case 'mastercard':
+        return <MastercardLogo />;
+      case 'amex':
+        return <AmexLogo />;
+      default:
+        return null;
+    }
   };
 
   return (
