@@ -6,6 +6,36 @@ import matplotlib
 matplotlib.use('Agg')
 import os  # Import os to handle directory creation
 
+def upload_to_s3(local_file, s3_file, aws_config):
+    """
+    Upload a file to an S3 bucket
+    
+    :param local_file: File to upload
+    :param s3_file: S3 object name
+    :param aws_config: AWS configuration
+    :return: True if file was uploaded, else False
+    """
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=aws_config.AWS_ACCESS_KEY,
+        aws_secret_access_key=aws_config.AWS_SECRET_ACCESS_KEY,
+        region_name=aws_config.AWS_REGION
+    )
+
+    try:
+        s3_client.upload_file(local_file, aws_config.S3_BUCKET, s3_file)
+        print(f"Upload Successful: {s3_file}")
+        return True
+    except FileNotFoundError:
+        print(f"The file {local_file} was not found")
+        return False
+    except NoCredentialsError:
+        print("Credentials not available")
+        return False
+    except Exception as e:
+        print(f"Error uploading to S3: {str(e)}")
+        return False
+
 # Load calculated ratios from JSON file
 def generate_comparison_report(facial_metrics, username, gender):
     # Load calculated ratios from JSON file
