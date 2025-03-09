@@ -367,8 +367,8 @@ def analyze_face():
             ], cwd=report_gen_path)
             
             print(f"Report generation triggered for user: {username}")
-        except Exception as e:
-            print(f"Error triggering report generation: {str(e)}")
+        except Exception as report_error:
+            print(f"Error triggering report generation: {str(report_error)}")
         
         print(f"Report generation triggered for user: {username}")
 
