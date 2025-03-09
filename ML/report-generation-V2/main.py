@@ -11,6 +11,8 @@ import json
 from pymongo import MongoClient
 import sys
 from langchain_community.document_loaders import PyPDFLoader
+import matplotlib
+matplotlib.use('Agg')
 
 PATH="data/Facial Aesthetics.pdf"
 
@@ -91,6 +93,7 @@ def main(username):
     # Steve Jobs' management approach at Apple served as inspiration for Brian Chesky's "Founder Mode" at Airbnb. One notable practice was Jobs' annual retreat for the 100 most important people at Apple, regardless of their position on the organizational chart
     # . This unconventional method allowed Jobs to maintain a startup-like environment even as Apple grew, fostering innovation and direct communication across hierarchical levels. Such practices emphasize the importance of founders staying deeply involved in their companies' operations, challenging the traditional notion of delegating responsibilities to professional managers as companies scale.
     # """
+    print(f"Starting report genaration for USER: {username}")
 
     # Get user data from MongoDB
     data, image_urls = get_user_metrics(username)
@@ -165,4 +168,10 @@ def main(username):
     print(f"PDF generated and stored at {output_path}")
 
 if __name__ == "__main__":
-    main()
+    # Check if username is provided as command-line argument
+    if len(sys.argv) > 1:
+        username = sys.argv[1]
+        main(username)
+    else:
+        print("No username provided. Usage: python main.py <username>")
+        sys.exit(1)  # Exit with error code

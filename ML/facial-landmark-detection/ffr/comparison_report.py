@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import json
+import matplotlib
+matplotlib.use('Agg')
 import os  # Import os to handle directory creation
 
 # Load calculated ratios from JSON file
