@@ -7,7 +7,7 @@ import FeatureInfoPanel from './FeatureInfoPanel'
 import WelcomePanel from './WelcomePanel'
 import NavigationBar from './NavigationBar'
 import SceneLighting from './SceneLighting'
-import { featureData } from '../data/featureData'
+import { featureData } from '../data/FeatureData'
 import '../styles/AnatomyExplorer.css'
 
 const AnatomyExplorer = () => {
@@ -57,18 +57,30 @@ const AnatomyExplorer = () => {
         <>
           {selectedFeature === 'lips' ? (
             <>
-              <FeatureInfoPanel 
-                feature={selectedFeature}
-                description={featureData[selectedFeature].description}
-                onClose={handleCloseInfo}
-                style={{ right: 'auto', left: '5%', width: '30%', maxWidth: '300px' }}
-              />
-              <FeatureInfoPanel 
-                feature={selectedFeature}
-                description={featureData[selectedFeature].description}
-                onClose={handleCloseInfo}
-                style={{ right: '5%', left: 'auto', width: '30%', maxWidth: '300px' }}
-              />
+              {/* Split the description for lips into two parts */}
+              {(() => {
+                const fullDescription = featureData[selectedFeature].description;
+                const midpoint = Math.ceil(fullDescription.length / 2);
+                const firstHalf = fullDescription.substring(0, midpoint);
+                const secondHalf = fullDescription.substring(midpoint);
+
+                return (
+                  <>
+                    <FeatureInfoPanel 
+                      feature={`${selectedFeature} (1/2)`}
+                      description={firstHalf}
+                      onClose={handleCloseInfo}
+                      style={{ right: 'auto', left: '5%', width: '30%', maxWidth: '300px' }}
+                    />
+                    <FeatureInfoPanel 
+                      feature={`${selectedFeature} (2/2)`}
+                      description={secondHalf}
+                      onClose={handleCloseInfo}
+                      style={{ right: '5%', left: 'auto', width: '30%', maxWidth: '300px' }}
+                    />
+                  </>
+                );
+              })()}
             </>
           ) : (
             <FeatureInfoPanel 
