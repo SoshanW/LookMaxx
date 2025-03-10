@@ -29,44 +29,27 @@ def serial_user(user):
     return{
         'id': str(user['_id']),
         'username': user['username'],
-        'created_at': user['created_at'],
-        'post_count': len(user['posts']),
-        'comment_count': len(user['comments'])
+        'created_on': user['created_on'],
+        'post_count': user.get['posts',[]],
+        'comment_count': user.get['comments',[]]
     }
 
-def serial_post(post, include_user = True):
-    serialized = {
+def serial_post(post):
+    return {
         'id': str(post['_id']),
         'title': post['title'],
         'content': post['content'],
-        'author': post['author'],
-        'created_at': post['created_at'],
+        'created_on': post['created_on'],
+        'comments': post.get('comments', [])
     }
 
-    if include_user:
-        from . import mongo
-        author = mongo.db.users.find_one({'_id': post['author_id']})
-        if author:
-            serialized['author'] = {
-                'id': str(author['_id']),
-                'username': author['username']
-            }
-    return serialized
 
-def serial_comment(comment,include_user = True):
-    serialized = {
+def serial_comment(comment):
+    return {
         'id': str(comment['_id']),
         'content': comment['content'],
-        'author': comment['author'],
+        'author_id': str(comment['author_id']),
         'post_id': str(comment['post_id']),
-        'created_at': comment['created_at'],
+        'created_on': comment['created_on'],
     }
-    if include_user:
-            from . import mongo
-            author = mongo.db.users.find_one({'_id': comment['author_id']})
-            if author:
-                serialized['author'] = {
-                    'id': str(author['_id']),
-                    'username': author['username']
-                }
-    return serialized
+    
