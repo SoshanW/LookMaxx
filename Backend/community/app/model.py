@@ -14,7 +14,8 @@ def create_post(title, content, author_id):
         'content': content,
         'author_id': author_id,
         'created_on': datetime.utcnow(),
-        'comments': []
+        'comments': [],
+        'likes': []
     }
 
 def create_comment(content, author_id, post_id):
@@ -40,7 +41,9 @@ def serial_post(post):
         'title': post['title'],
         'content': post['content'],
         'created_on': post['created_on'],
-        'comments': post.get('comments', [])
+        'comments': post.get('comments', []),
+        'likes_count': len(post.get('likes', [])),
+        'liked_by': [str(user_id) for user_id in post.get('likes', [])]
     }
 
 

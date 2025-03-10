@@ -82,6 +82,7 @@ def get_posts():
         app.logger.error(f'Error fetching posts: {str(e)}')
         return jsonify({'error':f'Databse error: {str(e)}'}), 500
 
+
 @app.route('/posts', methods=['POST'])
 @jwt_required()
 def create_post():
@@ -199,6 +200,110 @@ def create_comment(post_id):
         logger.error(f'Error creating comment: {str(e)}')
         return jsonify({'error': 'Database error'}), 500
 
+
+@app.route('/posts/<post_id>/like', methods=['POST'])
+@jwt_required()
+def like_post(post_id):
+    try:
+        user_id = ObjectId(get_jwt_identity())
+        post_object_id = ObjectId(post_id)
+        
+        post = mongo.db.posts.find_one({'_id': post_object_id})
+        if not post:
+            return jsonify({'error': 'Post not found'}), 404
+            
+        if user_id in [ObjectId(id) for id in post.get('likes', [])]:
+            return jsonify({'error': 'You already liked this post'}), 400
+            
+        mongo.db.posts.update_one(
+            {'_id': post_object_id},
+            {'$push': {'likes': user_id}}
+        )
+        
+        updated_post = mongo.db.posts.find_one({'_id': post_object_id})
+        
+        return jsonify({
+            'message': 'Post liked successfully',
+            'likes_count': len(updated_post.get('likes', [])),
+            'post': serial_post(updated_post)
+        }), 200
+            
+    except InvalidId:
+        return jsonify({'error': 'Invalid post ID'}), 400
+    
+    except Exception as e:
+        logger.error(f'Error liking post: {str(e)}')
+        return jsonify({'error': 'Database error'}), 500
+
+
+@app.route('/posts/<post_id>/likes', methods=['GET'])
+def get_post_likes(post_id):
+    try:
+        post_object_id = ObjectId(post_id)
+        
+        post = mongo.db.posts.find_one({'_id': post_object_id})
+        if not post:
+            return jsonify({'error': 'Post not found'}), 404
+            
+        likes = post.get('likes', [])
+        liked_users = []
+        
+        for user_id in likes:
+            user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
+            if user:
+                liked_users.append({
+                    'id': str(user['_id']),
+                    'username': user['username']
+                })
+        
+        return jsonify({
+            'post_id': post_id,
+            'likes_count': len(likes),
+            'liked_by': liked_users
+        }), 200
+            
+    except InvalidId:
+        return jsonify({'error': 'Invalid post ID'}), 400
+    
+    except Exception as e:
+        logger.error(f'Error getting post likes: {str(e)}')
+        return jsonify({'error': 'Database error'}), 500
+
+
+@app.route('/posts/<post_id>/unlike', methods=['POST'])
+@jwt_required()
+def unlike_post(post_id):
+    try:
+        user_id = ObjectId(get_jwt_identity())
+        post_object_id = ObjectId(post_id)
+        
+        post = mongo.db.posts.find_one({'_id': post_object_id})
+        if not post:
+            return jsonify({'error': 'Post not found'}), 404
+    
+        if user_id not in [ObjectId(id) for id in post.get('likes', [])]:
+            return jsonify({'error': 'You have not liked this post'}), 400
+    
+        mongo.db.posts.update_one(
+            {'_id': post_object_id},
+            {'$pull': {'likes': user_id}}
+        )
+        
+        updated_post = mongo.db.posts.find_one({'_id': post_object_id})
+        
+        return jsonify({
+            'message': 'Post unliked successfully',
+            'likes_count': len(updated_post.get('likes', [])),
+            'post': serial_post(updated_post)
+        }), 200
+            
+    except InvalidId:
+        return jsonify({'error': 'Invalid post ID'}), 400
+    except Exception as e:
+        logger.error(f'Error unliking post: {str(e)}')
+        return jsonify({'error': 'Database error'}), 500
+    
+    
 @app.route('/users/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
