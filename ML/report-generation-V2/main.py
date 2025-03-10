@@ -45,19 +45,19 @@ def get_user_metrics(username):
         ]
         
         # Also retrieve the image paths
-        images = []
-        if 'Graphs_and_Images' in latest_ffr:
-            visualization_urls = latest_ffr['Graphs_and_Images']
-            images = [
-                (visualization_urls.get('face_mesh_tessellation', ''), "Face Tessellation"),
-                (visualization_urls.get('face_ratio', ''), "Face Width to Height Ratio"),
-                (visualization_urls.get('facial_thirds', ''), "Facial Thirds"),
-                (visualization_urls.get('eye_measurements', ''), "Interpupilary Ratios"),
-                (visualization_urls.get('lip_ratio', ''), "Vermillion Ratios"),
-                (visualization_urls.get('nasal_index', ''), "Nasal Index")
-            ]
+        # images = []
+        # if 'Graphs_and_Images' in latest_ffr:
+        #     visualization_urls = latest_ffr['Graphs_and_Images']
+        #     images = [
+        #         (visualization_urls.get('face_mesh_tessellation', ''), "Face Tessellation"),
+        #         (visualization_urls.get('face_ratio', ''), "Face Width to Height Ratio"),
+        #         (visualization_urls.get('facial_thirds', ''), "Facial Thirds"),
+        #         (visualization_urls.get('eye_measurements', ''), "Interpupilary Ratios"),
+        #         (visualization_urls.get('lip_ratio', ''), "Vermillion Ratios"),
+        #         (visualization_urls.get('nasal_index', ''), "Nasal Index")
+        #     ]
             
-        return data, images
+        return data
     return None, None
 
 def find_metric(metric_name,data):
@@ -103,7 +103,7 @@ def main(username):
     print(f"GOOGLE_CLOUD_PROJECT: {os.environ.get('GOOGLE_CLOUD_PROJECT')}")
 
     # Get user data from MongoDB
-    data, image_urls = get_user_metrics(username)
+    data = get_user_metrics(username)
     
     if not data:
         print(f"No facial metrics found for user: {username}")
@@ -169,9 +169,9 @@ def main(username):
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{username}_report.pdf")
 
-    images = [("images/face_mesh_tessellation.png", "Face Tessellation"), ("images/face_ratio.png", "Face Width to Height Ratio"), ("images/facial_thirds.png", "Facial Thirds"), ("images/eye_measurements.png", "Interpupilary Ratios"), ("images/lip_ratio.png", "Vermillion Ratios"), ("images/nasal_index.png", "Nasal Index")]
+    images = [("facial-landmark-detection/assets/facial_ratio_graphs/face_mesh_tessellation.png", "Face Tessellation"), ("facial-landmark-detection/assets/facial_ratio_graphs/face_ratio.png", "Face Width to Height Ratio"), ("facial-landmark-detection/assets/facial_ratio_graphs/facial_thirds.png", "Facial Thirds"), ("facial-landmark-detection/assets/facial_ratio_graphs/eye_measurements.png", "Interpupilary Ratios"), ("facial-landmark-detection/assets/facial_ratio_graphs/lip_ratio.png", "Vermillion Ratios"), ("facial-landmark-detection/assets/facial_ratio_graphs/nasal_index.png", "Nasal Index")]
 
-    generate_pdf(prop_results,larger_results, output_path, image_urls)
+    generate_pdf(prop_results,larger_results, output_path, images)
     print(f"PDF generated and stored at {output_path}")
 
 if __name__ == "__main__":
