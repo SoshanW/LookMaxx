@@ -4,7 +4,7 @@ import '../styles/Navbar.css';
 
 const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeLink, setActiveLink] = useState('home');
+  const [activeLink, setActiveLink] = useState('ffr');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navLinksRef = useRef([]);
   const authRef = useRef(null);
@@ -98,7 +98,7 @@ const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         <div className="nav-links">
-          {['Home', 'Retail', 'Community', 'Study', 'About', 'FFR'].map((link) => (
+          {['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community'].map((link) => (
             <a
               key={link.toLowerCase()}
               ref={addToRefs}
