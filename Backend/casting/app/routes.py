@@ -89,3 +89,33 @@ def send_mail_route():
     except Exception as e:
         logger.error(f'Error sending email: {str(e)}')
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500
+    
+@main.route('/submit-form', methods=['POST'])
+def submit_form():
+    try:
+         
+        form_data = request.json
+        logger.info(f"Received form data: {form_data}")
+         
+        
+        if not form_data:
+            return jsonify({"error": "No form data received"}), 400
+         
+        user_data = {
+            'first_name': form_data.get('first_name', ''),
+            'last_name': form_data.get('last_name', ''),
+            'email': form_data.get('email', ''),
+            'ffr_results': form_data.get('ffr_results', 'N/A')
+        }
+         
+        message = form_data.get('message', '')
+         
+        recipient_email = form_data.get('recipient_email', 'default-recipient@example.com')
+ 
+        response, status_code = send_mail(user_data, recipient_email, message)
+         
+        return jsonify(response), status_code
+         
+    except Exception as e:
+        logger.error(f"Error processing form submission: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
