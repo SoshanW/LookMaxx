@@ -1,42 +1,63 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Reset */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Layout */
+.page-container {
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  font-family: 'Nasalization Rg', sans-serif;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+@font-face {
+  font-family: 'Nasalization Rg';
+  src: url('/fonts/Nasalization Rg.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Neuropolitical Rg';
+  src: url('/fonts/Neuropolitical Rg.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section_content,
+  .discovery-section_content,
+  .ffr-section_content {
+    flex-direction: column;
+    min-height: auto;
   }
-  to {
-    transform: rotate(360deg);
+
+  .hero-section_text,
+  .hero-section_image,
+  .discovery-section_text,
+  .discovery-section_image,
+  .ffr-section_text,
+  .ffr-section_image {
+    padding: 3rem 1.5rem;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .hero-section_text h1,
+  .discovery-section_text h2,
+  .ffr-section_text h2 {
+    font-size: 2.5rem;
   }
-}
 
-.card {
-  padding: 2em;
-}
+  .nav-list {
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-.read-the-docs {
-  color: #888;
+  .footer-nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
