@@ -1,3 +1,10 @@
+import os
+from dotenv import load_dotenv
+import urllib.parse
+
+username = os.getenv('MONGO_USERNAME')
+password = os.getenv('MONGO_PASSWORD')
+
 encoded_username = urllib.parse.quote_plus(username)
 encoded_password = urllib.parse.quote_plus(password)
 
