@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import "../styles/CastingPage.css";
 
 // New NeonMist component that will be reused across sections
@@ -202,7 +203,7 @@ const SectionNavigation = ({ sections, activeSection, onNavigate }) => {
   );
 };
 
-const HeroSection = ({ sectionRef, isActive }) => {
+const HeroSection = ({ sectionRef, isActive, onApplyNow }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   // Animation variants
@@ -256,6 +257,7 @@ const HeroSection = ({ sectionRef, isActive }) => {
             animate={isActive ? "visible" : "hidden"}
             variants={fadeInDelayedVariant}
             custom={2} // Delay factor = 2
+            onClick={onApplyNow} // Handler for Apply Now button
           >
             APPLY NOW
           </motion.button>
@@ -409,6 +411,8 @@ const FFRSection = ({ sectionRef, isActive }) => {
 };
 
 const CastingPage = () => {
+  // Use react-router-dom's navigate hook for programmatic navigation
+  const navigate = useNavigate();
   // Use our custom smooth scroll hook
   const { sectionRefs, activeSection, scrollToSection } = useSmoothScroll();
   
@@ -418,6 +422,12 @@ const CastingPage = () => {
     { id: 'discovery', label: 'Discovery Section' },
     { id: 'ffr', label: 'FFR Section' }
   ];
+  
+  // Function to handle "APPLY NOW" button click - navigates to application form
+  const handleApplyNow = () => {
+    // Use navigate to go to the application form page
+    navigate('/apply');
+  };
 
   return (
     <main className="page-container">
