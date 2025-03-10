@@ -1,9 +1,18 @@
 import os
 import urllib
 from dotenv import load_dotenv
+from flask_mail import Mail
 
 load_dotenv()
 class Config:
+    
+    SECRET_KEY = os.getenv('SECRET_KEY', '')
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.getenv('EMAIL_USER')  
+    MAIL_PASSWORD = os.getenv('EMAIL_PASS')
+    MAIL_DEFAULT_SENDER = os.getenv('EMAIL_USER')
     
     username = os.getenv('MONGO_USERNAME', '')
     password = os.getenv('MONGO_PASSWORD', '')
@@ -17,3 +26,4 @@ class Config:
     
 
     JWT_SECRET_KEY = os.getenv('JWT_SECRET')
+mail = Mail()
