@@ -10,7 +10,7 @@ import React, { useState, useEffect } from "react";
     email: "mjameela@gmail.com",
     gender: "Female",
     username: "@mariyamj",
-    profileImage: "pfp.png"
+    profileImage: "pfp.jpg"
   };
      return (
        <div className="profile-container">
@@ -44,10 +44,25 @@ import React, { useState, useEffect } from "react";
                           <span className="value">{userData.gender}</span>
                         </div>
                       </div>
-                      
-                      <div className="profile-bio">
-                        <p>{userData.bio}</p>
-                      </div>
+
+                      <div className="profile-actions">
+                 <button className="btn-primary">Edit Profile</button>
+                 <button className="btn-secondary">Settings</button>
+               </div>
+             </div>
+           </div>
+           
+           {/* Right Side - 3D Avatar Display */}
+           <div className="avatar-container">
+             <div className="avatar-display">
+               <div className="avatar-model">
+                 {/* Placeholder for the actual 3D model */}
+                 <div className="avatar-model-placeholder">
+                   <span className="model-label">{userData.gender} Avatar</span>
+                 </div>
+                 <h3>Your 3D Avatar</h3>
+                 <p>Automatically generated based on your gender selection</p>
+               </div>
 
                     </div>
                   </div>
