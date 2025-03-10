@@ -1,2 +1,0 @@
-# LookMaxx Frontend
-

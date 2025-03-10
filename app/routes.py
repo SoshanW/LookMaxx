@@ -1,9 +1,51 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from . import mongo
 from werkzeug.security import generate_password_hash, check_password_hash
-import base64
+import boto3
+import os
+from botocore.exceptions import ClientError
+from werkzeug.utils import secure_filename
+from .config import AWS
 
 app_routes = Blueprint('app_routes', __name__)
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS.AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS.AWS_SECRET_ACCESS_KEY,
+    region_name=AWS.AWS_REGION
+)
+
+def upload_file_to_s3(file, username):
+    """
+    Upload a file to the S3 bucket
+    
+    :param file: File to upload
+    :param username: Username to create filename with
+    :return: S3 URL of the uploaded file
+    """
+    # Create a filename based on username
+    filename = f"{username}_profile.jpg"
+    s3_path = AWS.S3_PROFILE_PICTURES_PREFIX + filename
+    
+    try:
+        # Upload the file to S3
+        s3_client.upload_fileobj(
+            file,
+            AWS.S3_BUCKET,
+            s3_path,
+            ExtraArgs={
+                'ContentType': file.content_type
+            }
+        )
+        
+        # Generate the URL for the uploaded file
+        s3_url = f"s3://{AWS.S3_BUCKET}/{s3_path}"
+        return s3_url
+    
+    except ClientError as e:
+        print(f"Error uploading to S3: {e}")
+        return None
 
 @app_routes.route('/')
 def home():
@@ -14,25 +56,34 @@ def signup():
     username = request.form.get('username')
     first_name = request.form.get('firstName')
     last_name = request.form.get('lastName')
+    gender = request.form.get('gender')
     email = request.form.get('email')
     password = request.form.get('password')
     profile_picture = request.files.get('profile_picture')
-
-    #image storing and conversion of image to base64 string
-    encoded_image = base64.b64encode(profile_picture.read()).decode('utf-8')
     
     # Check if username or email already exists
     if mongo.db.users.find_one({'$or': [{'username': username}, {'email': email}]}):
         return jsonify({"error": "Username or email already exists"}), 400
     
     try:
+        profile_picture_url = None
+        if profile_picture and profile_picture.filename:
+            # Reset file pointer to the beginning (in case it was previously read)
+            profile_picture.seek(0)
+            
+            # Upload to S3
+            profile_picture_url = upload_file_to_s3(profile_picture, username)
+            if not profile_picture_url:
+                return jsonify({"error": "Failed to upload profile picture"}), 500
+            
         user = {
             'username': username,
             'first_name': first_name,
             'last_name': last_name,
+            'gender':gender,
             'email': email,
             'password': generate_password_hash(password),  
-            'profile_picture' : encoded_image
+            'profile_picture' : profile_picture_url
         }
         
         mongo.db.users.insert_one(user)
