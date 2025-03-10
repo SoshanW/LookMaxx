@@ -12,9 +12,14 @@ from pymongo import MongoClient
 import sys
 from langchain_community.document_loaders import PyPDFLoader
 import matplotlib
+from dotenv import load_dotenv
+
 matplotlib.use('Agg')
 
-PATH="data/Facial Aesthetics.pdf"
+PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "Facial Aesthetics.pdf")
+
+dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+load_dotenv(dotenv_path)
 
 # MongoDB connection setup
 def get_mongodb_connection():
@@ -94,6 +99,8 @@ def main(username):
     # . This unconventional method allowed Jobs to maintain a startup-like environment even as Apple grew, fostering innovation and direct communication across hierarchical levels. Such practices emphasize the importance of founders staying deeply involved in their companies' operations, challenging the traditional notion of delegating responsibilities to professional managers as companies scale.
     # """
     print(f"Starting report genaration for USER: {username}")
+    print(f"GOOGLE_APPLICATION_CREDENTIALS: {os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')}")
+    print(f"GOOGLE_CLOUD_PROJECT: {os.environ.get('GOOGLE_CLOUD_PROJECT')}")
 
     # Get user data from MongoDB
     data, image_urls = get_user_metrics(username)
@@ -158,7 +165,7 @@ def main(username):
         for i, r in enumerate(larger_results):
             print(f"{i+1}) {r.page_content} --- Chunk_id: {r.metadata['chunk_id']}")
 
-    output_dir = "pdf"
+    output_dir = "report-generation-V2/pdf"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{username}_report.pdf")
 
