@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../styles/CastingPage.css";
 
-// New NeonMist component that will be reused across sections
+
 const NeonMist = ({ isActive }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const mistRef = useRef(null);
@@ -112,6 +112,7 @@ const useSmoothScroll = () => {
   
   // Function to scroll to previous or next section
   const navigateSection = (direction) => {
+    // Updated sections array for navigation
     const sections = ['hero', 'discovery', 'ffr'];
     const currentIndex = sections.indexOf(activeSection);
     
@@ -181,7 +182,14 @@ const useSmoothScroll = () => {
   return { sectionRefs, activeSection, scrollToSection };
 };
 
-// Navigation component
+/**
+ * Section Navigation Component
+ * Provides dot navigation for scrolling between sections
+ * 
+ * @param {Array} sections - Array of section objects with id and label
+ * @param {string} activeSection - ID of the currently active section
+ * @param {function} onNavigate - Handler function for navigation
+ */
 const SectionNavigation = ({ sections, activeSection, onNavigate }) => {
   return (
     <nav className="section-navigation">
@@ -203,6 +211,14 @@ const SectionNavigation = ({ sections, activeSection, onNavigate }) => {
   );
 };
 
+/**
+ * Hero Section Component
+ * Main landing section with call-to-action
+ * 
+ * @param {React.RefObject} sectionRef - Reference to the section DOM element
+ * @param {boolean} isActive - Whether this section is currently active
+ * @param {function} onApplyNow - Handler for Apply Now button clicks
+ */
 const HeroSection = ({ sectionRef, isActive, onApplyNow }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -276,6 +292,13 @@ const HeroSection = ({ sectionRef, isActive, onApplyNow }) => {
   );
 };
 
+/**
+ * Discovery Section Component
+ * Second section highlighting model discovery features
+ * 
+ * @param {React.RefObject} sectionRef - Reference to the section DOM element
+ * @param {boolean} isActive - Whether this section is currently active
+ */
 const DiscoverySection = ({ sectionRef, isActive }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -345,6 +368,13 @@ const DiscoverySection = ({ sectionRef, isActive }) => {
   );
 };
 
+/**
+ * FFR Section Component
+ * Features section highlighting Facial Feature Recognition technology
+ * 
+ * @param {React.RefObject} sectionRef - Reference to the section DOM element
+ * @param {boolean} isActive - Whether this section is currently active
+ */
 const FFRSection = ({ sectionRef, isActive }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -410,9 +440,14 @@ const FFRSection = ({ sectionRef, isActive }) => {
   );
 };
 
+/**
+ * Main CastingPage Component
+ * Handles page structure and navigation between sections
+ */
 const CastingPage = () => {
   // Use react-router-dom's navigate hook for programmatic navigation
   const navigate = useNavigate();
+  
   // Use our custom smooth scroll hook
   const { sectionRefs, activeSection, scrollToSection } = useSmoothScroll();
   
@@ -422,7 +457,7 @@ const CastingPage = () => {
     { id: 'discovery', label: 'Discovery Section' },
     { id: 'ffr', label: 'FFR Section' }
   ];
-  
+
   // Function to handle "APPLY NOW" button click - navigates to application form
   const handleApplyNow = () => {
     // Use navigate to go to the application form page
@@ -442,6 +477,7 @@ const CastingPage = () => {
       <HeroSection 
         sectionRef={sectionRefs.hero} 
         isActive={activeSection === 'hero'} 
+        onApplyNow={handleApplyNow} // Pass the navigation handler
       />
       <DiscoverySection 
         sectionRef={sectionRefs.discovery} 
