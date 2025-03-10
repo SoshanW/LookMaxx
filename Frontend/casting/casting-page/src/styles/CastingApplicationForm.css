@@ -2,7 +2,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: radial-gradient(circle, rgb(39, 10, 93) 10%, rgb(0, 0, 0) 100%);
+  background: radial-gradient(circle, rgb(20, 49, 59) 10%, rgb(10, 13, 70) 100%);
   color: #ffffff;
   /* Remove any height limitations if they exist */
   min-height: 100%;
