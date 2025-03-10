@@ -36,6 +36,13 @@ def serial_user(user):
     }
 
 def serial_post(post):
+    from bson import ObjectId
+    comments = []
+    for comment_id in post.get('comments', []):
+        if isinstance(comment_id, ObjectId):
+            comments.append(str(comment_id))
+        else:
+            comments.append(str(comment_id))
     return {
         'id': str(post['_id']),
         'title': post['title'],

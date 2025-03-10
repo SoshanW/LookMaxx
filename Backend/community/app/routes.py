@@ -60,16 +60,29 @@ def get_posts():
     skip = (page - 1) * per_page
 
     try:
-        posts_cursor = mongo.db.posts.find().sort('created_on', -1).skip(skip).limit(per_page)
+        post_list = list(mongo.db.posts.find().sort('created_on', -1).skip(skip).limit(per_page))
         total = mongo.db.posts.count_documents({})
         serialized_post = []
 
-        for post in posts_cursor:
-            author = mongo.db.users.find_one({'_id': post['author_id']})
-            post_data = serial_post(post)
-            post_data['author'] = {'username': author['username'] if author else 'Unknown'}
-            
-            serialized_post.append(post_data)
+        for post in post_list:
+            try:
+                author = None
+                if 'author_id' in post:
+                    author = mongo.db.users.find_one({'_id': post['author_id']})
+                
+                
+                post_data = serial_post(post)
+                
+                
+                username = 'Unknown'
+                if author and 'username' in author:
+                    username = author['username']
+                post_data['author'] = {'username': username}
+                
+                serialized_post.append(post_data)
+            except Exception as post_error:
+                
+                app.logger.error(f"Error processing post {post.get('_id', 'unknown')}: {str(post_error)}")
 
         return jsonify({
             'posts': serialized_post,
@@ -85,7 +98,7 @@ def get_posts():
 
 @app.route('/posts', methods=['POST'])
 @jwt_required()
-def create_post():
+def create_new_post():
     data = request.json
     if not data:
         return jsonify({"error": "No data provided"}), 400
