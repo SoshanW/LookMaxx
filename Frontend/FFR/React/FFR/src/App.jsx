@@ -6,21 +6,20 @@ import CustomScrollbar from './components/CustomScrollbar';
 import SectionIndicator from './components/SectionIndicator';
 import DynamicScrollButton from './components/DynamicScrollButton';
 import DesignCard from './components/DesignCard';
-import UploadPhoto from './components/UploadPhoto'; // Import the UploadPhoto component
-import BlogCard from './components/BlogCard'; // Import BlogCard
+import UploadPhoto from './components/UploadPhoto';
+import BlogCard from './components/BlogCard';
 import './App.css';
 import BottomNavBar from './components/BottomNavBar';
 
 function App() {
   const [showDesignCard, setShowDesignCard] = useState(false);
-  const [showUploadPhoto, setShowUploadPhoto] = useState(false); // State for UploadPhoto visibility
-  const [showBlogCard, setShowBlogCard] = useState(false); // State for BlogCard visibility
+  const [showUploadPhoto, setShowUploadPhoto] = useState(false);
+  const [showBlogCard, setShowBlogCard] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Track login status
+  const [userName, setUserName] = useState('User'); // Fixed the typo in state setter
 
   useEffect(() => {
-    // Force scroll to top on component mount
     window.scrollTo(0, 0);
-    
-    // Prevent any default scroll restoration
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
@@ -29,14 +28,9 @@ function App() {
       const scrollPosition = window.scrollY;
       const viewportHeight = window.innerHeight;
 
-      // Show BlogCard when scrolled past a certain point
       setShowBlogCard(scrollPosition > viewportHeight * 0.7 && scrollPosition < viewportHeight * 2.5);
-      
-      // Show DesignCard when scrolled past a certain point
       setShowDesignCard(scrollPosition > viewportHeight * 1.5);
-      
-      // Show the UploadPhoto component after scrolling down a few ticks
-      setShowUploadPhoto(scrollPosition > viewportHeight * 5); // Adjust this value for desired scroll position
+      setShowUploadPhoto(scrollPosition > viewportHeight * 5);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -45,16 +39,21 @@ function App() {
 
   return (
     <div className="app">
-      <Navbar />
-      <ImageSequence frameCount={225} imageFormat="jpg" />
-      <ScrollText />
+      <Navbar isLoggedIn={isLoggedIn} userName={userName} setIsLoggedIn={setIsLoggedIn} />
+      
+      <main>
+        <ImageSequence frameCount={225} imageFormat="jpg" />
+        <ScrollText />
+        
+        {showBlogCard && <BlogCard isVisible={showBlogCard} />}
+        {showDesignCard && <DesignCard isVisible={showDesignCard} />}
+        {showUploadPhoto && <UploadPhoto />}
+      </main>
+      
       <CustomScrollbar />
       <SectionIndicator />
       <DynamicScrollButton />
       <BottomNavBar />
-      {showBlogCard && <BlogCard isVisible={showBlogCard} />} {/* Conditionally render BlogCard */}
-      {showDesignCard && <DesignCard isVisible={showDesignCard} />} {/* Conditionally render DesignCard */}
-      {showUploadPhoto && <UploadPhoto />} {/* Conditionally render UploadPhoto */}
     </div>
   );
 }
