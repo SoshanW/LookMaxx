@@ -1,0 +1,29 @@
+/* Reset */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Layout */
+.page-container {
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  font-family: 'Nasalization Rg', sans-serif;
+}
+
+@font-face {
+  font-family: 'Nasalization Rg';
+  src: url('/fonts/Nasalization Rg.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Neuropolitical Rg';
+  src: url('/fonts/Neuropolitical Rg.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
