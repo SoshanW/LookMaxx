@@ -87,3 +87,92 @@ body {
   animation: buttonHover 1s ease-in-out infinite;
 }
 
+.app-content {
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+/* Apply blur when login prompt is active */
+.app-content.blur {
+  filter: blur(8px);
+  opacity: 0.8; /* Keep some opacity to see the content */
+  pointer-events: none; /* Prevents interaction with blurred content */
+}
+
+/* Overlay to maintain the dark background when blurred */
+.app-content.blur::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3); /* Dark overlay to maintain contrast */
+  z-index: 999; /* Below the login prompt but above other content */
+  pointer-events: none;
+}
+
+/* Dark background overlay for login prompt */
+.login-background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 0.7) 0%, 
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  z-index: 9999; /* Below the login prompt but above the content */
+  pointer-events: none;
+}
+
+/* Animation for the login restriction warning */
+@keyframes warningPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 59, 48, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+  }
+}
+
+/* Additional login prompt styles */
+.login-prompt-warning {
+  color: #ff3b30;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: rgba(255, 59, 48, 0.1);
+  margin-bottom: 20px;
+  animation: warningPulse 2s infinite;
+  display: inline-block;
+}
+
+/* Bottom section that serves as a trigger for the upload component */
+#bottom-section {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.9) 100%);
+}
+
+/* When the upload photo is shown, ensure it's positioned correctly */
+.upload-photo-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+  display: flex;
+  z-index: 9995;
+}
+
+/* Add a final spacer to ensure there's room to scroll to the bottom */
+.bottom-spacer {
+  height: 100vh;
+  width: 100%;
+}
