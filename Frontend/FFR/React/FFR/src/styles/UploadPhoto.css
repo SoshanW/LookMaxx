@@ -220,3 +220,83 @@ body.no-scroll {
   justify-content: center;
   align-items: center;
 }
+
+.upload-photo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.922);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9990; /* Lower than login prompt but higher than other content */
+  padding: 5% 10%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.upload-photo-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Improved guide photo size and visibility */
+.guide-photo {
+  width: 35%;
+  padding-left: 20px;
+}
+
+.guide-photo img {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Make the upload area more noticeable */
+.upload-area {
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  padding: 80px 40px;
+  text-align: center;
+  width: 60%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.upload-area:hover {
+  border-color: #0056b3;
+  background-color: rgba(0, 123, 255, 0.1);
+  transform: scale(1.02);
+}
+
+/* Make buttons more prominent */
+.upload-button {
+  padding: 14px 28px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.upload-button:hover:not([disabled]) {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+.upload-button[disabled] {
+  background-color: #6c757d;
+  opacity: 0.65;
+  cursor: not-allowed;
+}

@@ -3,7 +3,6 @@ import gsap from 'gsap';
 import '../styles/Navbar.css';
 
 const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
-  console.log("Navbar rendered with isLoggedIn:", isLoggedIn);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState('home');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -65,8 +64,6 @@ const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
     };
   }, []);
 
-  // Removed the scroll functionality since links will connect to other React projects
-
   const addToRefs = (el) => {
     if (el && !navLinksRef.current.includes(el)) {
       navLinksRef.current.push(el);
@@ -81,7 +78,20 @@ const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
     // Update login status to false
     setIsLoggedIn(false);
     setDropdownOpen(false);
-    console.log("User logged out");
+    // Scroll back to top when logging out
+    window.scrollTo(0, 0);
+    
+    // Reset scroll detection state in the parent component
+    // We need to add a slight delay to ensure the App component's useEffect 
+    // has time to detect the logout state change
+    setTimeout(() => {
+      const resetEvent = new CustomEvent('resetScrollDetection');
+      window.dispatchEvent(resetEvent);
+    }, 100);
+  };
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
   };
 
   return (
@@ -138,10 +148,16 @@ const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
             </div>
           ) : (
             <div className="auth-buttons">
-              <a href="/login" className="btn btn-login">
+              <a href="/login" className="btn btn-login" onClick={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}>
                 <span className="btn-text">Login</span>
               </a>
-              <a href="/signup" className="btn btn-signup">
+              <a href="/signup" className="btn btn-signup" onClick={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}>
                 <span className="btn-text">Sign Up</span>
               </a>
             </div>
