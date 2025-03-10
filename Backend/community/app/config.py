@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import urllib.parse
 
+load_dotenv()
 username = os.getenv('MONGO_USERNAME')
 password = os.getenv('MONGO_PASSWORD')
 
