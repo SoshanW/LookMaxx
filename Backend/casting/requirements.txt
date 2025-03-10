@@ -1,5 +1,6 @@
-Flask
-Flask-Mail
-pymongo
+flask
+flask-Mail
+flask-pymongo
 flask-cors
 python-dotenv
+flask-jwt-extended 
