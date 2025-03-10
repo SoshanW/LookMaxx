@@ -10,16 +10,53 @@ import React, { useState, useEffect } from "react";
     email: "mjameela@gmail.com",
     gender: "Female",
     username: "@mariyamj",
-    profileImage: "https://via.placeholder.com/150"
+    profileImage: "pfp.png"
   };
      return (
        <div className="profile-container">
          <h1>Profile Page</h1>
          <div className="profile-header-bg">
-             
-         </div>
-       </div>
-     );
-   }
- 
+              {/* Main Profile Content */}
+              <div className="profile-content-wrapper">
+                <div className="profile-main">
+                  {/* Left Side - Profile Info */}
+                  <div className="profile-info-section">
+                    <div className="profile-image-container">
+                      <img 
+                        src={userData.profileImage} 
+                        alt="Profile" 
+                        className="profile-image" 
+                      />
+                      <div className="profile-status online"></div>
+                    </div>
+        
+                    <div className="profile-details">
+                      <h1>{userData.firstName} {userData.lastName}</h1>
+                      <p className="username">{userData.username}</p>
+                      
+                      <div className="profile-data">
+                        <div className="data-item">
+                          <span className="label">Email:</span>
+                          <span className="value">{userData.email}</span>
+                        </div>
+                        <div className="data-item">
+                          <span className="label">Gender:</span>
+                          <span className="value">{userData.gender}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="profile-bio">
+                        <p>{userData.bio}</p>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+              
+   );
+ };
+
  export default Profile;
