@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import SignUp from './components/Signup.jsx'; 
-import FaceModelPage from './components/FaceModelPage';
+import SignUp from './components/signup/Signup'; 
+import FaceModelPage from './components/signup/FaceModelPage';
 
 const App = () => {
   return (
@@ -10,8 +10,8 @@ const App = () => {
         {/* Make SignUp the default landing page */}
         <Route path="/" element={<SignUp />} />
         
-        {/* Keep the named route as well for explicit navigation */}
-        <Route path="/signup" element={<SignUp />} /> {/* Fix this to use SignUp, not SignupPage */}
+       
+        <Route path="/signup" element={<SignUp />} /> 
         
         {/* Face model page route */}
         <Route path="/face-model" element={<FaceModelPage />} />

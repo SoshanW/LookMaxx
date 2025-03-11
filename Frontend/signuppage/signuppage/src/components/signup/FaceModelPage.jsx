@@ -28,7 +28,7 @@ const FaceModelPage = () => {
 
   const handleContinue = () => {
     // Navigate to the next step in your app flow
-    navigate('/customization');
+    navigate('/signup');
   };
 
   if (loading) {
@@ -206,7 +206,7 @@ const FaceModelPage = () => {
               e.currentTarget.style.boxShadow = '0 4px 15px rgba(176, 69, 195, 0.3)';
             }}
           >
-            Continue to Homepage
+            Login now
           </button>
         </div>
       </div> 
