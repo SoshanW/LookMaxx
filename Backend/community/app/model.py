@@ -5,7 +5,8 @@ def create_user(username):
         'username': username,
         'created_on': datetime.utcnow(),
         'posts': [],
-        'comments':[]
+        'comments':[],
+        'liked_posts':[]
     }
 
 def create_post(title, content, author_id):
@@ -31,8 +32,9 @@ def serial_user(user):
         'id': str(user['_id']),
         'username': user['username'],
         'created_on': user['created_on'],
-        'post_count': user.get['posts',[]],
-        'comment_count': user.get['comments',[]]
+        'post_count': len(user.get('posts',[])),
+        'comment_count': user.get('comments',[]),
+        'liked_posts':  [str(post_id) for post_id in user.get('liked_posts', [])]
     }
 
 def serial_post(post):

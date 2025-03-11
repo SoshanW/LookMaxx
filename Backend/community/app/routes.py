@@ -339,7 +339,6 @@ def delete_post(post_id):
             {'$pull': {'posts': post_object_id}})
         
         return jsonify({'message': 'Post deleted successfully!'}), 200
-    
     except InvalidId:
         return jsonify({'error': 'Invalid post ID'}), 400
     
