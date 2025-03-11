@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
-import '../styles/BottomNavBar.css';
+import '../../styles/ffr/BottomNavBar.css';
 
 const BottomNavBar = () => {
   const [isVisible, setIsVisible] = useState(true);

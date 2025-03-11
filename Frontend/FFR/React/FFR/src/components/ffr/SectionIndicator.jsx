@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import '../styles/SectionIndicator.css';
+import '../../styles/ffr/SectionIndicator.css';
 
 const SectionIndicator = () => {
   const [activeSection, setActiveSection] = useState(0);

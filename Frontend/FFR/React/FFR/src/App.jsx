@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
-import ImageSequence from './components/ImageSequence';
-import ScrollText from './components/ScrollText';
-import Navbar from './components/Navbar';
-import CustomScrollbar from './components/CustomScrollbar';
-import SectionIndicator from './components/SectionIndicator';
-import DynamicScrollButton from './components/DynamicScrollButton';
-import DesignCard from './components/DesignCard';
-import UploadPhoto from './components/UploadPhoto';
-import BlogCard from './components/BlogCard';
-import LoginPrompt from './components/LoginPrompt';
-import ReportGenerator from './components/ReportGenerator';
+import ImageSequence from './components/ffr/ImageSequence';
+import ScrollText from './components/ffr/ScrollText';
+import Navbar from './components/ffr/Navbar';
+import CustomScrollbar from './components/ffr/CustomScrollbar';
+import SectionIndicator from './components/ffr/SectionIndicator';
+import DynamicScrollButton from './components/ffr/DynamicScrollButton';
+import DesignCard from './components/ffr/DesignCard';
+import UploadPhoto from './components/ffr/UploadPhoto';
+import BlogCard from './components/ffr/BlogCard';
+import LoginPrompt from './components/ffr/LoginPrompt';
+import ReportGenerator from './components/ffr/ReportGenerator';
 import './App.css';
-import BottomNavBar from './components/BottomNavBar';
+import BottomNavBar from './components/ffr/BottomNavBar';
 
 function App() {
   const [showDesignCard, setShowDesignCard] = useState(false);

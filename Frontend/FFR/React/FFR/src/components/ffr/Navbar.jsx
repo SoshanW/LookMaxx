@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import '../styles/Navbar.css';
+import '../../styles/ffr/Navbar.css';
 
 const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
   const [isScrolled, setIsScrolled] = useState(false);

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import '../styles/BlogCard.css';
+import '../../styles/ffr/BlogCard.css';
 
 const BlogCard = ({ isVisible }) => {
   const blogCardRef = useRef(null);

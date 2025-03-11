@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/CustomCard.css'; 
+import '../../styles/ffr/CustomCard.css'; 
 
 const CustomCard = () => {
   return (
