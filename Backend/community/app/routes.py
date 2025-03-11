@@ -176,7 +176,7 @@ def get_comments(post_id):
 
 @app.route('/posts/<post_id>/comments', methods=['POST'])
 @jwt_required()
-def create_comment(post_id):
+def create_new_comment(post_id):
     try:
         data = request.json
         if not data:
@@ -195,6 +195,8 @@ def create_comment(post_id):
         
         comment = create_comment(content, user_id, post_object_id)
 
+        insert_comment = mongo.db.comments.insert_one(comment)
+        comment['_id'] = insert_comment.inserted_id
         mongo.db.posts.update_one(
                 {'_id': post_object_id},
                 {'$push': {'comments': comment}}
