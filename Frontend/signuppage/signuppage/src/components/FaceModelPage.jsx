@@ -133,7 +133,7 @@ const FaceModelPage = () => {
             Your {gender === 'male' ? 'Male' : 'Female'} Avatar
           </h3>
           
-          {/* Display the 3D model with the gender passed from signup */}
+          {/* Displaying the 3D model with the gender passed from signup */}
           <div style={{ height: 'calc(100% - 100px)' }}>
             <ModelDisplay gender={gender} />
           </div>

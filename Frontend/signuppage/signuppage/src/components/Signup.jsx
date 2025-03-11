@@ -107,7 +107,7 @@ const SignUp = () => {
     setSuccess(true);
     console.log('Form submitted:', formData);
   
-    // Modified to immediately navigate to face-model page with gender parameter
+    // Navigates to face-model page with gender parameter
     navigate(`/face-model?gender=${gender}`);
   };
 

@@ -192,9 +192,9 @@ body {
     height: 250px;
     margin-left: 6rem;
   }
-  
+
   .auth-wrapper.flipped.with-error {
-    height: 300px; 
+    height: 330px; 
   }
   
   .auth-wrapper.with-error {
@@ -605,3 +605,119 @@ body {
     border-top: none;
     font-style: italic;
   }
+
+  /* Forgot Password Link */
+.forgot-password-link-container {
+    text-align: right;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .forgot-password-link {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    text-decoration: none;
+  }
+  
+  .forgot-password-link:hover {
+    color: #ce93d8;
+    text-decoration: underline;
+  }
+  
+  /* Modal Styles */
+  .forgot-password-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .forgot-password-modal {
+    width: 100%;
+    max-width: 450px;
+    background: rgba(25, 10, 47, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(123, 31, 162, 0.6),
+      inset 0 0 10px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideUp 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    position: relative;
+  }
+  
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+    font-weight: 600;
+    background: linear-gradient(135deg, #ce93d8 0%, #9c27b0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .close-modal-button {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+  
+  .close-modal-button:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .modal-description {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  
+  
