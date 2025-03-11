@@ -1,0 +1,536 @@
+.report-generator-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.report-generator-container {
+  width: 90%;
+  max-width: 700px;
+  background: linear-gradient(135deg, rgba(30, 30, 35, 0.9), rgba(15, 15, 20, 0.95));
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+              0 0 0 1px rgba(255, 255, 255, 0.1),
+              0 0 30px rgba(90, 103, 216, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.report-generator-header {
+  padding: 1.5rem;
+  background: rgba(20, 20, 25, 0.7);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.report-generator-header h2 {
+  margin: 0;
+  color: white;
+  font-size: a1.4rem;
+  font-family: 'Nasalization', sans-serif;
+  background: linear-gradient(135deg, #ffffff, #a0a0a0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.report-generator-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.minimize-btn, .close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.minimize-btn:hover, .close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.close-btn:hover {
+  background: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+}
+
+.report-generator-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.progress-visual {
+  height: 200px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scanner-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(90, 103, 216, 0.2),
+    transparent
+  );
+  animation: scanAnimation 3s infinite;
+  z-index: 1;
+}
+
+.face-outline {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 160px;
+  border: 2px solid rgba(90, 103, 216, 0.7);
+  border-radius: 70px 70px 60px 60px;
+  z-index: 2;
+}
+
+.face-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(to right, rgba(90, 103, 216, 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(90, 103, 216, 0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.face-points:before, .face-points:after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(90, 103, 216, 0.9);
+  border-radius: 50%;
+}
+
+.face-points:before {
+  top: 40px;
+  left: 30px;
+  animation: pulseDot 2s infinite;
+}
+
+.face-points:after {
+  top: 40px;
+  right: 30px;
+  animation: pulseDot 2s infinite 0.5s;
+}
+
+.progress-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.status-message {
+  color: white;
+  font-size: 1.1rem;
+  margin: 0;
+  text-align: center;
+  min-height: 1.6em;
+  animation: fadeText 0.5s ease-in-out;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5a67d8, #4c51bf);
+  width: 0;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+.progress-percentage {
+  color: white;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: right;
+}
+
+.wait-message {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  text-align: center;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Minimized version */
+.minimized-progress-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  background: linear-gradient(135deg, rgba(30, 30, 35, 0.9), rgba(15, 15, 20, 0.95));
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.3s ease-out forwards;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.minimized-progress-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.minimized-progress-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+}
+
+.minimized-progress-bar {
+  width: 120px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.minimized-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5a67d8, #4c51bf);
+  width: 0;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.minimized-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+.minimized-progress-text {
+  color: white;
+  font-size: 0.85rem;
+  font-weight: bold;
+  min-width: 30px;
+}
+
+.minimized-maximize-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.minimized-maximize-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Download button styles */
+.download-section {
+  margin-top: 20px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.complete-message {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 15px;
+  font-size: 1.05rem;
+}
+
+.download-pdf-button {
+  background: linear-gradient(135deg, #5a67d8, #4c51bf);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-family: 'Nasalization', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(76, 81, 191, 0.4);
+}
+
+.download-pdf-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(76, 81, 191, 0.6);
+}
+
+.download-pdf-button:active {
+  transform: translateY(0);
+}
+
+/* Completion animation */
+.complete-animation {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: rgba(90, 103, 216, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 0 auto;
+  animation: checkmarkScale .3s ease-in-out .9s both;
+}
+
+.checkmark:before {
+  content: '';
+  width: 16px;
+  height: 32px;
+  border-bottom: 6px solid #5a67d8;
+  border-right: 6px solid #5a67d8;
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  opacity: 0;
+  animation: checkmarkStroke 0.5s ease-in-out 0.2s forwards;
+}
+
+@keyframes checkmarkScale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes checkmarkStroke {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(45deg) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(45deg) scale(1);
+  }
+}
+
+/* Minimized download button */
+.minimized-download-btn {
+  background: none;
+  border: none;
+  color: #5a67d8;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+  margin-right: 4px;
+}
+
+.minimized-download-btn:hover {
+  background: rgba(90, 103, 216, 0.2);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scanAnimation {
+  0% {
+    transform: translateY(-100%);
+  }
+  50% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes pulseDot {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeText {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .report-generator-content {
+    padding: 1.5rem;
+  }
+  
+  .progress-visual {
+    height: 150px;
+  }
+  
+  .face-outline {
+    width: 100px;
+    height: 140px;
+  }
+  
+  .minimized-progress-bar {
+    width: 80px;
+  }
+  
+  .download-pdf-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .checkmark {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .checkmark:before {
+    width: 30px;
+    height: 15px;
+    border-bottom: 5px solid #5a67d8;
+    border-right: 5px solid #5a67d8;
+  }
+}
