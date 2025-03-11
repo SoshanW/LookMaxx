@@ -16,7 +16,7 @@ def create_app():
     app.config.from_object('app.config.Config')
 
     app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=48)
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=5)
     jwt.init_app(app)
     
     try:
