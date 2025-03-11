@@ -13,6 +13,10 @@ import sys
 from langchain_community.document_loaders import PyPDFLoader
 import matplotlib
 from dotenv import load_dotenv
+import boto3
+from config2 import AWS
+import datetime
+from botocore.exceptions import ClientError
 
 matplotlib.use('Agg')
 
@@ -82,6 +86,71 @@ def clean_text(list_of_documents):
         text = " ".join(text.split())
         doc.page_content = text
     return list_of_documents
+
+def upload_to_s3(file_path, username):
+    """Upload a file to S3 bucket"""
+    try:
+        # Create S3 client
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=AWS.AWS_ACCESS_KEY,
+            aws_secret_access_key=AWS.AWS_SECRET_ACCESS_KEY,
+            region_name=AWS.AWS_REGION
+        )
+        
+        # Generate a filename with timestamp to ensure uniqueness
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{username}_report_{timestamp}.pdf"
+        
+        # Define the S3 object key
+        s3_key = f"{AWS.S3_FFR_PDF_UPLOAD}/{filename}"
+        
+        print(f"Uploading file to S3: {s3_key}")
+        
+        # Upload the file
+        s3.upload_file(file_path, AWS.S3_BUCKET, s3_key)
+        
+        # Generate the URL for the uploaded file
+        s3_url = f"https://{AWS.S3_BUCKET}.s3.{AWS.AWS_REGION}.amazonaws.com/{s3_key}"
+        
+        print(f"Successfully uploaded file to S3: {s3_url}")
+        
+        # Update MongoDB with the S3 URL
+        update_mongodb_with_pdf_url(username, s3_url)
+        
+        return s3_url
+        
+    except ClientError as e:
+        print(f"Error uploading file to S3: {str(e)}")
+        return None
+
+def update_mongodb_with_pdf_url(username, pdf_url):
+    """Update the user's record in MongoDB with the PDF URL"""
+    try:
+        db = get_mongodb_connection()
+        
+        # Find the user and update the latest ffr_results entry with the PDF URL
+        result = db.users.update_one(
+            {'username': username, 'ffr_results.0': {'$exists': True}},
+            {
+                '$set': {
+                    'ffr_results.$[elem].pdf_url': pdf_url,
+                    'ffr_results.$[elem].pdf_generated_at': datetime.datetime.now()
+                }
+            },
+            array_filters=[{"elem": {"$eq": db.users.find_one({'username': username})['ffr_results'][-1]}}]
+        )
+        
+        if result.modified_count > 0:
+            print(f"Successfully updated MongoDB with PDF URL for user: {username}")
+            return True
+        else:
+            print(f"No document was updated for user: {username}")
+            return False
+            
+    except Exception as e:
+        print(f"Error updating MongoDB with PDF URL: {str(e)}")
+        return False
 
 def main(username):
     # sample_content = """Paul Graham's essay "Founder Mode," published in September 2024, challenges conventional wisdom about scaling startups, arguing that founders should maintain their unique management style rather than adopting traditional corporate practices as their companies grow.
@@ -173,6 +242,13 @@ def main(username):
 
     generate_pdf(prop_results,larger_results, output_path, images)
     print(f"PDF generated and stored at {output_path}")
+
+    s3_url = upload_to_s3(output_path, username)
+    
+    if s3_url:
+        print(f"PDF successfully processed and stored in AWS S3 at: {s3_url}")
+    else:
+        print("Failed to upload PDF to AWS S3")
 
 if __name__ == "__main__":
     # Check if username is provided as command-line argument
