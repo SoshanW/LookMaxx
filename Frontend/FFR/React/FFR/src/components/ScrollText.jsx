@@ -15,6 +15,20 @@ const ScrollText = () => {
     setIsVisible(scrollPosition <= fadeThreshold);
   };
 
+  const scrollToBottom = () => {
+    // Find bottom section element or fallback to document height
+    const bottomSection = document.getElementById('bottom-section');
+    if (bottomSection) {
+      bottomSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Fallback - scroll to the bottom of page
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   useEffect(() => {
     // Set initial positions for the text
     gsap.set([headingRef.current, subheadingRef.current, buttonRef.current], {
@@ -107,7 +121,7 @@ const ScrollText = () => {
       <button 
         ref={buttonRef} 
         className="get-started-button"
-        onClick={() => console.log('Get Started clicked')}
+        onClick={scrollToBottom}
       >
         Get Started
       </button>

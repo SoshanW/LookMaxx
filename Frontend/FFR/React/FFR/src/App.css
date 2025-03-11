@@ -160,7 +160,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.9) 100%);
+  background: linear-gradient(to right, rgba(75,65,90,255) 3%, rgba(23,15,59,255) 100%);
+  z-index: 10; /* Ensure it's above other content */
+}
+
+/* Add a message for when the user isn't logged in */
+#bottom-section::before {
+  content: "Upload Photo Section";
+  position: absolute;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: 'Nasalization', sans-serif;
 }
 
 /* When the upload photo is shown, ensure it's positioned correctly */
@@ -170,7 +182,6 @@ body {
   display: flex;
   z-index: 9995;
 }
-
 /* Add a final spacer to ensure there's room to scroll to the bottom */
 .bottom-spacer {
   height: 100vh;

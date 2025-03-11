@@ -9,6 +9,7 @@ import DesignCard from './components/DesignCard';
 import UploadPhoto from './components/UploadPhoto';
 import BlogCard from './components/BlogCard';
 import LoginPrompt from './components/LoginPrompt';
+import ReportGenerator from './components/ReportGenerator';
 import './App.css';
 import BottomNavBar from './components/BottomNavBar';
 
@@ -19,9 +20,20 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('User');
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showReportGenerator, setShowReportGenerator] = useState(false);
+  const [isReportMinimized, setIsReportMinimized] = useState(() => {
+    return localStorage.getItem('reportMinimized') === 'true';
+  });
+  // Check if there's an ongoing report generation from a previous session
+  const [reportGeneratorActive, setReportGeneratorActive] = useState(() => {
+    return localStorage.getItem('reportProgress') !== null;
+  });
   const hasScrolled = useRef(false);
   const initialScrollLock = useRef(false);
   const bottomSectionRef = useRef(null);
+  
+  // Report generator settings
+  const reportDuration = 60000; // 60 seconds (adjust as needed)
 
   // Handle login functions
   const handleLogin = () => {
@@ -31,6 +43,20 @@ function App() {
     document.body.style.overflow = 'auto';
     initialScrollLock.current = false;
     hasScrolled.current = false;
+    
+    // Check for unfinished report after login
+    checkForUnfinishedReport();
+  };
+
+  // Check if there's an unfinished report in localStorage
+  const checkForUnfinishedReport = () => {
+    const savedProgress = localStorage.getItem('reportProgress');
+    const savedMinimized = localStorage.getItem('reportMinimized');
+    
+    if (savedProgress && parseFloat(savedProgress) < 100) {
+      setShowReportGenerator(true);
+      setIsReportMinimized(savedMinimized === 'true');
+    }
   };
 
   // Close login prompt and go back to home
@@ -40,6 +66,48 @@ function App() {
     hasScrolled.current = false;
     document.body.style.overflow = 'auto';
   };
+
+  // Handle starting report generation
+  const handleStartReportGeneration = () => {
+    setShowReportGenerator(true);
+    setIsReportMinimized(false);
+    // Hide upload photo component when report generator is active
+    setShowUploadPhoto(false);
+    // Scroll to top for better view of the report generator
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle closing report generator
+  const handleCloseReportGenerator = () => {
+    setShowReportGenerator(false);
+    setIsReportMinimized(false);
+  };
+
+  // Handle minimizing/maximizing report generator
+  const handleReportMinimizeChange = (isMinimized) => {
+    setIsReportMinimized(isMinimized);
+    
+    // When maximizing from minimized state, scroll to top
+    if (!isMinimized) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // When minimizing, allow the user to interact with the site
+    if (isMinimized) {
+      document.body.style.overflow = 'auto';
+    } else {
+      // When maximizing, you might want to prevent scrolling of the background
+      // Uncomment if you want this behavior
+      // document.body.style.overflow = 'hidden';
+    }
+  };
+
+  // Check for unfinished report on initial load
+  useEffect(() => {
+    if (isLoggedIn) {
+      checkForUnfinishedReport();
+    }
+  }, [isLoggedIn]);
 
   // Add a bottom section div as the final element
   useEffect(() => {
@@ -95,25 +163,28 @@ function App() {
       setShowBlogCard(scrollPosition > viewportHeight * 0.7 && scrollPosition < viewportHeight * 2.5);
       setShowDesignCard(scrollPosition > viewportHeight * 1.5);
       
-      // Show UploadPhoto only at the very bottom
-      if (isLoggedIn) {
-        // Calculate if user is at the bottom of the page
-        // We check if they've scrolled to within 10px of the maximum possible scroll position
-        const maxScroll = documentHeight - viewportHeight;
-        const isAtBottom = scrollPosition >= maxScroll - 100;
-        
-        // Or if they're in the last section
+      // Show UploadPhoto when at bottom section (only if the report generator is not active or it's minimized)
+      if (!showReportGenerator || isReportMinimized) {
         const bottomSection = document.getElementById('bottom-section');
         let isInBottomSection = false;
         
         if (bottomSection) {
           const bottomSectionRect = bottomSection.getBoundingClientRect();
-          isInBottomSection = bottomSectionRect.top < viewportHeight;
+          isInBottomSection = bottomSectionRect.top < viewportHeight / 2;
+        } else {
+          // Fallback - check if near bottom of page
+          const maxScroll = documentHeight - viewportHeight;
+          isInBottomSection = scrollPosition >= maxScroll - 100;
         }
         
-        setShowUploadPhoto(isAtBottom || isInBottomSection);
-      } else {
-        setShowUploadPhoto(false);
+        // Only show upload photo if logged in OR at bottom section
+        if (isLoggedIn) {
+          setShowUploadPhoto(isInBottomSection);
+        } else if (isInBottomSection) {
+          // If not logged in but at bottom, show login prompt
+          setShowLoginPrompt(true);
+          hasScrolled.current = true;
+        }
       }
     };
 
@@ -129,20 +200,25 @@ function App() {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resetScrollDetection', resetScrollDetection);
     };
-  }, [isLoggedIn]);
+  }, [isLoggedIn, showReportGenerator, isReportMinimized]);
 
   return (
     <div className="app">
       <Navbar isLoggedIn={isLoggedIn} userName={userName} setIsLoggedIn={setIsLoggedIn} />
       
-      <div className={`app-content ${showLoginPrompt ? 'blur' : ''}`}>
+      <div className={`app-content ${(showLoginPrompt || (showReportGenerator && !isReportMinimized)) ? 'blur' : ''}`}>
         <main>
           <ImageSequence frameCount={225} imageFormat="jpg" />
           <ScrollText />
           
           {showBlogCard && <BlogCard isVisible={showBlogCard} />}
           {showDesignCard && <DesignCard isVisible={showDesignCard} />}
-          {showUploadPhoto && <UploadPhoto isVisible={showUploadPhoto} />}
+          {showUploadPhoto && (
+            <UploadPhoto 
+              isVisible={showUploadPhoto} 
+              onStartReportGeneration={handleStartReportGeneration}
+            />
+          )}
         </main>
         
         <CustomScrollbar />
@@ -157,6 +233,13 @@ function App() {
         isOpen={showLoginPrompt} 
         onClose={handleClosePrompt}
         onLogin={handleLogin}
+      />
+      
+      <ReportGenerator 
+        isActive={showReportGenerator}
+        duration={reportDuration} // Pass the duration in milliseconds
+        onClose={handleCloseReportGenerator}
+        onMinimize={handleReportMinimizeChange}
       />
     </div>
   );
