@@ -1,9 +1,8 @@
-// src/components/SphereRippleEffect.jsx
 import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useFrame } from '@react-three/fiber'
+import { Billboard } from '@react-three/drei'
 import * as THREE from 'three'
-import { Billboard } from '@react-three/drei';
 
 const SphereRippleEffect = ({ active = false, color = "#a94dff", scale = 1, intensity = 1 }) => {
   const [ripples, setRipples] = useState([])
