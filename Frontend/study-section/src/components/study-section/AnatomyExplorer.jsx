@@ -4,11 +4,11 @@ import { Environment, Stars } from '@react-three/drei'
 import HumanHeadModel from './HumanHeadModel'
 import FeatureInfoPanel from './FeatureInfoPanel'
 import WelcomePanel from './WelcomePanel'
-import NavigationBar from './NavigationBar'
+import Navbar from './Navbar'
 import SceneLighting from './SceneLighting'
-import { featureData } from '../data/FeatureData'
+import { featureData } from '../../data/FeatureData'
 import {useRef} from 'react'
-import '../styles/AnatomyExplorer.css'
+import '../../styles/study-section/AnatomyExplorer.css'
 
 const AnatomyExplorer = () => {
   const [selectedFeature, setSelectedFeature] = useState(null)
@@ -99,7 +99,7 @@ const AnatomyExplorer = () => {
 
   return (
     <div className="canvas-container">
-      <NavigationBar />
+      <Navbar />
       <Canvas camera={{ position: [0, 0, 5] }}>
         <SceneLighting />
         <Environment preset="city" />

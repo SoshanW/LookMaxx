@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import '../styles/WelcomeText.css'
+import '../../styles/study-section/WelcomeText.css'
 
 const WelcomePanel = ({ isExiting = false, onExitComplete = null }) => {
   const containerRef = useRef(null)

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import '../styles/Navbar.css'
+import '../../styles/study-section/Navbar.css'
 
 const NavigationBar = () => {
   const [isScrolled, setIsScrolled] = useState(false)

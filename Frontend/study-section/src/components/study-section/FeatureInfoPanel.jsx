@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 import FeatureHeader from './FeatureHeader';
 import FeatureContent from './FeatureContent';
 import FeatureFooter from './FeatureFooter';
-import '../styles/FeatureInfo.css';
+import '../../styles/study-section/FeatureInfo.css';
 
 const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting = false, onExitComplete }) => {
   const panelRef = useRef(null);

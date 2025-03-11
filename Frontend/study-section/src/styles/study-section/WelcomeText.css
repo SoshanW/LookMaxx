@@ -1,4 +1,8 @@
-/* Updated styles for WelcomeText.css */
+@font-face {
+  font-family: 'Nasalisation';
+  src: url(../fonts/Nasalization\ Rg.otf);
+}
+
 .welcome-container {
   position: absolute;
   top: 50%;
@@ -50,6 +54,7 @@
 }
 
 .welcome-header h2 {
+  font-family: 'Nasalization';
   margin: 0 1rem;
   color: #a94dff;
   text-transform: uppercase;
@@ -65,6 +70,7 @@
 }
 
 .welcome-text {
+  font-family: 'Nasalization';
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 1.5rem;
