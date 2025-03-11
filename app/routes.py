@@ -8,7 +8,10 @@ from werkzeug.utils import secure_filename
 from config import AWS
 import datetime
 from flask_jwt_extended import create_access_token, JWTManager,jwt_required, get_jwt_identity,get_jwt
-
+import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app_routes = Blueprint('app_routes', __name__)
 
@@ -70,14 +73,21 @@ def delete_user_images_from_s3(username):
         profile_filename = f"{username}_profile.jpg"
         profile_path = AWS.S3_PROFILE_PICTURES_PREFIX + profile_filename
         
+        # Print debug info for profile path
+        print(f"Attempting to delete profile picture at: {profile_path}")
+        
         s3_client.delete_object(
             Bucket=AWS.S3_BUCKET,
             Key=profile_path
         )
         result["profile_deleted"] = True
+        print(f"Profile picture deletion request sent")
         
         # 2. List all FFR pictures for this user
         ffr_prefix = f"{AWS.S3_FFR_PICTURES_GENERATED}{username}/"
+        
+        # Print debug info for FFR path
+        print(f"Looking for FFR pictures with prefix: {ffr_prefix}")
         
         response = s3_client.list_objects_v2(
             Bucket=AWS.S3_BUCKET,
@@ -89,6 +99,8 @@ def delete_user_images_from_s3(username):
             # Create a list of objects to delete
             objects_to_delete = [{'Key': obj['Key']} for obj in response['Contents']]
             
+            print(f"Found {len(objects_to_delete)} FFR pictures to delete")
+            
             # Delete all found objects in one batch request
             if objects_to_delete:
                 s3_client.delete_objects(
@@ -96,9 +108,15 @@ def delete_user_images_from_s3(username):
                     Delete={'Objects': objects_to_delete}
                 )
                 result["ffr_deleted"] = True
+                print(f"FFR pictures deletion request sent")
+            else:
+                print("No FFR pictures found to delete")
+        else:
+            print(f"No FFR pictures found for user {username}")
                 
     except ClientError as e:
-        print(f"Error deleting from S3: {e}")
+        error_msg = f"Error deleting from S3: {e}"
+        print(error_msg)
         result["ffr_delete_errors"].append(str(e))
     
     return result
@@ -221,3 +239,74 @@ def delete_user(username):
         return jsonify({"message": "User successfully deleted"}), 200
     else:
         return jsonify({"error": "Failed to delete user"}), 500
+    
+# @app_routes.route('/request-password-reset', methods=['POST'])
+# def request_password_reset():
+#     """
+#     Request a password reset by providing the email associated with the account.
+#     This generates a reset token and returns it to the frontend to send the email.
+#     """
+#     email = request.form.get('email')
+    
+#     # Find user by email
+#     user = mongo.db.users.find_one({'email': email})
+#     if not user:
+#         # Don't reveal whether a user exists or not for security
+#         return jsonify({"message": "If your email is registered, you will receive a password reset link"}), 200
+    
+#     # Generate a unique token
+#     reset_token = secrets.token_urlsafe(32)
+#     expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # Token expires in 1 hour
+    
+#     # Store the token and its expiration directly in the user document
+#     mongo.db.users.update_one(
+#         {'email': email},
+#         {'$set': {
+#             'reset_token': reset_token,
+#             'reset_token_expires': expiration
+#         }}
+#     )
+    
+#     # Return token and user info to the frontend for email sending
+#     return jsonify({
+#         "status": "success",
+#         "token": reset_token,
+#         "email": email,
+#         "firstName": user.get('first_name', ''),
+#         "message": "Reset token generated successfully"
+#     }), 200
+
+# @app_routes.route('/reset-password', methods=['POST'])
+# def reset_password():
+#     """
+#     Reset a user's password using the token received in email
+#     """
+#     token = request.form.get('token')
+#     new_password = request.form.get('password')
+    
+#     # Validate input
+#     if not token or not new_password:
+#         return jsonify({"error": "Token and new password are required"}), 400
+    
+#     # Find user with this token and check if it's not expired
+#     user = mongo.db.users.find_one({
+#         'reset_token': token,
+#         'reset_token_expires': {'$gt': datetime.datetime.utcnow()}  # Check if token is not expired
+#     })
+    
+#     if not user:
+#         return jsonify({"error": "Invalid or expired token"}), 400
+    
+#     # Update user's password and remove the reset token fields
+#     result = mongo.db.users.update_one(
+#         {'_id': user['_id']},
+#         {
+#             '$set': {'password': generate_password_hash(new_password)},
+#             '$unset': {'reset_token': "", 'reset_token_expires': ""}
+#         }
+#     )
+    
+#     if result.modified_count > 0:
+#         return jsonify({"message": "Password updated successfully"}), 200
+#     else:
+#         return jsonify({"error": "Failed to update password"}), 500
