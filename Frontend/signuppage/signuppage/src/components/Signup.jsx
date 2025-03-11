@@ -1,10 +1,10 @@
-// src/components/SignUp.jsx
 import React, { useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const navigate = useNavigate();
+
   const [isFlipped, setIsFlipped] = useState(true);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -21,34 +21,34 @@ const SignUp = () => {
   const [success, setSuccess] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
 
-const handleChange = (e) => {
+  const handleChange = (e) => {
     const updatedFormData = { ...formData, [e.target.name]: e.target.value };
     setFormData(updatedFormData);
     setError('');
   };
-  
+
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-  
+
   const validatePassword = (password) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordRegex.test(password);
   };
-  
+
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     const { loginUsername, loginPassword } = formData;
-  
+
     if (!loginUsername || !loginPassword) {
       setError('All fields are required.');
       return;
     }
-  
+
     console.log('Login form submitted:', { username: loginUsername, password: loginPassword });
   };
-  
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     
@@ -79,26 +79,26 @@ const handleChange = (e) => {
       setError('');
     }
   };
-  
+
   const handleSignUpSubmit = (e) => {
     e.preventDefault();
     const { fullName, username, email, gender, password, confirmPassword, profilePicture } = formData;
-  
+
     if (!fullName || !username || !email || !gender || !password || !confirmPassword || !profilePicture) {
       setError('All fields including profile picture are required.');
       return;
     }
-  
+
     if (!validateEmail(email)) {
       setError('Please enter a valid email address.');
       return;
     }
-  
+
     if (!validatePassword(password)) {
       setError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.');
       return;
     }
-  
+
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
@@ -107,11 +107,9 @@ const handleChange = (e) => {
     setSuccess(true);
     console.log('Form submitted:', formData);
   
-    // Navigate to face-model page with gender parameter
+    // Modified to immediately navigate to face-model page with gender parameter
     navigate(`/face-model?gender=${gender}`);
   };
-
-  // Form handlers will be added in the next commit
 
   return (
     <div className="auth-container">
@@ -150,18 +148,18 @@ const handleChange = (e) => {
           </button>
         </div>
 
-        {/* Form containers will be added in the next commit */}
-        <div className={`auth-wrapper ${isFlipped ? 'flipped' : ''} ${error ? 'with-error' : ''}`}>
-          {/* Login form */}
-            <div className="auth-card back">
+        {/* Flip Cards Container */}
+        <div className={`auth-wrapper ${isFlipped ? 'flipped' : ''} ${error ? 'with-error' : ''}`}> 
+          {/* Login Form */}
+          <div className="auth-card back">
             {error && <div className="error-alert">{error}</div>}
             
             <form onSubmit={handleLoginSubmit} className="auth-form">
-                <div className="form-group">
+              <div className="form-group">
                 <label htmlFor="loginUsername" className="form-label">Username</label>
                 <div className="input-container">
-                    <User className="input-icon" />
-                    <input
+                  <User className="input-icon" />
+                  <input
                     id="loginUsername"
                     name="loginUsername"
                     type="text"
@@ -169,15 +167,15 @@ const handleChange = (e) => {
                     value={formData.loginUsername}
                     onChange={handleChange}
                     placeholder="YourUsername"
-                    />
+                  />
                 </div>
-                </div>
+              </div>
 
-                <div className="form-group">
+              <div className="form-group">
                 <label htmlFor="loginPassword" className="form-label">Password</label>
                 <div className="input-container">
-                    <Lock className="input-icon" />
-                    <input
+                  <Lock className="input-icon" />
+                  <input
                     id="loginPassword"
                     name="loginPassword"
                     type="password"
@@ -185,81 +183,80 @@ const handleChange = (e) => {
                     value={formData.loginPassword}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    />
+                  />
                 </div>
-                </div>
+              </div>
 
-                <button type="submit" className="submit-button">
+              <button type="submit" className="submit-button">
                 Login
-                </button>
+              </button>
             </form>
-            </div>
           </div>
           
-          {/* Sign Up form*/}
-            <div className="auth-card front">
+          {/* Sign Up Form */}
+          <div className="auth-card front">
             {error && <div className="error-alert">{error}</div>}
             {success && (
-                <div className="success-alert">
+              <div className="success-alert">
                 Welcome to LookSci. Time to redefine your look.
-                </div>
+              </div>
             )}
             
             {!success && (
-                <form onSubmit={handleSignUpSubmit} className="auth-form">
+              <form onSubmit={handleSignUpSubmit} className="auth-form">
                 <div className="form-group">
-                    <label htmlFor="fullName" className="form-label">Full Name</label>
-                    <div className="input-container">
+                  <label htmlFor="fullName" className="form-label">Full Name</label>
+                  <div className="input-container">
                     <User className="input-icon" />
                     <input
-                        id="fullName"
-                        name="fullName"
-                        type="text"
-                        className="form-input"
-                        value={formData.fullName}
-                        onChange={handleChange}
-                        placeholder="Your name"
+                      id="fullName"
+                      name="fullName"
+                      type="text"
+                      className="form-input"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      placeholder="Your name"
                     />
-                    </div>
+                  </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="username" className="form-label">Username</label>
-                    <div className="input-container">
+                  <label htmlFor="username" className="form-label">Username</label>
+                  <div className="input-container">
                     <User className="input-icon" />
                     <input
-                        id="username"
-                        name="username"
-                        type="text"
-                        className="form-input"
-                        value={formData.username}
-                        onChange={handleChange}
-                        placeholder="YourUsername"
+                      id="username"
+                      name="username"
+                      type="text"
+                      className="form-input"
+                      value={formData.username}
+                      onChange={handleChange}
+                      placeholder="YourUsername"
                     />
-                    </div>
+                  </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="email" className="form-label">Email</label>
-                    <div className="input-container">
+                  <label htmlFor="email" className="form-label">Email</label>
+                  <div className="input-container">
                     <Mail className="input-icon" />
                     <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        className="form-input"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="your.email@example.com"
+                      id="email"
+                      name="email"
+                      type="email"
+                      className="form-input"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="your.email@example.com"
                     />
-                    </div>
+                  </div>
                 </div>
 
                 <div className="form-group">
-                    <label className="form-label">Gender</label>
-                    <div className="gender-group">
+                  <label className="form-label">Gender</label>
+                  <div className="gender-group">
                     <div className="gender-option">
-                        <input
+                      <input
                         type="radio"
                         id="male"
                         name="gender"
@@ -267,11 +264,11 @@ const handleChange = (e) => {
                         checked={formData.gender === 'male'}
                         onChange={handleChange}
                         className="gender-radio"
-                        />
-                        <label htmlFor="male" className="gender-label">Male</label>
+                      />
+                      <label htmlFor="male" className="gender-label">Male</label>
                     </div>
                     <div className="gender-option">
-                        <input
+                      <input
                         type="radio"
                         id="female"
                         name="gender"
@@ -279,80 +276,82 @@ const handleChange = (e) => {
                         checked={formData.gender === 'female'}
                         onChange={handleChange}
                         className="gender-radio"
-                        />
-                        <label htmlFor="female" className="gender-label">Female</label>
+                      />
+                      <label htmlFor="female" className="gender-label">Female</label>
                     </div>
-                    </div>
+                  </div>
                 </div>
                 
                 <div className="form-group">
-                    <label className="form-label">Profile Picture</label>
-                    <div className="profile-upload-container">
+                  <label className="form-label">Profile Picture</label>
+                  <div className="profile-upload-container">
                     <div className="profile-preview">
-                        {imagePreview ? (
+                      {imagePreview ? (
                         <img src={imagePreview} alt="Profile preview" className="profile-image-preview" />
-                        ) : (
+                      ) : (
                         <div className="profile-placeholder">
-                            <User size={40} />
+                          <User size={40} />
                         </div>
-                        )}
+                      )}
                     </div>
                     <div className="upload-button-container">
-                        <label htmlFor="profilePicture" className="upload-button">
+                      <label htmlFor="profilePicture" className="upload-button">
                         {imagePreview ? 'Change Photo' : 'Upload Photo'}
-                        </label>
-                        <input
+                      </label>
+                      <input
                         type="file"
                         id="profilePicture"
                         name="profilePicture"
                         accept="image/*"
                         onChange={handleFileChange}
                         className="file-input"
-                        />
+                      />
                     </div>
-                    </div>
+                  </div>
                 </div>
                 
                 <div className="form-group">
-                    <label htmlFor="password" className="form-label">Password</label>
-                    <div className="input-container">
+                  <label htmlFor="password" className="form-label">Password</label>
+                  <div className="input-container">
                     <Lock className="input-icon" />
                     <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        className="form-input"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="••••••••"
+                      id="password"
+                      name="password"
+                      type="password"
+                      className="form-input"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="••••••••"
                     />
-                    </div>
+                  </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                    <div className="input-container">
+                  <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                  <div className="input-container">
                     <Lock className="input-icon" />
                     <input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type="password"
-                        className="form-input"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        placeholder="••••••••"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      className="form-input"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="••••••••"
                     />
-                    </div>
+                  </div>
                 </div>
 
                 <button type="submit" className="submit-button">
-                    Start Your Transformation
+                  Start Your Transformation
                 </button>
-                </form>
+              </form>
             )}
-            </div>
+          </div>
         </div>
+        
       </div>
+    </div>
   );
 };
 
