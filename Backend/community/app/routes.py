@@ -317,8 +317,82 @@ def unlike_post(post_id):
     except Exception as e:
         logger.error(f'Error unliking post: {str(e)}')
         return jsonify({'error': 'Database error'}), 500
+
+
+@app.route('/posts/<post_id>', methods=['DELETE'])
+@jwt_required()
+def delete_post(post_id):
+    try:
+        user_id = ObjectId(get_jwt_identity())
+        post_object_id = ObjectId(post_id)
+
+        post = mongo.db.posts.find_one({'_id': post_object_id})
+
+        if not post:
+            return jsonify({'error': 'Post not found'}), 404
+        
+        if post['author_id'] != user_id:
+            return jsonify({'error': 'You can only delete you posts'}), 403
+        
+        mongo.db.users.update_one (
+            {'_id': user_id},
+            {'$pull': {'posts': post_object_id}})
+        
+        return jsonify({'message': 'Post deleted successfully!'}), 200
     
+    except InvalidId:
+        return jsonify({'error': 'Invalid post ID'}), 400
     
+    except Exception as e:
+        logger.error(f'Error deleting post: {str(e)}')
+        return jsonify({'error':f'Database error:{str(e)}'}), 500
+    
+
+@app.route('/posts/<post_id>/comments/<comment_id>', methods=['DELETE'])
+@jwt_required()
+def delete_comment(post_id, comment_id):
+    try:
+        user_id = ObjectId(get_jwt_identity())
+        post_object_id = ObjectId(post_id)
+        comment_object_id = ObjectId(comment_id)
+
+        post = mongo.db.posts.find_one({'_id': post_object_id})
+            
+        if not post:
+            return jsonify({'error': 'Post not found'}), 404 
+
+        comment = None
+        for c in post.get('comments', []):
+            if c.get('_id') == comment_object_id:
+                comment = c
+                break
+                    
+        if not comment:
+            return jsonify({'error': 'Comment not found'}), 404
+            
+        if comment['author_id'] != user_id:
+            return jsonify({'error': 'You can only delete your own comments'}), 403  
+
+       
+        mongo.db.posts.update_one(
+        {'_id': post_object_id},
+        {'$pull': {'comments': {'_id': comment_object_id}}}
+        )
+            
+        mongo.db.users.update_one(
+            {'_id': user_id},
+            {'$pull': {'comments': comment_object_id}}
+        )
+        
+        return jsonify({'message': 'Comment deleted successfully'}), 200
+        
+    except InvalidId:
+        return jsonify({'error': 'Invalid post or comment ID'}), 400
+    except Exception as e:
+        logger.error(f'Error deleting comment: {str(e)}')
+        return jsonify({'error': 'Database error'}), 500
+    
+
 @app.route('/users/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
