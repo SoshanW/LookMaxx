@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { Environment } from '@react-three/drei'
+import { Environment, Stars } from '@react-three/drei'
 import HumanHeadModel from './HumanHeadModel'
 import FeatureInfoPanel from './FeatureInfoPanel'
 import WelcomePanel from './WelcomePanel'
 import NavigationBar from './NavigationBar'
 import SceneLighting from './SceneLighting'
 import { featureData } from '../data/FeatureData'
+import {useRef} from 'react'
 import '../styles/AnatomyExplorer.css'
 
 const AnatomyExplorer = () => {
@@ -16,6 +17,7 @@ const AnatomyExplorer = () => {
   const [isExiting, setIsExiting] = useState(false)
   const [welcomeExiting, setWelcomeExiting] = useState(false)
   const [nextFeature, setNextFeature] = useState(null)
+  const exitProcessed = useRef(false);
 
   const initialHeadPosition = { 
     position: [-3, -1, 0], 
@@ -24,38 +26,40 @@ const AnatomyExplorer = () => {
   }
 
   const handleFeatureClick = (feature) => {
-    if (isExiting || feature === selectedFeature) return
-
+    if (isExiting || feature === selectedFeature) return;
+  
+    exitProcessed.current = false;
     if (selectedFeature) {
-      setIsExiting(true)
-      setNextFeature(feature)
-    } else if (showWelcome) {
-      setWelcomeExiting(true)
-      setNextFeature(feature)
+      setIsExiting(true);
+      setNextFeature(feature);
     } else {
-      setShowWelcome(false)
-      setSelectedFeature(feature)
+      setShowWelcome(false); 
+      setSelectedFeature(feature); 
     }
-  }
+  };  
 
   const handleCloseInfo = () => {
+    if (nextFeature !== null) return;
     setIsExiting(true)
-    setNextFeature(null)
   }
   
   const handleExitComplete = () => {
+    if (exitProcessed.current) return;
+    exitProcessed.current = true;
+
     if (nextFeature) {
-      setShowInfo(false)
-      setSelectedFeature(nextFeature)
-      setNextFeature(null)
-      setIsExiting(false)
+      setShowInfo(false); 
+      setSelectedFeature(nextFeature);
+      setNextFeature(null);
+      setIsExiting(false);
+      setShowWelcome(false); 
     } else {
-      setShowInfo(false)
-      setShowWelcome(true)
-      setSelectedFeature(null)
-      setIsExiting(false)
+      setShowInfo(false);
+      setShowWelcome(true);
+      setSelectedFeature(null);
+      setIsExiting(false);
     }
-  }
+  };  
   
   const handleWelcomeExitComplete = () => {
     setShowWelcome(false)
@@ -99,6 +103,7 @@ const AnatomyExplorer = () => {
       <Canvas camera={{ position: [0, 0, 5] }}>
         <SceneLighting />
         <Environment preset="city" />
+        <Stars radius={50} depth={50} count={5000} factor={4} saturation={0} fade />
         <HumanHeadModel 
           initialPosition={initialHeadPosition}
           selectedFeature={selectedFeature}
