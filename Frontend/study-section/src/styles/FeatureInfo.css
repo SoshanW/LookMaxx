@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Nasalisation';
+  src: url(../fonts/Nasalization\ Rg.otf);
+}
+
 .feature-info-container {
   position: absolute;
   top: 50%;
@@ -46,6 +51,7 @@
 }
 
 .feature-title {
+  font-family: 'Nasalization';
   margin: 0 1rem;
   font-size: 1.5rem;
   color: #a94dff;
@@ -60,10 +66,13 @@
 }
 
 .feature-info-container:hover .feature-title {
+  font-family: 'Nasalization';
+  cursor: pointer;
   text-shadow: 0 0 10px rgba(169, 77, 255, 1);
 }
 
 .feature-description {
+  font-family: 'Nasalization';
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 0.5rem;
