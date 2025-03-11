@@ -5,9 +5,14 @@ import boto3
 import os
 from botocore.exceptions import ClientError
 from werkzeug.utils import secure_filename
-from .config import AWS
+from config import AWS
+import datetime
+from flask_jwt_extended import create_access_token, JWTManager,jwt_required, get_jwt_identity,get_jwt
+
 
 app_routes = Blueprint('app_routes', __name__)
+
+jwt_blocklist = set()
 
 s3_client = boto3.client(
     's3',
@@ -100,8 +105,16 @@ def login():
     user = mongo.db.users.find_one({'username': username})
     
     if user and check_password_hash(user['password'], password):
+        access_token = create_access_token(
+            identity=str(user['username']),
+            additional_claims={
+                "first_name":user['first_name'],
+                "email":user['email']
+            }
+        )
         return jsonify({
             "message": "Login successful",
+            "access_token": access_token,
             "user": {
                 "username": user['username'],
                 "email": user['email'],
@@ -112,6 +125,16 @@ def login():
     
     return jsonify({"error": "Invalid username or password"}), 401
 
-@app_routes.route('/welcome')
-def welcome():
-    return render_template('welcome.html')
+@app_routes.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]  # Get JWT ID
+    jwt_blocklist.add(jti)  # Add token to blocklist
+    
+    return jsonify({"message": "Successfully logged out"}), 200
+
+# Register JWT blocklist loader
+def register_jwt_callbacks(jwt):
+    @jwt.token_in_blocklist_loader
+    def check_if_token_in_blocklist(jwt_header, jwt_payload):
+        return jwt_payload["jti"] in jwt_blocklist
