@@ -10,8 +10,8 @@ const App = () => {
         {/* Make SignUp the default landing page */}
         <Route path="/" element={<SignUp />} />
         
-        {/* Keep the named route as well for explicit navigation */}
-        <Route path="/signup" element={<SignUp />} /> {/* Fix this to use SignUp, not SignupPage */}
+       
+        <Route path="/signup" element={<SignUp />} /> 
         
         {/* Face model page route */}
         <Route path="/face-model" element={<FaceModelPage />} />
