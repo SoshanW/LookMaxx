@@ -15,7 +15,6 @@ from email.mime.multipart import MIMEMultipart
 from flask_cors import CORS
 
 app_routes = Blueprint('app_routes', __name__)
-CORS(app_routes)
 
 jwt_blocklist = set()
 

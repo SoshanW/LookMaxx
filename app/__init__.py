@@ -10,7 +10,7 @@ jwt_blocklist = set()
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "*"}})
     
 
     app.config.from_object('app.config.Config')
