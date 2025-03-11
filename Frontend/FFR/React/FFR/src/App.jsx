@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ImageSequence from './components/ffr/ImageSequence';
 import ScrollText from './components/ffr/ScrollText';
-import Navbar from './components/ffr/Navbar';
+import Navbar from './components/ffr/Navbar'; // Import the refactored Navbar
 import CustomScrollbar from './components/ffr/CustomScrollbar';
 import SectionIndicator from './components/ffr/SectionIndicator';
 import DynamicScrollButton from './components/ffr/DynamicScrollButton';
@@ -10,24 +10,29 @@ import UploadPhoto from './components/ffr/UploadPhoto';
 import BlogCard from './components/ffr/BlogCard';
 import LoginPrompt from './components/ffr/LoginPrompt';
 import ReportGenerator from './components/ffr/ReportGenerator';
+import useAuth from './hooks/useAuth'; // Import the auth hook
 import './App.css';
 import BottomNavBar from './components/ffr/BottomNavBar';
 
 function App() {
+  // Use the authentication hook
+  const { isLoggedIn, userName, login, logout } = useAuth();
+  
   const [showDesignCard, setShowDesignCard] = useState(false);
   const [showUploadPhoto, setShowUploadPhoto] = useState(false);
   const [showBlogCard, setShowBlogCard] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('User');
+  const [activeLink, setActiveLink] = useState('ffr'); // Active navigation link
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showReportGenerator, setShowReportGenerator] = useState(false);
   const [isReportMinimized, setIsReportMinimized] = useState(() => {
     return localStorage.getItem('reportMinimized') === 'true';
   });
+  
   // Check if there's an ongoing report generation from a previous session
   const [reportGeneratorActive, setReportGeneratorActive] = useState(() => {
     return localStorage.getItem('reportProgress') !== null;
   });
+  
   const hasScrolled = useRef(false);
   const initialScrollLock = useRef(false);
   const bottomSectionRef = useRef(null);
@@ -35,10 +40,16 @@ function App() {
   // Report generator settings
   const reportDuration = 60000; // 60 seconds (adjust as needed)
 
-  // Handle login functions
+  // Function to show login prompt (passed to Navbar)
+  const handleShowLoginPrompt = () => {
+    setShowLoginPrompt(true);
+    hasScrolled.current = true;
+    document.body.style.overflow = 'hidden';
+  };
+
+  // Handle login
   const handleLogin = () => {
-    setIsLoggedIn(true);
-    setUserName('Guest');
+    login('Guest'); // Use the login function from auth hook
     setShowLoginPrompt(false);
     document.body.style.overflow = 'auto';
     initialScrollLock.current = false;
@@ -95,10 +106,6 @@ function App() {
     // When minimizing, allow the user to interact with the site
     if (isMinimized) {
       document.body.style.overflow = 'auto';
-    } else {
-      // When maximizing, you might want to prevent scrolling of the background
-      // Uncomment if you want this behavior
-      // document.body.style.overflow = 'hidden';
     }
   };
 
@@ -204,7 +211,18 @@ function App() {
 
   return (
     <div className="app">
-      <Navbar isLoggedIn={isLoggedIn} userName={userName} setIsLoggedIn={setIsLoggedIn} />
+      {/* Use the refactored Navbar with all necessary props */}
+      <Navbar 
+        isLoggedIn={isLoggedIn} 
+        userName={userName}
+        setIsLoggedIn={logout} // Use logout function from auth hook 
+        requiresAuth={true} // This page requires authentication for some features
+        navLinks={['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']}
+        activeLink={activeLink}
+        setActiveLink={setActiveLink}
+        onPageRestricted={handleShowLoginPrompt}
+        enableScrollDetection={true} // Enable scroll detection for login prompts
+      />
       
       <div className={`app-content ${(showLoginPrompt || (showReportGenerator && !isReportMinimized)) ? 'blur' : ''}`}>
         <main>
