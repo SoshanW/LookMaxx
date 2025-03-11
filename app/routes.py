@@ -51,6 +51,27 @@ def upload_file_to_s3(file, username):
     except ClientError as e:
         print(f"Error uploading to S3: {e}")
         return None
+    
+def delete_file_from_s3(username):
+    """
+    Delete a user's profile picture from S3
+    
+    :param username: Username of the user whose file to delete
+    :return: Boolean indicating success/failure
+    """
+    filename = f"{username}_profile.jpg"
+    s3_path = AWS.S3_PROFILE_PICTURES_PREFIX + filename
+    
+    try:
+        # Delete the file from S3
+        s3_client.delete_object(
+            Bucket=AWS.S3_BUCKET,
+            Key=s3_path
+        )
+        return True
+    except ClientError as e:
+        print(f"Error deleting from S3: {e}")
+        return False
 
 @app_routes.route('/')
 def home():
@@ -138,3 +159,38 @@ def register_jwt_callbacks(jwt):
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blocklist(jwt_header, jwt_payload):
         return jwt_payload["jti"] in jwt_blocklist
+    
+@app_routes.route('/users/<username>', methods=['DELETE'])
+@jwt_required()
+def delete_user(username):
+    # Check if the requesting user is the same as the one to be deleted
+    current_user = get_jwt_identity()
+    
+    # Only allow users to delete their own account or implement admin check
+    if current_user != username:
+        return jsonify({"error": "Unauthorized to delete this user"}), 403
+    
+    # Find the user
+    user = mongo.db.users.find_one({'username': username})
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    # Delete profile picture from S3 if it exists
+    if user.get('profile_picture'):
+        delete_success = delete_file_from_s3(username)
+        if not delete_success:
+            # You can decide whether to fail the whole operation or continue
+            print(f"Warning: Failed to delete profile picture for {username}")
+    
+    # Delete user from database
+    result = mongo.db.users.delete_one({'username': username})
+    
+    if result.deleted_count > 0:
+        # Add user's JWT token to blocklist if they're deleting their own account
+        if current_user == username:
+            jti = get_jwt()["jti"]
+            jwt_blocklist.add(jti)
+            
+        return jsonify({"message": "User successfully deleted"}), 200
+    else:
+        return jsonify({"error": "Failed to delete user"}), 500
