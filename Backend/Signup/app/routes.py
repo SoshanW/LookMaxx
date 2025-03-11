@@ -1,11 +1,21 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from . import mongo
 from werkzeug.security import generate_password_hash, check_password_hash
-import base64
-from config import AWS
 import boto3
+import os
+from botocore.exceptions import ClientError
+from werkzeug.utils import secure_filename
+from config import AWS
+import datetime
+from flask_jwt_extended import create_access_token, JWTManager,jwt_required, get_jwt_identity,get_jwt
+import secrets
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from flask_cors import CORS
 
 app_routes = Blueprint('app_routes', __name__)
+
 jwt_blocklist = set()
 
 s3_client = boto3.client(
@@ -112,7 +122,6 @@ def delete_user_images_from_s3(username):
     
     return result
 
-
 @app_routes.route('/')
 def home():
     return "Welcome"
@@ -122,25 +131,34 @@ def signup():
     username = request.form.get('username')
     first_name = request.form.get('firstName')
     last_name = request.form.get('lastName')
+    gender = request.form.get('gender')
     email = request.form.get('email')
     password = request.form.get('password')
     profile_picture = request.files.get('profile_picture')
-
-    #image storing and conversion of image to base64 string
-    encoded_image = base64.b64encode(profile_picture.read()).decode('utf-8')
     
     # Check if username or email already exists
     if mongo.db.users.find_one({'$or': [{'username': username}, {'email': email}]}):
         return jsonify({"error": "Username or email already exists"}), 400
     
     try:
+        profile_picture_url = None
+        if profile_picture and profile_picture.filename:
+            # Reset file pointer to the beginning (in case it was previously read)
+            profile_picture.seek(0)
+            
+            # Upload to S3
+            profile_picture_url = upload_file_to_s3(profile_picture, username)
+            if not profile_picture_url:
+                return jsonify({"error": "Failed to upload profile picture"}), 500
+            
         user = {
             'username': username,
             'first_name': first_name,
             'last_name': last_name,
+            'gender':gender,
             'email': email,
             'password': generate_password_hash(password),  
-            'profile_picture' : encoded_image
+            'profile_picture' : profile_picture_url
         }
         
         mongo.db.users.insert_one(user)
@@ -157,8 +175,16 @@ def login():
     user = mongo.db.users.find_one({'username': username})
     
     if user and check_password_hash(user['password'], password):
+        access_token = create_access_token(
+            identity=str(user['username']),
+            additional_claims={
+                "first_name":user['first_name'],
+                "email":user['email']
+            }
+        )
         return jsonify({
             "message": "Login successful",
+            "access_token": access_token,
             "user": {
                 "username": user['username'],
                 "email": user['email'],
@@ -169,10 +195,20 @@ def login():
     
     return jsonify({"error": "Invalid username or password"}), 401
 
-@app_routes.route('/welcome')
-def welcome():
-    return render_template('welcome.html')
+@app_routes.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]  # Get JWT ID
+    jwt_blocklist.add(jti)  # Add token to blocklist
+    
+    return jsonify({"message": "Successfully logged out"}), 200
 
+# Register JWT blocklist loader
+def register_jwt_callbacks(jwt):
+    @jwt.token_in_blocklist_loader
+    def check_if_token_in_blocklist(jwt_header, jwt_payload):
+        return jwt_payload["jti"] in jwt_blocklist
+    
 @app_routes.route('/users/<username>', methods=['DELETE'])
 @jwt_required()
 def delete_user(username):
@@ -188,22 +224,90 @@ def delete_user(username):
     if not user:
         return jsonify({"error": "User not found"}), 404
     
-    # Delete profile picture from S3 if it exists
-    if user.get('profile_picture'):
-        delete_success = delete_file_from_s3(username)
-        if not delete_success:
-            # You can decide whether to fail the whole operation or continue
-            print(f"Warning: Failed to delete profile picture for {username}")
+    # Delete all images associated with the user from S3
+    delete_results = delete_user_images_from_s3(username)
+    
+    # Log any errors but continue with user deletion
+    if delete_results.get("ffr_delete_errors"):
+        print(f"Errors deleting FFR images for {username}: {delete_results['ffr_delete_errors']}")
     
     # Delete user from database
     result = mongo.db.users.delete_one({'username': username})
     
     if result.deleted_count > 0:
-        # Add user's JWT token to blocklist if they're deleting their own account
-        if current_user == username:
-            jti = get_jwt()["jti"]
-            jwt_blocklist.add(jti)
-            
+        jti = get_jwt()["jti"]
+        jwt_blocklist.add(jti)        
         return jsonify({"message": "User successfully deleted"}), 200
     else:
         return jsonify({"error": "Failed to delete user"}), 500
+    
+# @app_routes.route('/request-password-reset', methods=['POST'])
+# def request_password_reset():
+#     """
+#     Request a password reset by providing the email associated with the account.
+#     This generates a reset token and returns it to the frontend to send the email.
+#     """
+#     email = request.form.get('email')
+    
+#     # Find user by email
+#     user = mongo.db.users.find_one({'email': email})
+#     if not user:
+#         # Don't reveal whether a user exists or not for security
+#         return jsonify({"message": "If your email is registered, you will receive a password reset link"}), 200
+    
+#     # Generate a unique token
+#     reset_token = secrets.token_urlsafe(32)
+#     expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # Token expires in 1 hour
+    
+#     # Store the token and its expiration directly in the user document
+#     mongo.db.users.update_one(
+#         {'email': email},
+#         {'$set': {
+#             'reset_token': reset_token,
+#             'reset_token_expires': expiration
+#         }}
+#     )
+    
+#     # Return token and user info to the frontend for email sending
+#     return jsonify({
+#         "status": "success",
+#         "token": reset_token,
+#         "email": email,
+#         "firstName": user.get('first_name', ''),
+#         "message": "Reset token generated successfully"
+#     }), 200
+
+# @app_routes.route('/reset-password', methods=['POST'])
+# def reset_password():
+#     """
+#     Reset a user's password using the token received in email
+#     """
+#     token = request.form.get('token')
+#     new_password = request.form.get('password')
+    
+#     # Validate input
+#     if not token or not new_password:
+#         return jsonify({"error": "Token and new password are required"}), 400
+    
+#     # Find user with this token and check if it's not expired
+#     user = mongo.db.users.find_one({
+#         'reset_token': token,
+#         'reset_token_expires': {'$gt': datetime.datetime.utcnow()}  # Check if token is not expired
+#     })
+    
+#     if not user:
+#         return jsonify({"error": "Invalid or expired token"}), 400
+    
+#     # Update user's password and remove the reset token fields
+#     result = mongo.db.users.update_one(
+#         {'_id': user['_id']},
+#         {
+#             '$set': {'password': generate_password_hash(new_password)},
+#             '$unset': {'reset_token': "", 'reset_token_expires': ""}
+#         }
+#     )
+    
+#     if result.modified_count > 0:
+#         return jsonify({"message": "Password updated successfully"}), 200
+#     else:
+#         return jsonify({"error": "Failed to update password"}), 500
