@@ -52,26 +52,56 @@ def upload_file_to_s3(file, username):
         print(f"Error uploading to S3: {e}")
         return None
     
-def delete_file_from_s3(username):
+def delete_user_images_from_s3(username):
     """
-    Delete a user's profile picture from S3
+    Delete all images associated with a user from S3
     
-    :param username: Username of the user whose file to delete
-    :return: Boolean indicating success/failure
+    :param username: Username of the user whose files to delete
+    :return: Dictionary with success/failure for each type of image
     """
-    filename = f"{username}_profile.jpg"
-    s3_path = AWS.S3_PROFILE_PICTURES_PREFIX + filename
+    result = {
+        "profile_deleted": False,
+        "ffr_deleted": False,
+        "ffr_delete_errors": []
+    }
     
     try:
-        # Delete the file from S3
+        # 1. Delete profile picture
+        profile_filename = f"{username}_profile.jpg"
+        profile_path = AWS.S3_PROFILE_PICTURES_PREFIX + profile_filename
+        
         s3_client.delete_object(
             Bucket=AWS.S3_BUCKET,
-            Key=s3_path
+            Key=profile_path
         )
-        return True
+        result["profile_deleted"] = True
+        
+        # 2. List all FFR pictures for this user
+        ffr_prefix = f"{AWS.S3_FFR_PICTURES_GENERATED}{username}/"
+        
+        response = s3_client.list_objects_v2(
+            Bucket=AWS.S3_BUCKET,
+            Prefix=ffr_prefix
+        )
+        
+        # If there are FFR pictures, delete them
+        if 'Contents' in response:
+            # Create a list of objects to delete
+            objects_to_delete = [{'Key': obj['Key']} for obj in response['Contents']]
+            
+            # Delete all found objects in one batch request
+            if objects_to_delete:
+                s3_client.delete_objects(
+                    Bucket=AWS.S3_BUCKET,
+                    Delete={'Objects': objects_to_delete}
+                )
+                result["ffr_deleted"] = True
+                
     except ClientError as e:
         print(f"Error deleting from S3: {e}")
-        return False
+        result["ffr_delete_errors"].append(str(e))
+    
+    return result
 
 @app_routes.route('/')
 def home():
@@ -175,22 +205,19 @@ def delete_user(username):
     if not user:
         return jsonify({"error": "User not found"}), 404
     
-    # Delete profile picture from S3 if it exists
-    if user.get('profile_picture'):
-        delete_success = delete_file_from_s3(username)
-        if not delete_success:
-            # You can decide whether to fail the whole operation or continue
-            print(f"Warning: Failed to delete profile picture for {username}")
+    # Delete all images associated with the user from S3
+    delete_results = delete_user_images_from_s3(username)
+    
+    # Log any errors but continue with user deletion
+    if delete_results.get("ffr_delete_errors"):
+        print(f"Errors deleting FFR images for {username}: {delete_results['ffr_delete_errors']}")
     
     # Delete user from database
     result = mongo.db.users.delete_one({'username': username})
     
     if result.deleted_count > 0:
-        # Add user's JWT token to blocklist if they're deleting their own account
-        if current_user == username:
-            jti = get_jwt()["jti"]
-            jwt_blocklist.add(jti)
-            
+        jti = get_jwt()["jti"]
+        jwt_blocklist.add(jti)        
         return jsonify({"message": "User successfully deleted"}), 200
     else:
         return jsonify({"error": "Failed to delete user"}), 500
