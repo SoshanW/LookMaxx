@@ -1,0 +1,43 @@
+/* src/styles.css */
+body {
+    background: linear-gradient(135deg, #0f031b 0%, #2e1855 50%, #07010b 100%);
+    background-size: 200% 200%;
+    animation: gradientAnimation 15s ease infinite;
+    min-height: 100vh;
+    color: #e1e7ef;
+    position: relative;
+    overflow-x: hidden;
+    font-family: 'Nasalization', sans-serif;
+  }
+  
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 35%, rgba(93, 37, 205, 0.4) 0%, transparent 30%),
+      radial-gradient(circle at 75% 65%, rgba(41, 10, 89, 0.6) 0%, transparent 40%);
+    z-index: -1;
+  }
+  
+  @keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem;
+    min-height: 100vh;
+  }
+  
+  .auth-content {
+    width: 100%;
+    max-width: 30rem;
+    display: flex
+  }
