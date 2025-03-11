@@ -24,6 +24,7 @@ import sys
 import subprocess
 import importlib.util
 import importlib.machinery
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 
 ffr_bp = Blueprint('ffr', __name__)
 
@@ -220,11 +221,10 @@ def analyze_face():
     # Check if image file is in request
     if 'image' not in request.files:
         return jsonify({'error': 'No image file provided'}), 400
-    if 'username' not in request.form:
-        return jsonify({'error': 'Username not provided'}), 400
+    username= get_jwt_identity()
     
     file = request.files['image']
-    username = request.form['username']
+    
     try:
         user = mongo.db.users.find_one({'username': username})
         if user:
