@@ -253,7 +253,7 @@ const PricingCard = ({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}  // Slower duration
                 >
-                  ${originalPrice}
+                  LKR {originalPrice}
                 </motion.span>
               )}
             </div>
