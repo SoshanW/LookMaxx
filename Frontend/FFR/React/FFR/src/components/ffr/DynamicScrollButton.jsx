@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowUp } from 'lucide-react';
 import gsap from 'gsap';
-import '../styles/DynamicScrollButton.css';
+import '../../styles/ffr/DynamicScrollButton.css';
 
 const DynamicScrollButton = () => {
   const [isScrolled, setIsScrolled] = useState(false);

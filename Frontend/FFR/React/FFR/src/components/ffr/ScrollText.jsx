@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import '../styles/ScrollText.css';
+import '../../styles/ffr/ScrollText.css';
 
 const ScrollText = () => {
   const headingRef = useRef(null);

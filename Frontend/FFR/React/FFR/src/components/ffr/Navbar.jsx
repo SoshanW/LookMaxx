@@ -1,10 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import '../styles/Navbar.css';
+import '../../styles/ffr/Navbar.css';
 
-const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
+/**
+ * A reusable Navbar component that can be used across different projects
+ * 
+ * @param {Object} props
+ * @param {boolean} props.isLoggedIn - Whether the user is logged in
+ * @param {string} props.userName - The name of the logged in user
+ * @param {Function} props.setIsLoggedIn - Function to update the login state
+ * @param {boolean} props.requiresAuth - Whether the current page requires authentication
+ * @param {Array} props.navLinks - Array of navigation links to display
+ * @param {string} props.activeLink - The currently active link
+ * @param {Function} props.setActiveLink - Function to update the active link
+ * @param {Function} props.onPageRestricted - Called when a non-logged in user attempts to access a restricted area
+ * @param {boolean} props.enableScrollDetection - Whether to enable scroll detection for login prompts
+ */
+const Navbar = ({ 
+  isLoggedIn, 
+  userName = 'User', 
+  setIsLoggedIn,
+  requiresAuth = false,
+  navLinks = ['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community'],
+  activeLink = 'home',
+  setActiveLink = () => {},
+  onPageRestricted = () => {},
+  enableScrollDetection = false
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeLink, setActiveLink] = useState('ffr');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navLinksRef = useRef([]);
   const authRef = useRef(null);
@@ -46,6 +69,11 @@ const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       setIsScrolled(scrollPosition > 30);
+      
+      // If scroll detection is enabled and we're in a page that requires auth
+      if (enableScrollDetection && requiresAuth && !isLoggedIn && scrollPosition > 100) {
+        onPageRestricted();
+      }
     };
 
     // Close dropdown when clicking outside
@@ -62,7 +90,7 @@ const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [enableScrollDetection, isLoggedIn, onPageRestricted, requiresAuth]);
 
   const addToRefs = (el) => {
     if (el && !navLinksRef.current.includes(el)) {
@@ -94,21 +122,32 @@ const Navbar = ({ isLoggedIn, userName, setIsLoggedIn }) => {
     setIsLoggedIn(true);
   };
 
+  const handleLinkClick = (linkName, e) => {
+    e.preventDefault(); // Prevent default navigation
+    setActiveLink(linkName.toLowerCase());
+    
+    // If this is a restricted page and user isn't logged in
+    if (requiresAuth && !isLoggedIn) {
+      onPageRestricted();
+      return;
+    }
+    
+    // Otherwise navigate or handle link click
+    // In a real app with React Router, you would use navigate here
+    // navigate(`/${linkName.toLowerCase()}`);
+  };
+
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         <div className="nav-links">
-          {['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community'].map((link) => (
+          {navLinks.map((link) => (
             <a
               key={link.toLowerCase()}
               ref={addToRefs}
               href={`/${link.toLowerCase()}`}
               className={`nav-link ${activeLink === link.toLowerCase() ? 'active' : ''}`}
-              onClick={(e) => {
-                e.preventDefault(); // Prevent navigation for now
-                setActiveLink(link.toLowerCase());
-                // Will be linked to other React projects later
-              }}
+              onClick={(e) => handleLinkClick(link, e)}
             >
               {link}
             </a>

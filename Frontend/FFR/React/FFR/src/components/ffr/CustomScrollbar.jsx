@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import '../styles/CustomScrollbar.css';
+import '../../styles/ffr/CustomScrollbar.css';
 
 const CustomScrollbar = () => {
   const thumbRef = useRef(null);

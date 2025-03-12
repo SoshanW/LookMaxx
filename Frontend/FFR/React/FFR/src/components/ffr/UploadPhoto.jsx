@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/UploadPhoto.css';
+import '../../styles/ffr/UploadPhoto.css';
 
 const UploadPhoto = ({ isVisible, onStartReportGeneration }) => {
   const [file, setFile] = useState(null);

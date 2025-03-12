@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Minimize2, Maximize2, Download } from 'lucide-react';
-import '../styles/ReportGenerator.css';
+import '../../styles/ffr/ReportGenerator.css';
 
 const ReportGenerator = ({ 
   isActive, 

@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import PropTypes from 'prop-types';
-import '../styles/ImageSequence.css';
+import '../../styles/ffr/ImageSequence.css';
 
 gsap.registerPlugin(ScrollTrigger);
 

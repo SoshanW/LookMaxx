@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import '../styles/LoginPrompt.css';
+import '../../styles/ffr/LoginPrompt.css';
 
 const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
   useEffect(() => {
