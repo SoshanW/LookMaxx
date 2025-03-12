@@ -47,7 +47,15 @@ function FfrPage() {
 
   // Handle login
   const handleLogin = () => {
-    login('Guest'); // Use the login function from auth hook
+    // Call login function from auth hook to update auth state
+    login('Guest');
+    
+    // Broadcast auth state change for immediate UI update
+    window.dispatchEvent(new CustomEvent('authStateChanged', { 
+      detail: { isLoggedIn: true, userName: 'Guest' } 
+    }));
+    
+    // Update local component state
     setShowLoginPrompt(false);
     document.body.style.overflow = 'auto';
     initialScrollLock.current = false;
@@ -116,12 +124,26 @@ function FfrPage() {
       document.body.style.overflow = 'hidden';
     };
     
+    // Listen for auth state changes to update component state accordingly
+    const handleAuthStateChanged = (event) => {
+      if (event.detail && event.detail.isLoggedIn !== undefined) {
+        // If user is now logged in, we might need to update component state
+        if (event.detail.isLoggedIn && showLoginPrompt) {
+          setShowLoginPrompt(false);
+          document.body.style.overflow = 'auto';
+          hasScrolled.current = false;
+        }
+      }
+    };
+    
     window.addEventListener('showLoginPrompt', handleShowPromptEvent);
+    window.addEventListener('authStateChanged', handleAuthStateChanged);
     
     return () => {
       window.removeEventListener('showLoginPrompt', handleShowPromptEvent);
+      window.removeEventListener('authStateChanged', handleAuthStateChanged);
     };
-  }, []);
+  }, [showLoginPrompt]);
 
   // Check for unfinished report on initial load
   useEffect(() => {

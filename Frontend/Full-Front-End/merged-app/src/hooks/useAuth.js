@@ -1,11 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-/**
- * Custom hook to manage authentication state across the application
- * 
- * @param {boolean} initialState - Initial login state (defaults to checking localStorage)
- * @returns {Object} Authentication state and functions
- */
 export const useAuth = (initialState = null) => {
   // Initialize from localStorage if available, or use provided initialState
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -32,31 +26,20 @@ export const useAuth = (initialState = null) => {
     return 'Guest';
   });
 
-  // Update localStorage whenever auth state changes
-  useEffect(() => {
-    localStorage.setItem('isLoggedIn', isLoggedIn);
-    
-    // If user logs out, clear any auth-related data from localStorage
-    if (!isLoggedIn) {
-      localStorage.removeItem('userName');
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user_data');
-    }
-  }, [isLoggedIn]);
-
-  // Login function with optional user info
-  const login = (name = 'Guest') => {
+  // Use useCallback to prevent unnecessary function recreations
+  const login = useCallback((name = 'Guest') => {
     setIsLoggedIn(true);
     setUserName(name);
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('userName', name);
     
-    // Dispatch a custom event to force components to check auth state
-    window.dispatchEvent(new CustomEvent('authStateChanged'));
-  };
+    // Dispatch a custom event that other components can listen for
+    window.dispatchEvent(new CustomEvent('authStateChanged', { 
+      detail: { isLoggedIn: true, userName: name } 
+    }));
+  }, []);
 
-  // Logout function
-  const logout = () => {
+  const logout = useCallback(() => {
     setIsLoggedIn(false);
     setUserName('');
     
@@ -68,11 +51,39 @@ export const useAuth = (initialState = null) => {
     
     // Reset any scroll detection or app state
     window.scrollTo(0, 0);
+    
+    // Dispatch auth change event
+    window.dispatchEvent(new CustomEvent('authStateChanged', { 
+      detail: { isLoggedIn: false, userName: '' } 
+    }));
+    
     setTimeout(() => {
       const resetEvent = new CustomEvent('resetScrollDetection');
       window.dispatchEvent(resetEvent);
     }, 100);
-  };
+  }, []);
+
+  // Listen for auth state changes from other components
+  useEffect(() => {
+    const handleAuthChange = (event) => {
+      if (event.detail) {
+        setIsLoggedIn(event.detail.isLoggedIn);
+        if (event.detail.userName) {
+          setUserName(event.detail.userName);
+        }
+      }
+    };
+    
+    window.addEventListener('authStateChanged', handleAuthChange);
+    return () => {
+      window.removeEventListener('authStateChanged', handleAuthChange);
+    };
+  }, []);
+  
+  // Update localStorage whenever auth state changes
+  useEffect(() => {
+    localStorage.setItem('isLoggedIn', isLoggedIn);
+  }, [isLoggedIn]);
   
   return {
     isLoggedIn,

@@ -89,12 +89,26 @@ const Navbar = ({
       }
     };
 
+    // Function to update the navbar based on auth state
+    const handleAuthChange = () => {
+      // The navbar will re-render when isLoggedIn prop changes
+      // We can use this to force animations for the auth section on login state change
+      if (authRef.current) {
+        gsap.fromTo(authRef.current, 
+          { scale: 0.8, opacity: 0.5 },
+          { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" }
+        );
+      }
+    };
+    
     window.addEventListener('scroll', handleScroll);
     document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('authStateChanged', handleAuthChange);
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('authStateChanged', handleAuthChange);
     };
   }, [enableScrollDetection, isLoggedIn]);
 
@@ -148,7 +162,7 @@ const Navbar = ({
       <div className="navbar-container">
         <div className="nav-links">
           {navLinks.map((link) => (
-            <a  // This opening <a> tag was missing
+            <a
               key={link.toLowerCase()}
               ref={addToRefs}
               href={`/${link.toLowerCase()}`}

@@ -26,6 +26,9 @@ function App() {
   // Determine if navbar should use scroll detection based on route
   const [enableScrollDetection, setEnableScrollDetection] = useState(false);
 
+  // Force UI update when auth state changes
+  const [forceUpdate, setForceUpdate] = useState(0);
+
   // Initialize auth state on app load
   useEffect(() => {
     // Check if user should be logged in
@@ -36,9 +39,24 @@ function App() {
     // If there's evidence of a logged in state but context doesn't show it,
     // force a refresh of the app to ensure state is loaded
     if ((savedLoginState === 'true' || hasToken) && !isLoggedIn && savedUserName) {
-      window.location.reload();
+      // Instead of hard refresh, trigger a state update to re-render
+      setForceUpdate(prev => prev + 1);
     }
   }, [isLoggedIn]);
+  
+  // Listen for auth state changes
+  useEffect(() => {
+    const handleAuthChange = () => {
+      // Force a re-render by updating the state
+      setForceUpdate(prev => prev + 1);
+    };
+    
+    window.addEventListener('authStateChanged', handleAuthChange);
+    
+    return () => {
+      window.removeEventListener('authStateChanged', handleAuthChange);
+    };
+  }, []);
   
   useEffect(() => {
     // Enable scroll detection only on FFR page
@@ -75,14 +93,15 @@ function App() {
           setIsLoggedIn={logout}
           navLinks={navLinks}
           enableScrollDetection={enableScrollDetection}
+          key={`navbar-${isLoggedIn}-${forceUpdate}`} // Force re-render when auth state changes
         />
       )}
       
       <div className="app-container">
         <Routes>
           {/* Main routes */}
-          <Route path="/" element={<FfrPage />} />
-          <Route path="/ffr" element={<FfrPage />} />
+          <Route path="/" element={<FfrPage key={`ffr-page-${isLoggedIn}-${forceUpdate}`} />} />
+          <Route path="/ffr" element={<FfrPage key={`ffr-page-${isLoggedIn}-${forceUpdate}`} />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/face-model" element={<FaceModelPage />} />
           

@@ -21,10 +21,32 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
   if (!isOpen) return null;
 
   const handleSignupClick = () => {
+    // Dispatch global auth state event with login info before navigating
+    window.dispatchEvent(new CustomEvent('authStateChanged', { 
+      detail: { isLoggedIn: true, userName: 'Guest' } 
+    }));
+    
+    // Call the onLogin callback first to update auth state
+    if (onLogin) {
+      onLogin();
+    }
+    
+    // Then navigate to signup page
     navigate('/signup', { state: { activeTab: 'signup' } });
   };
 
   const handleLoginClick = () => {
+    // Dispatch global auth state event with login info before navigating
+    window.dispatchEvent(new CustomEvent('authStateChanged', { 
+      detail: { isLoggedIn: true, userName: 'Guest' } 
+    }));
+    
+    // Call the onLogin callback first to update auth state
+    if (onLogin) {
+      onLogin();
+    }
+    
+    // Then navigate to login page
     navigate('/signup', { state: { activeTab: 'login' } });
   };
 

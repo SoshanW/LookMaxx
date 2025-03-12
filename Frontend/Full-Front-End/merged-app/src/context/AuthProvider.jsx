@@ -1,19 +1,34 @@
-// In src/context/AuthProvider.jsx
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
 
 // Create the auth context
 const AuthContext = createContext(null);
 
-/**
- * Authentication Provider component that wraps your application
- * to provide authentication state and functions to all components
- */
 export const AuthProvider = ({ children }) => {
   const auth = useAuth();
   
-  // Log auth state for debugging
-  console.log('Auth Provider state:', auth);
+  // Listen for external auth state changes (from localStorage)
+  useEffect(() => {
+    const checkAuthState = () => {
+      const savedLoginState = localStorage.getItem('isLoggedIn') === 'true';
+      const savedUserName = localStorage.getItem('userName');
+      
+      if (savedLoginState !== auth.isLoggedIn) {
+        // If there's a mismatch, update the context state
+        auth.setIsLoggedIn(savedLoginState);
+      }
+    };
+    
+    // Check initially and also when storage changes
+    checkAuthState();
+    
+    // Listen for storage events (in case localStorage changes in another tab)
+    window.addEventListener('storage', checkAuthState);
+    
+    return () => {
+      window.removeEventListener('storage', checkAuthState);
+    };
+  }, [auth]);
   
   return (
     <AuthContext.Provider value={auth}>
@@ -22,10 +37,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-/**
- * Custom hook to use the auth context
- * @returns {Object} Authentication state and functions
- */
 export const useAuthContext = () => {
   const context = useContext(AuthContext);
   
