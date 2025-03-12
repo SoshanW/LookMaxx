@@ -3,8 +3,10 @@ import React, { useState, useEffect } from "react";
  import "../app.css";
  
  const Profile = () => {
+  const [activeTab, setActiveTab] = useState("profile");
      
   const userData = {
+  
     firstName: "Mariyam",
     lastName: "Jameela",
     email: "mjameela@gmail.com",
@@ -69,7 +71,70 @@ import React, { useState, useEffect } from "react";
                 </div>
               </div>
             </div>
-          </div>
+
+            <div className="profile-nav">
+            <ul>
+              <li 
+                className={activeTab === "profile" ? "active" : ""}
+                onClick={() => setActiveTab("profile")}
+              >
+                Profile
+              </li>
+              <li 
+                className={activeTab === "collections" ? "active" : ""}
+                onClick={() => setActiveTab("collections")}
+              >
+                Collections
+              </li>
+              <li 
+                className={activeTab === "gallery" ? "active" : ""}
+                onClick={() => setActiveTab("gallery")}
+              >
+                Gallery
+              </li>
+              <li 
+                className={activeTab === "settings" ? "active" : ""}
+                onClick={() => setActiveTab("settings")}
+              >
+                Settings
+              </li>
+            </ul>
+            </div>
+
+            {/* Tab Content - Empty placeholders for now */}
+            <div className="tab-content">
+            {activeTab === "profile" && (
+              <div className="content-section">
+                <h2>Personal Information</h2>
+                <p className="placeholder-text">Profile information will appear here</p>
+              </div>
+            )}
+
+            {activeTab === "collections" && (
+              <div className="content-section">
+                <h2>Your Collections</h2>
+                <p className="placeholder-text">Your collections will appear here</p>
+              </div>
+            )}
+
+            {activeTab === "gallery" && (
+              <div className="content-section">
+                <h2>Your Gallery</h2>
+                <p className="placeholder-text">Your gallery will appear here</p>
+              </div>
+            )}
+
+            {activeTab === "settings" && (
+              <div className="content-section">
+                <h2>Account Settings</h2>
+                <p className="placeholder-text">Settings options will appear here</p>
+              </div>
+            )}
+            </div>
+            </div>
+            
+
+
               
    );
  };
