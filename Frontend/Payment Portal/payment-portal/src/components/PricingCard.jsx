@@ -350,11 +350,13 @@ const PricingCard = ({
         </div>
       </motion.div>
       {isPopupOpen && 
-      <PaymentPopup
-       onClose={closePopup}
-       planId="1" />
-       planName={title}
-       planPrice={price.replace('$','Rs')} 
+        <PaymentPopup 
+          onClose={closePopup}
+          planId="1" // Set a fixed planId of "1" as you requested
+          planName={title}
+          planPrice={price.replace('$', 'Rs')} // Remove $ if present in the price
+        />
+      }
     </motion.div>
   );
 };
