@@ -1,14 +1,18 @@
+// src/App.jsx - Updated to include the casting routes
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthContext } from './context/AuthProvider';
 
 // Common components
 import Navbar from './components/common/Navbar';
+import Footer from './components/common/Footer';
 
 // Pages
 import FfrPage from './pages/FfrPage';
 import SignupPage from './pages/SignupPage';
 import FaceModelPage from './pages/FaceModelPage';
+import CastingPage from './pages/CastingPage';
+import CastingApplicationPage from './pages/CastingApplicationPage';
 
 // Import global styles
 import './styles/global.css';
@@ -67,11 +71,13 @@ function App() {
     }
     
     // Clean up any existing body classes first
-    document.body.classList.remove('ffr-page', 'signup-page');
+    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page');
     
     // Apply specific body classes based on route
     if (location.pathname.includes('/signup') || location.pathname.includes('/face-model')) {
       document.body.classList.add('signup-page');
+    } else if (location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
+      document.body.classList.add('casting-page');
     } else {
       document.body.classList.add('ffr-page');
     }
@@ -83,6 +89,24 @@ function App() {
     };
   }, [location.pathname]);
 
+  // Update navLinks active state based on current path
+  useEffect(() => {
+    // Set the active navigation link based on the current path
+    const path = location.pathname.split('/')[1]; // Get the first part of the path
+    const newNavLinks = navLinks.map(link => ({
+      name: link,
+      active: link.toLowerCase() === (path || 'home')
+    }));
+    
+    if (JSON.stringify(newNavLinks) !== JSON.stringify(navLinks)) {
+      setNavLinks(newNavLinks);
+    }
+  }, [location.pathname]);
+
+  // Determine whether to show the footer
+  const showFooter = !location.pathname.includes('/signup') && 
+                    !location.pathname.includes('/face-model');
+
   return (
     <>
       {/* Only show navbar if not on signup or face-model pages */}
@@ -91,7 +115,7 @@ function App() {
           isLoggedIn={isLoggedIn}
           userName={userName}
           setIsLoggedIn={logout}
-          navLinks={navLinks}
+          navLinks={navLinks.map(link => typeof link === 'object' ? link.name : link)}
           enableScrollDetection={enableScrollDetection}
           key={`navbar-${isLoggedIn}-${forceUpdate}`} // Force re-render when auth state changes
         />
@@ -105,12 +129,19 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/face-model" element={<FaceModelPage />} />
           
+          {/* Casting routes */}
+          <Route path="/casting" element={<CastingPage />} />
+          <Route path="/apply" element={<CastingApplicationPage />} />
+          
           {/* Add additional routes for other pages here */}
           
           {/* Fallback route - redirect to home */}
           <Route path="*" element={<FfrPage />} />
         </Routes>
       </div>
+
+      {/* Only show footer on appropriate pages */}
+      {showFooter && <Footer />}
     </>
   );
 }

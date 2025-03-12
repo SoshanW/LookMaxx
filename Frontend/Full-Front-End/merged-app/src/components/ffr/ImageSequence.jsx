@@ -25,8 +25,8 @@ const ImageSequence = ({ frameCount = 225, imageFormat = 'jpg' }) => {
 
     updateCanvasSize();
 
-    const currentFrame = (index) => `/assets/${(index + 1).toString()}.${imageFormat}`;
-
+    const currentFrame = (index) => `/assets/ffr/${(index + 1).toString()}.${imageFormat}`;
+    
     imagesRef.current = new Array(frameCount).fill(null);
 
     const loadImageBatch = (startIdx) => {
