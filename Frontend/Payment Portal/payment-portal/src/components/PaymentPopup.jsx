@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import md5 from 'crypto-js/md5';
+import PayHereComponent from "./PayHereComponent";
 
 // PayHere configuration
 const PAYHERE_CONFIG = {
@@ -30,10 +31,10 @@ const PaymentPopup = ({ onClose, planId, planName, planPrice }) => {
   const merchantId = PAYHERE_CONFIG.MERCHANT_ID;
   const merchantSecret = PAYHERE_CONFIG.MERCHANT_SECRET;
   
-  const rupee = "4500";
+  const rupees = "4500";
 
   // Format amount to have 2 decimal places
-  const formattedAmount = parseFloat(rupee).toFixed(2);
+  const formattedAmount = parseFloat(rupees).toFixed(2);
   
   // Generate hash according to PayHere documentation
   const hashedSecret = md5(merchantSecret).toString().toUpperCase();
