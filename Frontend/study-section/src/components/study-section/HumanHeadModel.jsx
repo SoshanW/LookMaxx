@@ -23,7 +23,7 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
 
   const resetHeadPosition = () => {
     if (!headRef.current) return
-    
+
     const tl = gsap.timeline()
     
     tl.to(headRef.current.position, {
@@ -51,17 +51,17 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
     }, 0)
   }
 
-  // Setup pulsing animation for spheres
+  // Setup pulsing animation for spheres on mount
   useEffect(() => {
-    Object.entries(featureData).forEach(([feature, _]) => {
+    Object.entries(featureData).forEach(([feature]) => {
       const sphere = sphereRefs.current[feature]
       if (!sphere) return
       
       gsap.killTweensOf(sphere.scale)
       
       gsap.to(sphere.scale, {
-        x: 1.15, 
-        y: 1.15, 
+        x: 1.15,
+        y: 1.15,
         z: 1.15,
         duration: 1.3,
         repeat: -1,
@@ -73,7 +73,7 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
 
   // Handle feature selection animations
   useEffect(() => {
-    Object.entries(featureData).forEach(([feature, data]) => {
+    Object.entries(featureData).forEach(([feature]) => {
       const sphere = sphereRefs.current[feature]
       if (!sphere) return
 
@@ -87,8 +87,8 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
         })
         
         gsap.to(sphere.scale, {
-          x: 1.5, 
-          y: 1.5, 
+          x: 1.5,
+          y: 1.5,
           z: 1.5,
           duration: 1.5,
           repeat: -1,
@@ -102,14 +102,14 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
         })
         
         gsap.to(sphere.scale, {
-          x: 0.85, 
-          y: 0.85, 
+          x: 0.85,
+          y: 0.85,
           z: 0.85,
           duration: 0.5,
           onComplete: () => {
             gsap.to(sphere.scale, {
-              x: 1.15, 
-              y: 1.15, 
+              x: 1.15,
+              y: 1.15,
               z: 1.15,
               duration: 1.3,
               repeat: -1,
@@ -175,88 +175,108 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
       </group>
       
       {/* Feature spheres */}
-      {Object.entries(featureData).map(([feature, data]) => (
-        <group 
-          key={feature} 
-          position={data.spherePos} 
-          ref={(el) => { sphereGroupRefs.current[feature] = el }}
-        >
-          {/* Ripple effect */}
-          <SphereRippleEffect 
-            active={selectedFeature === feature} 
-            color="#a94dff" 
-            scale={1}
-            intensity={1.5}
-          />
-          
-          {/* Sphere */}
-          <mesh
-            ref={(el) => { if (el) sphereRefs.current[feature] = el }}
-            onClick={(e) => {
-              e.stopPropagation()
-              onFeatureClick(feature)
-            }}
-            onPointerOver={(e) => {
-              e.stopPropagation()
-              if (selectedFeature !== feature) {
-                gsap.to(e.object.material, {
-                  emissiveIntensity: 0.7,
-                  duration: 0.3
-                })
-                
-                gsap.to(e.object.scale, {
-                  x: 1.3, 
-                  y: 1.3, 
-                  z: 1.3,
-                  duration: 0.4,
-                  ease: "back.out(2)"
-                })
-                
-                gsap.fromTo(
-                  sphereGroupRefs.current[feature].rotation,
-                  { z: -0.1 },
-                  { 
-                    z: 0.1, 
-                    duration: 0.2, 
-                    repeat: 3, 
-                    yoyo: true,
-                    ease: "sine.inOut" 
-                  }
-                )
-              }
-            }}
-            onPointerOut={(e) => {
-              e.stopPropagation()
-              if (selectedFeature !== feature) {
-                gsap.to(e.object.material, {
-                  emissiveIntensity: 0.3,
-                  duration: 0.3
-                })
-                
-                gsap.to(e.object.scale, {
-                  x: 1.15, 
-                  y: 1.15, 
-                  z: 1.15,
-                  duration: 0.5,
-                  ease: "power2.out"
-                })
-                
-                gsap.to(sphereGroupRefs.current[feature].rotation, {
-                  z: 0,
-                  duration: 0.3
-                })
-              }
-            }}
+      {Object.entries(featureData).map(([feature, data]) => {
+        // If a feature is selected and this sphere is not it, hide it.
+        if (selectedFeature && feature !== selectedFeature) return null;
+
+        return (
+          <group 
+            key={feature} 
+            position={data.spherePos} 
+            ref={(el) => { sphereGroupRefs.current[feature] = el }}
           >
-            <sphereGeometry args={[0.1, 32, 32]} />
-            <meshStandardMaterial 
+            {/* Ripple effect */}
+            <SphereRippleEffect 
+              active={selectedFeature === feature} 
               color="#a94dff" 
-              emissive="#a94dff" 
-              emissiveIntensity={selectedFeature === feature ? 0.8 : 0.3} 
+              scale={1}
+              intensity={1.5}
             />
-          </mesh>
-        </group>
-      ))}
+            
+            {/* Sphere */}
+            <mesh
+              ref={(el) => { if (el) sphereRefs.current[feature] = el }}
+              onClick={(e) => {
+                e.stopPropagation()
+                onFeatureClick(feature)
+              }}
+              onPointerOver={(e) => {
+                e.stopPropagation()
+                // Set cursor to pointer and disable pulsing
+                document.body.style.cursor = 'pointer'
+                gsap.killTweensOf(e.object.scale)
+                if (selectedFeature !== feature) {
+                  gsap.to(e.object.material, {
+                    emissiveIntensity: 0.7,
+                    duration: 0.3
+                  })
+                  
+                  gsap.to(e.object.scale, {
+                    x: 1.3, 
+                    y: 1.3, 
+                    z: 1.3,
+                    duration: 0.4,
+                    ease: "back.out(2)"
+                  })
+                  
+                  gsap.fromTo(
+                    sphereGroupRefs.current[feature].rotation,
+                    { z: -0.1 },
+                    { 
+                      z: 0.1, 
+                      duration: 0.2, 
+                      repeat: 3, 
+                      yoyo: true,
+                      ease: "sine.inOut" 
+                    }
+                  )
+                }
+              }}
+              onPointerOut={(e) => {
+                e.stopPropagation()
+                // Reset cursor style
+                document.body.style.cursor = 'auto'
+                if (selectedFeature !== feature) {
+                  gsap.to(e.object.material, {
+                    emissiveIntensity: 0.3,
+                    duration: 0.3
+                  })
+                  // Tween to the low value first, then restart pulsing tween
+                  gsap.to(e.object.scale, {
+                    x: 0.85,
+                    y: 0.85,
+                    z: 0.85,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    onComplete: () => {
+                      gsap.to(e.object.scale, {
+                        x: 1.15,
+                        y: 1.15,
+                        z: 1.15,
+                        duration: 1.3,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: "sine.inOut"
+                      })
+                    }
+                  })
+                  gsap.to(sphereGroupRefs.current[feature].rotation, {
+                    z: 0,
+                    duration: 0.3
+                  })
+                }
+              }}
+            >
+              <sphereGeometry args={[0.1, 32, 32]} />
+              <meshStandardMaterial 
+                color="#a94dff" 
+                emissive="#a94dff" 
+                emissiveIntensity={selectedFeature === feature ? 0.8 : 0.3} 
+              />
+            </mesh>
+          </group>
+        )
+      })}
     </group>
   )
 }

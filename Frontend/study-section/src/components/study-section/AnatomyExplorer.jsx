@@ -1,23 +1,21 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Environment, Stars } from '@react-three/drei'
 import HumanHeadModel from './HumanHeadModel'
 import FeatureInfoPanel from './FeatureInfoPanel'
 import WelcomePanel from './WelcomePanel'
-import Navbar from './Navbar'
+import NavigationBar from './NavigationBar'
 import SceneLighting from './SceneLighting'
 import { featureData } from '../../data/FeatureData'
-import {useRef} from 'react'
 import '../../styles/study-section/AnatomyExplorer.css'
 
 const AnatomyExplorer = () => {
   const [selectedFeature, setSelectedFeature] = useState(null)
+  const [pendingFeature, setPendingFeature] = useState(null)
   const [showInfo, setShowInfo] = useState(false)
   const [showWelcome, setShowWelcome] = useState(true)
   const [isExiting, setIsExiting] = useState(false)
   const [welcomeExiting, setWelcomeExiting] = useState(false)
-  const [nextFeature, setNextFeature] = useState(null)
-  const exitProcessed = useRef(false);
 
   const initialHeadPosition = { 
     position: [-3, -1, 0], 
@@ -28,44 +26,47 @@ const AnatomyExplorer = () => {
   const handleFeatureClick = (feature) => {
     if (isExiting || feature === selectedFeature) return;
   
-    exitProcessed.current = false;
     if (selectedFeature) {
+      // A feature is active so set the pending feature and trigger exit animation.
       setIsExiting(true);
-      setNextFeature(feature);
+      setPendingFeature(feature);
     } else {
+      // No feature is active so directly transition.
       setShowWelcome(false); 
       setSelectedFeature(feature); 
     }
-  };  
+  };
 
   const handleCloseInfo = () => {
-    if (nextFeature !== null) return;
-    setIsExiting(true)
+    if (pendingFeature !== null) return;
+    setIsExiting(true);
   }
   
+  // When the info panel's exit animation is complete:
   const handleExitComplete = () => {
-    if (exitProcessed.current) return;
-    exitProcessed.current = true;
-
-    if (nextFeature) {
-      setShowInfo(false); 
-      setSelectedFeature(nextFeature);
-      setNextFeature(null);
+    if (pendingFeature) {
+      // Transition to the new feature without going back to welcome.
+      setSelectedFeature(pendingFeature);
+      setPendingFeature(null);
       setIsExiting(false);
-      setShowWelcome(false); 
+      setShowWelcome(false);
     } else {
+      // No pending feature: close info panel and show welcome.
+      setSelectedFeature(null);
       setShowInfo(false);
       setShowWelcome(true);
-      setSelectedFeature(null);
       setIsExiting(false);
     }
-  };  
+  };
   
   const handleWelcomeExitComplete = () => {
     setShowWelcome(false)
     setWelcomeExiting(false)
-    setSelectedFeature(nextFeature)
-    setNextFeature(null)
+    // When the welcome panel exits, if a pending feature was queued, transition to it.
+    if (pendingFeature) {
+      setSelectedFeature(pendingFeature)
+      setPendingFeature(null)
+    }
   }
 
   // Helper to split description for lips
@@ -99,7 +100,7 @@ const AnatomyExplorer = () => {
 
   return (
     <div className="canvas-container">
-      <Navbar />
+      <NavigationBar />
       <Canvas camera={{ position: [0, 0, 5] }}>
         <SceneLighting />
         <Environment preset="city" />
@@ -108,7 +109,10 @@ const AnatomyExplorer = () => {
           initialPosition={initialHeadPosition}
           selectedFeature={selectedFeature}
           featureData={featureData}
-          onAnimationComplete={() => !isExiting && setShowInfo(true)}
+          onAnimationComplete={() => {
+            // Always open the info panel after the head animation completes if a feature is active.
+            if (!isExiting && selectedFeature) setShowInfo(true)
+          }}
           onFeatureClick={handleFeatureClick}
         />
       </Canvas>
