@@ -50,6 +50,29 @@ const generateOrderId = () => {
     form.method = 'POST';
     form.action = PAYHERE_CONFIG.SANDBOX_URL;
     
+    // Define all required parameters
+    const paymentData = {
+      sandbox: true,
+      merchant_id: PAYHERE_CONFIG.MERCHANT_ID,
+      return_url: PAYHERE_CONFIG.RETURN_URL,
+      cancel_url: PAYHERE_CONFIG.CANCEL_URL,
+      notify_url: PAYHERE_CONFIG.NOTIFY_URL,
+      order_id: orderId,
+      items: planName || "PRO Subscription",
+      amount: 4500,
+      currency: currency,
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      phone: mobile.replace(/\+/g, ''), // Remove + from country code
+      address: address,
+      city: city,
+      country: country,
+      recurrence: "1 Month",
+      duration : "1 Month",
+      hash: hash
+    };
+    
     // Add form fields
     Object.entries(paymentData).forEach(([key, value]) => {
       const input = document.createElement('input');
