@@ -8,7 +8,7 @@ const PAYHERE_CONFIG = {
   MERCHANT_ID: "1229752",
   MERCHANT_SECRET: "MTk3MzMwOTU3NjI2MjU0ODIxMTMzMTE2MjQzMDgyMzA4MzQxNDg4NA==",
   SANDBOX_URL: "https://sandbox.payhere.lk/pay/checkout",
-  RETURN_URL: "http://localhost:5173/",
+  RETURN_URL: "http://localhost:5000/",
   CANCEL_URL: "http://localhost:5000/payment/cancel",
   NOTIFY_URL: "http://localhost:5000/api/payment/notify"
 };
