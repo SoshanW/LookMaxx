@@ -84,7 +84,7 @@
 /* Feature cards styling */
 .feature-card {
   position: absolute;
-  width: 350px;
+  width: 350px; /* All cards have the same width */
   z-index: 3;
   opacity: 0;
   visibility: hidden;
@@ -93,20 +93,21 @@
 
 /* Position each card individually */
 .feature-card-1 {
-  top: 30%;
-  left: 10%;
+  top: 20%;
+  left: 40%;
 }
 
 .feature-card-2 {
-  top: 30%;
+  top: 40%;
   right: 10%;
 }
 
 .feature-card-3 {
-  top: 60%;
-  left: 15%;
+  top: 70%;
+  left: 40%;
 }
 
+/* Ensure all cards have the same styling */
 .card-content {
   background: rgba(9, 42, 62, 0.7);
   border: 1px solid #84ffff;
@@ -117,6 +118,10 @@
   color: white;
   text-align: center;
   transition: all 0.3s ease;
+  min-height: 200px; /* Ensure consistent height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card-content:hover {
@@ -146,6 +151,7 @@
   transition: all 0.3s ease;
   box-shadow: 0 0 10px rgba(132, 255, 255, 0.3);
   text-shadow: #ffffff 0 0 5px;
+  align-self: center;
 }
 
 .card-button:hover {
@@ -219,18 +225,22 @@
   
   /* Adjust card positions for mobile */
   .feature-card-1 {
-    top: 25%;
+    top: 15%;
     left: 5%;
   }
   
   .feature-card-2 {
-    top: 25%;
+    top: 40%;
     right: 5%;
   }
   
   .feature-card-3 {
-    top: 50%;
-    left: 10%;
+    top: 65%;
+    left: 5%;
+  }
+
+  .card-content {
+    min-height: 180px; /* Slightly smaller on mobile */
   }
 
   .card-content h2 {

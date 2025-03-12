@@ -71,35 +71,58 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
     
     window.addEventListener('resize', handleResize)
     
-    // GSAP animation
+    // Initial animations for brand name and tagline
+    gsap.fromTo(".brand-name", 
+      { autoAlpha: 0, y: -50 }, // starting state
+      { autoAlpha: 1, y: 0, duration: 1.5, delay: 0.5, ease: "power2.out" } // ending state
+    );
+    
+    gsap.fromTo(".brand-tagline", 
+      { autoAlpha: 0, y: 50 }, // starting state
+      { autoAlpha: 1, y: 0, duration: 1.5, delay: 1, ease: "power2.out" } // ending state
+    );
+    
+    gsap.fromTo(".get-started-btn", 
+      { autoAlpha: 0, scale: 0.8 }, // starting state
+      { autoAlpha: 1, scale: 1, duration: 1, delay: 1.5, ease: "back.out(1.7)" } // ending state
+    );
+    
+    // GSAP animation - slowed down for better pacing
     gsap.to(faceRef.current, {
       frame: frameCount - 1,
       snap: "frame",
       ease: "none",
       scrollTrigger: {
-        scrub: 0.5,
+        scrub: 1.5, // Even smoother scrolling
         pin: containerRef.current,
-        end: "200%",
+        end: "400%", // Increased to make scrolling slower
         onUpdate: (self) => {
           setScrollProgress(self.progress);
           
-          // Dynamic content visibility based on scroll position
-          if (self.progress > 0.25 && self.progress < 0.45) {
-            gsap.to(".feature-card-1", { autoAlpha: 1, duration: 0.5 });
+          // Keep brand name visible longer by adjusting fadeout timing
+          const brandOpacity = 1 - Math.max(0, (self.progress - 0.1) * 2.5);
+          gsap.set(".landing-text-overlay", { opacity: brandOpacity });
+          
+          
+          // First card 
+          if (self.progress > 0.5 && self.progress < 0.66) {
+            gsap.to(".feature-card-1", { autoAlpha: 1, duration: 1 });
           } else {
-            gsap.to(".feature-card-1", { autoAlpha: 0, duration: 0.5 });
+            gsap.to(".feature-card-1", { autoAlpha: 0, duration: 0.8 });
           }
           
-          if (self.progress > 0.45 && self.progress < 0.65) {
-            gsap.to(".feature-card-2", { autoAlpha: 1, duration: 0.5 });
+          // Second card 
+          if (self.progress > 0.66 && self.progress < 0.82) {
+            gsap.to(".feature-card-2", { autoAlpha: 1, duration: 1 });
           } else {
-            gsap.to(".feature-card-2", { autoAlpha: 0, duration: 0.5 });
+            gsap.to(".feature-card-2", { autoAlpha: 0, duration: 0.8 });
           }
           
-          if (self.progress > 0.65 && self.progress < 0.85) {
-            gsap.to(".feature-card-3", { autoAlpha: 1, duration: 0.5 });
+          // Third card 
+          if (self.progress > 0.82 && self.progress < 1) {
+            gsap.to(".feature-card-3", { autoAlpha: 1, duration: 1 });
           } else {
-            gsap.to(".feature-card-3", { autoAlpha: 0, duration: 0.5 });
+            gsap.to(".feature-card-3", { autoAlpha: 0, duration: 0.8 });
           }
         }
       },
@@ -123,8 +146,8 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
     <div ref={containerRef} className="animation-container">
       <canvas ref={canvasRef} className="scroll-animation-canvas" />
       
-      {/* Text overlay for landing area */}
-      <div className="landing-text-overlay" style={{ opacity: 1 - scrollProgress * 2 }}>
+      {/* Text overlay for landing area - opacity controlled by GSAP now */}
+      <div className="landing-text-overlay">
         <div className="brand-name">LookSci</div>
         <div className="brand-tagline">
           <div>Beauty</div>
