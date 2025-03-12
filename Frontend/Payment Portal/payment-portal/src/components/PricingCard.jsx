@@ -349,7 +349,12 @@ const PricingCard = ({
           </motion.ul>
         </div>
       </motion.div>
-      {isPopupOpen && <PaymentPopup onClose={closePopup} />} {/* Render the PaymentPopup if open */}
+      {isPopupOpen && 
+      <PaymentPopup
+       onClose={closePopup}
+       planId="1" />
+       planName={title}
+       planPrice={price.replace('$','Rs')} 
     </motion.div>
   );
 };
