@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-// import PaymentPopup from "./PaymentPopup";
+import PaymentPopup from "./PaymentPopup";
 
 const PricingCard = ({ 
   title, 
