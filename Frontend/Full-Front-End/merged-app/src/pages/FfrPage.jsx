@@ -1,3 +1,4 @@
+// src/pages/FfrPage.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import ImageSequence from '../components/ffr/ImageSequence';
 import ScrollText from '../components/ffr/ScrollText';
@@ -37,6 +38,31 @@ function FfrPage() {
   
   // Report generator settings
   const reportDuration = 60000; // 60 seconds (adjust as needed)
+
+  // Apply proper page class
+  useEffect(() => {
+    // Reset scroll position when the component mounts
+    window.scrollTo(0, 0);
+    
+    // Clear any previous body classes that might interfere
+    document.body.classList.remove('casting-page', 'signup-page');
+    document.body.classList.add('ffr-page');
+    
+    // Force re-initialization of GSAP animations
+    if (window.ScrollTrigger) {
+      window.ScrollTrigger.refresh();
+    }
+
+    return () => {
+      // Clean up when component unmounts
+      document.body.classList.remove('ffr-page');
+      
+      // Kill any lingering GSAP animations
+      if (window.ScrollTrigger) {
+        window.ScrollTrigger.getAll().forEach(t => t.kill());
+      }
+    };
+  }, []);
 
   // Function to show login prompt
   const handleShowLoginPrompt = () => {
@@ -175,7 +201,9 @@ function FfrPage() {
 
   // Handle scroll events
   useEffect(() => {
+    // Reset scroll position
     window.scrollTo(0, 0);
+    
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
@@ -240,9 +268,24 @@ function FfrPage() {
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resetScrollDetection', resetScrollDetection);
     
+    // Force GSAP to recalculate positions
+    if (window.ScrollTrigger) {
+      setTimeout(() => {
+        window.ScrollTrigger.refresh();
+      }, 100);
+    }
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resetScrollDetection', resetScrollDetection);
+      
+      // Clean up any lingering animations
+      if (window.ScrollTrigger) {
+        window.ScrollTrigger.getAll().forEach(t => t.kill());
+      }
+      
+      // Reset scroll position
+      document.body.style.overflow = 'auto';
     };
   }, [isLoggedIn, showReportGenerator, isReportMinimized]);
 

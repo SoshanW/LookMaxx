@@ -173,7 +173,7 @@ function CastingApplicationForm() {
             <h3>Your FFR Analysis Results</h3>
             <div className="ffr-pdf-container">
               {/* This would be replaced with actual user data in production */}
-              <img src="/assets/report.jpeg" alt="Sample FFR Results" className="ffr-sample-image" />
+              <img src="/assets/casting/report.jpeg" alt="Sample FFR Results" className="ffr-sample-image" />
               <p className="ffr-disclaimer">These results are generated from your FFR analysis completed on the FFR page. The data helps agencies evaluate facial symmetry, proportions, and other model-relevant metrics.</p>
             </div>
           </div>

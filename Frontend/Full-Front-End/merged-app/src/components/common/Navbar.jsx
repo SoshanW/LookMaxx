@@ -1,3 +1,5 @@
+// src/components/common/Navbar.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
@@ -26,6 +28,7 @@ const Navbar = ({
     const path = location.pathname.substring(1); // remove leading slash
     if (path === '') return 'home';
     if (path.startsWith('signup') || path.startsWith('face-model')) return '';
+    if (path === 'apply') return 'casting'; // Consider apply page as part of casting
     return path.toLowerCase();
   });
 
@@ -34,6 +37,7 @@ const Navbar = ({
     const path = location.pathname.substring(1);
     if (path === '') setActiveLink('home');
     else if (path.startsWith('signup') || path.startsWith('face-model')) setActiveLink('');
+    else if (path === 'apply') setActiveLink('casting');
     else setActiveLink(path.toLowerCase());
   }, [location]);
 
@@ -141,16 +145,31 @@ const Navbar = ({
     const lowercaseLink = linkName.toLowerCase();
     setActiveLink(lowercaseLink);
     
-    // Handle navigation based on link name
-    if (lowercaseLink === 'home') {
-      navigate('/');
-    } else if (lowercaseLink === 'ffr') {
-      navigate('/ffr');
-    } else if (lowercaseLink === 'signup' || lowercaseLink === 'login') {
-      navigate('/signup');
-    } else {
-      navigate(`/${lowercaseLink}`);
-    }
+    // Force state update before navigation
+    setTimeout(() => {
+      // Handle navigation based on link name
+      if (lowercaseLink === 'home') {
+        navigate('/', { replace: true });
+      } else if (lowercaseLink === 'ffr') {
+        navigate('/ffr', { replace: true });
+      } else if (lowercaseLink === 'casting') {
+        navigate('/casting', { replace: true });
+      } else if (lowercaseLink === 'signup' || lowercaseLink === 'login') {
+        navigate('/signup', { replace: true });
+      } else {
+        navigate(`/${lowercaseLink}`, { replace: true });
+      }
+      
+      // Force component re-render and recalculate dimensions
+      window.dispatchEvent(new Event('resize'));
+      
+      // Force GSAP to recalculate positions
+      if (window.ScrollTrigger) {
+        setTimeout(() => {
+          window.ScrollTrigger.refresh();
+        }, 100);
+      }
+    }, 0);
   };
 
   const handleLoginSignup = (type) => {
@@ -161,17 +180,23 @@ const Navbar = ({
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
         <div className="nav-links">
-          {navLinks.map((link) => (
-            <a
-              key={link.toLowerCase()}
-              ref={addToRefs}
-              href={`/${link.toLowerCase()}`}
-              className={`nav-link ${activeLink === link.toLowerCase() ? 'active' : ''}`}
-              onClick={(e) => handleLinkClick(link, e)}
-            >
-              {link}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            // Get the link text (could be object or string)
+            const linkText = typeof link === 'object' ? link.name : link;
+            const linkValue = linkText.toLowerCase();
+            
+            return (
+              <a
+                key={linkValue}
+                ref={addToRefs}
+                href={`/${linkValue === 'home' ? '' : linkValue}`}
+                className={`nav-link ${activeLink === linkValue ? 'active' : ''}`}
+                onClick={(e) => handleLinkClick(linkText, e)}
+              >
+                {linkText}
+              </a>
+            );
+          })}
         </div>
         
         <div className="auth-section" ref={authRef}>

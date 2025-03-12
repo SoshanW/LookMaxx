@@ -1,4 +1,4 @@
-// src/App.jsx - Updated to include the casting routes
+// src/App.jsx - Updated with fixes for tab switching issues
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthContext } from './context/AuthProvider';
@@ -62,7 +62,30 @@ function App() {
     };
   }, []);
   
+  // Fix for tab switching issues
   useEffect(() => {
+    // Force re-render of components when location changes
+    const cleanupFunctions = [];
+    
+    // Clear any lingering timeouts or intervals
+    const clearTimeoutsAndIntervals = () => {
+      // Force GSAP to recalculate scroll positions
+      if (window.ScrollTrigger) {
+        setTimeout(() => {
+          window.ScrollTrigger.refresh();
+        }, 100);
+      }
+      
+      // Dispatch resize event to force recalculation of component dimensions
+      window.dispatchEvent(new Event('resize'));
+    };
+    
+    // Run cleanup when location changes
+    clearTimeoutsAndIntervals();
+    
+    // Save cleanup function
+    cleanupFunctions.push(clearTimeoutsAndIntervals);
+    
     // Enable scroll detection only on FFR page
     if (location.pathname === '/' || location.pathname === '/ffr') {
       setEnableScrollDetection(true);
@@ -82,24 +105,40 @@ function App() {
       document.body.classList.add('ffr-page');
     }
     
-    // Cleanup on unmount
+    // Reset scroll position on page navigation
+    window.scrollTo(0, 0);
+    
     return () => {
-      // We'll leave this empty since we don't want to remove classes
-      // until another route is loaded
+      // Run all cleanup functions
+      cleanupFunctions.forEach(fn => fn());
     };
   }, [location.pathname]);
 
   // Update navLinks active state based on current path
   useEffect(() => {
     // Set the active navigation link based on the current path
-    const path = location.pathname.split('/')[1]; // Get the first part of the path
-    const newNavLinks = navLinks.map(link => ({
-      name: link,
-      active: link.toLowerCase() === (path || 'home')
-    }));
+    const path = location.pathname.split('/')[1] || 'home'; // Get the first part of the path
     
-    if (JSON.stringify(newNavLinks) !== JSON.stringify(navLinks)) {
-      setNavLinks(newNavLinks);
+    // Create array of standardized link objects
+    const linkObjects = navLinks.map(link => {
+      const linkName = typeof link === 'object' ? link.name : link;
+      return {
+        name: linkName,
+        active: linkName.toLowerCase() === path || 
+               (linkName.toLowerCase() === 'casting' && path === 'apply') ||
+               (linkName.toLowerCase() === 'home' && path === '')
+      };
+    });
+    
+    // Only update if there's a change to prevent infinite loop
+    const currentActiveIndex = linkObjects.findIndex(link => link.active);
+    const previousActiveIndex = navLinks.findIndex(link => {
+      if (typeof link === 'object') return link.active;
+      return false;
+    });
+    
+    if (currentActiveIndex !== previousActiveIndex) {
+      setNavLinks(linkObjects);
     }
   }, [location.pathname]);
 
@@ -115,28 +154,28 @@ function App() {
           isLoggedIn={isLoggedIn}
           userName={userName}
           setIsLoggedIn={logout}
-          navLinks={navLinks.map(link => typeof link === 'object' ? link.name : link)}
+          navLinks={navLinks}
           enableScrollDetection={enableScrollDetection}
-          key={`navbar-${isLoggedIn}-${forceUpdate}`} // Force re-render when auth state changes
+          key={`navbar-${isLoggedIn}-${forceUpdate}-${location.pathname}`} // Force re-render when auth state or location changes
         />
       )}
       
       <div className="app-container">
         <Routes>
-          {/* Main routes */}
-          <Route path="/" element={<FfrPage key={`ffr-page-${isLoggedIn}-${forceUpdate}`} />} />
-          <Route path="/ffr" element={<FfrPage key={`ffr-page-${isLoggedIn}-${forceUpdate}`} />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/face-model" element={<FaceModelPage />} />
+          {/* Main routes - key prop forces re-render when changes occur */}
+          <Route path="/" element={<FfrPage key={`ffr-page-${isLoggedIn}-${forceUpdate}-${location.pathname}`} />} />
+          <Route path="/ffr" element={<FfrPage key={`ffr-page-${isLoggedIn}-${forceUpdate}-${location.pathname}`} />} />
+          <Route path="/signup" element={<SignupPage key={`signup-page-${location.pathname}`} />} />
+          <Route path="/face-model" element={<FaceModelPage key={`face-model-${location.pathname}`} />} />
           
           {/* Casting routes */}
-          <Route path="/casting" element={<CastingPage />} />
-          <Route path="/apply" element={<CastingApplicationPage />} />
+          <Route path="/casting" element={<CastingPage key={`casting-page-${location.pathname}`} />} />
+          <Route path="/apply" element={<CastingApplicationPage key={`apply-page-${location.pathname}`} />} />
           
           {/* Add additional routes for other pages here */}
           
           {/* Fallback route - redirect to home */}
-          <Route path="*" element={<FfrPage />} />
+          <Route path="*" element={<FfrPage key={`ffr-page-fallback-${location.pathname}`} />} />
         </Routes>
       </div>
 

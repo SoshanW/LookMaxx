@@ -262,7 +262,7 @@ const HeroSection = ({ sectionRef, isActive, onApplyNow }) => {
             initial="hidden"
             animate={isActive ? "visible" : "hidden"}
             variants={fadeInDelayedVariant}
-            custom={2} // Delay factor = 2
+            custom={1} // Delay factor = 2
             onClick={onApplyNow} // Handler for Apply Now button
           >
             APPLY NOW
