@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import md5 from 'crypto-js/md5';
-import PayHereComponent from "./PayHereComponent";
 
 // PayHere configuration
 const PAYHERE_CONFIG = {
