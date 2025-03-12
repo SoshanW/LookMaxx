@@ -8,7 +8,7 @@ const PAYHERE_CONFIG = {
   MERCHANT_ID: "1229752",
   MERCHANT_SECRET: "MTk3MzMwOTU3NjI2MjU0ODIxMTMzMTE2MjQzMDgyMzA4MzQxNDg4NA==",
   SANDBOX_URL: "https://sandbox.payhere.lk/pay/checkout",
-  RETURN_URL: "http://localhost:5000/",
+  RETURN_URL: "http://localhost:5173/",
   CANCEL_URL: "http://localhost:5000/payment/cancel",
   NOTIFY_URL: "http://localhost:5000/api/payment/notify"
 };
@@ -31,10 +31,10 @@ const PaymentPopup = ({ onClose, planId, planName, planPrice }) => {
   const merchantId = PAYHERE_CONFIG.MERCHANT_ID;
   const merchantSecret = PAYHERE_CONFIG.MERCHANT_SECRET;
   
-  const rupees = "4500";
+  const rupee = "4500";
 
   // Format amount to have 2 decimal places
-  const formattedAmount = parseFloat(rupees).toFixed(2);
+  const formattedAmount = parseFloat(rupee).toFixed(2);
   
   // Generate hash according to PayHere documentation
   const hashedSecret = md5(merchantSecret).toString().toUpperCase();
@@ -95,7 +95,7 @@ const generateOrderId = () => {
       amount: 4500,
       currency: currency,
       first_name: firstName,
-      //last_name: lastName,
+      last_name: lastName,
       email: email,
       phone: mobile.replace(/\+/g, ''), // Remove + from country code
       address: address,
