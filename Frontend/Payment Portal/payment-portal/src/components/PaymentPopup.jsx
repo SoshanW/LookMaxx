@@ -16,6 +16,29 @@ const PaymentPopup = ({ onClose, planId, planName, planPrice }) => {
   const [error, setError] = useState('');
 
 
+ // Generate hash for PayHere
+  const generateHash = (orderId, amount, currency) => {
+  const merchantId = PAYHERE_CONFIG.MERCHANT_ID;
+  const merchantSecret = PAYHERE_CONFIG.MERCHANT_SECRET;
+  
+  const rupees = "4500";
+
+  // Format amount to have 2 decimal places
+  const formattedAmount = parseFloat(rupees).toFixed(2);
+  
+  // Generate hash according to PayHere documentation
+  const hashedSecret = md5(merchantSecret).toString().toUpperCase();
+  const hash = md5(
+    merchantId + 
+    orderId + 
+    formattedAmount + 
+    currency + 
+    hashedSecret
+  ).toString().toUpperCase();
+  
+  return hash;
+};
+
 // Generate a unique order ID
 const generateOrderId = () => {
   return `ORDER_${planId}_${Date.now()}`;
