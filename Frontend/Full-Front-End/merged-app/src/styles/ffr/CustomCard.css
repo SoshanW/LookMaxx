@@ -1,0 +1,117 @@
+@import url("https://fonts.cdnfonts.com/css/mona-sans");
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+html, body {
+  overflow: hidden;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  background: #343434;
+  background: linear-gradient(180deg, #343434 0%, #252525 100%);
+  font-family: "Mona-Sans", sans-serif;
+}
+
+.card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 19%;
+  margin: auto;
+  width: 320px;
+  height: 500px;
+  border-radius: 16px;
+  background: #191919aa;
+  background: linear-gradient(180deg, #292929aa 0%, #191919cc 50%);
+  backdrop-filter: blur(4px);
+  box-shadow: inset 0 2px 2px 0 #e7c4a088, inset 0 -2px 2px 0 #0003;
+  color: #ccc;
+  text-shadow: 1px 1px 3px #333a;
+  padding: 24px;
+  padding-right: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.card h2, .card p {
+  margin: 8px 0;
+}
+
+.card h2 {
+  font-size: 1.1em;
+}
+
+.card p {
+  font-size: 0.9em;
+  font-weight: 800;
+  color: #aaa;
+}
+
+.card .button {
+  width: fit-content;
+  border-radius: 100px;
+  padding: 8px 36px;
+  margin-top: 12px;
+  background: #fff2;
+  box-shadow: 0 0 0 1px #fff3, inset 120px 0 100px -100px #000c, 0 0 0 0 #fff1;
+  transition: box-shadow 0.4s ease-in-out;
+  cursor: pointer;
+}
+
+.card .button:hover {
+  box-shadow: 0 0 0 1px #fff3, inset 200px 0px 100px -100px #000a, -4px 0 8px 2px #fff2;
+}
+
+.card img {
+  position: absolute;
+  top: 32px;
+  left: 0;
+  right: 0;
+  width: 80%;
+  margin: auto;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Accents styles */
+.accents {
+  user-select: none;
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 20%;
+}
+
+.acc-card {
+  width: 330px;
+  height: 500px;
+  background: #eee1;
+  opacity: 0.8;
+  z-index: -1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 20%;
+  margin: auto;
+  border-radius: 16px;
+  box-shadow: inset 0 2px 2px 0 #e0c9b266, inset 0 -2px 2px 0 #0004;
+  backdrop-filter: blur(4px);
+  transition: all 0.1s linear;
+  transform-origin: 20% 80%;
+}
+

@@ -1,0 +1,75 @@
+::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+body {
+  overflow-y: scroll;
+}
+
+.custom-scrollbar {
+  position: fixed;
+  top: 50%;
+  right: 2rem;
+  transform: translateY(-50%);
+  height: 60vh;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.scrollbar-track {
+  width: 2px;
+  height: 100%;
+  background-color: rgba(25, 25, 25, 0.1);
+  position: relative;
+  border-radius: 1px;
+  pointer-events: all;
+}
+
+.scrollbar-thumb {
+  width: 100%;
+  background: linear-gradient(to bottom, #00d4ff, #00ffa3);
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 1px;
+  will-change: height;
+  pointer-events: all;
+}
+
+.scroll-dots {
+  position: absolute;
+  right: -4px;
+  top: 100%;
+  transform: translateX(50%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 4px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: #00ffa3;
+  border-radius: 50%;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.scrollbar-thumb:hover {
+  width: 4px;
+  transition: width 0.3s ease;
+}
+
+.scrollbar-thumb:hover .dot {
+  width: 6px;
+  height: 6px;
+  opacity: 1;
+}

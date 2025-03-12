@@ -1,0 +1,302 @@
+/* UploadPhoto.css */
+.upload-photo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.922);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20%;
+}
+
+.upload-photo-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px;
+  background-color: #f9f9f900;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+}
+
+.upload-area {
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  padding: 140px 40px;
+  text-align: center;
+  width: 60%;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.upload-area:hover {
+  border-color: #0056b3;
+}
+
+.upload-label {
+  display: block;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+
+.upload-button {
+  padding: 12px 25px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.guide-photo {
+  width: 35%;
+  padding-left: 20px;
+}
+
+.guide-photo h3 {
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.guide-photo img {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for the disclaimer modal */
+.disclaimer-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 90%; 
+  max-width: 850px; 
+  max-height: 80vh; /* Maximum height with viewport units */
+  transform: translate(-50%, -50%);
+  background: rgb(127, 0, 0);
+  padding: 50px; /* Reduced top padding from 150px to 50px */
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgb(255, 255, 255);
+  z-index: 10001;
+  display: flex;
+  flex-direction: column; 
+  justify-content: flex-start;
+  align-items: center; 
+  animation: fadeInScale 0.5s forwards;
+  overflow-y: auto; /* Keep the scrollbar */
+  /* Styling for scrollbar in modern browsers */
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff #7f0000;
+}
+
+.disclaimer-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.disclaimer-modal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.disclaimer-modal::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+/* Keyframes for fade-in and scale effect */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5); /* Start small */
+  }
+  50% {
+    opacity: 0.5; /* Midway opacity */
+    transform: translate(-50%, -50%) scale(1.05); /* Slightly larger */
+  }
+  100% {
+    opacity: 1; /* Fully visible */
+    transform: translate(-50%, -50%) scale(1); /* Original size */
+  }
+}
+
+.disclaimer-modal h2 {
+  margin-top: 0; /* Remove top margin to reduce space */
+  margin-bottom: 20px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.disclaimer-modal p {
+  margin-bottom: 20px;
+  color: #ffffff;
+  text-align: left;
+  line-height: 1.6;
+  width: 100%;
+}
+
+.disclaimer-content-wrapper {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative; /* Changed from sticky to relative */
+  padding-bottom: 10px;
+}
+
+.accept-button,
+.decline-button {
+  margin: 5px;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+}
+
+.accept-button {
+  background-color: #5cb85c;
+  color: white;
+}
+
+.decline-button {
+  background-color: #d9534f;
+  color: white;
+}
+
+.accept-button:hover {
+  background-color: #4cae4c;
+}
+
+.decline-button:hover {
+  background-color: #c9302c;
+}
+
+/* Make sure body doesn't scroll when disclaimer is visible */
+body.no-scroll {
+  overflow: hidden;
+}
+
+/* Additional styles for disclaimer modal visibility */
+.disclaimer-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 10000;
+}
+
+/* Container to ensure the disclaimer stays fixed on the screen */
+#disclaimerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-photo-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.922);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9990; /* Lower than login prompt but higher than other content */
+  padding: 5% 10%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.upload-photo-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Improved guide photo size and visibility */
+.guide-photo {
+  width: 35%;
+  padding-left: 20px;
+}
+
+.guide-photo img {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Make the upload area more noticeable */
+.upload-area {
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  padding: 80px 40px;
+  text-align: center;
+  width: 60%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.upload-area:hover {
+  border-color: #0056b3;
+  background-color: rgba(0, 123, 255, 0.1);
+  transform: scale(1.02);
+}
+
+/* Make buttons more prominent */
+.upload-button {
+  padding: 14px 28px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.upload-button:hover:not([disabled]) {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+.upload-button[disabled] {
+  background-color: #6c757d;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
