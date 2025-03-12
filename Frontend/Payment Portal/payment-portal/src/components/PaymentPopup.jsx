@@ -31,7 +31,7 @@ const PaymentPopup = ({ onClose, planId, planName, planPrice }) => {
   const merchantId = PAYHERE_CONFIG.MERCHANT_ID;
   const merchantSecret = PAYHERE_CONFIG.MERCHANT_SECRET;
   
-
+  const rupees = "4500";
 
   // Format amount to have 2 decimal places
   const formattedAmount = parseFloat(rupees).toFixed(2);
