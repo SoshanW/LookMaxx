@@ -95,7 +95,7 @@ const generateOrderId = () => {
       amount: 4500,
       currency: currency,
       first_name: firstName,
-      last_name: lastName,
+      //last_name: lastName,
       email: email,
       phone: mobile.replace(/\+/g, ''), // Remove + from country code
       address: address,
