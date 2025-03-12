@@ -120,7 +120,7 @@ const generateOrderId = () => {
     form.submit();
     
     // Clean up
-    //document.body.removeChild(form);
+    document.body.removeChild(form);
 
   };
 
