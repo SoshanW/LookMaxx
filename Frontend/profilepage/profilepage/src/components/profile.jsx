@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios'; // Import axios for making HTTP requests
 import '../styles/Profilesection.css';
 import '../styles/avatarsection.css';
 import '../styles/settingssection.css';
@@ -9,25 +10,36 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [isPublic, setIsPublic] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  
-  
-  // Simplified user data structure
-  const userData = {
-    fullName: "Mariyam Jameela",
-    email: "mjameela@gmail.com",
-    gender: "Female",
-    username: "@mariyamj",
-    profileImage: "pfp.jpg",
-    accountType: "regular"
-  };
-  
+  const [userData, setUserData] = useState(null); // State to store user data
+
+  // UseEffect to fetch the user data from backend on component mount
   useEffect(() => {
-    // Simulate loading data
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-    
-    return () => clearTimeout(timer);
+    const fetchUserData = async () => {
+      try {
+        // Get JWT token from local storage
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          alert("Authentication token not found. Please log in again.");
+          return;
+        }
+  
+        // Send GET request to backend
+        const response = await axios.get('http://your-backend-url/users/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        // Set user data to state
+        setUserData(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        alert("An error occurred while fetching the user data.");
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   // Handler for delete user button
@@ -71,8 +83,7 @@ const Profile = () => {
     }
   };
   
-
-  //handler for upgrading the acc
+  // Handler for upgrading the acc
   const handleUpgradeAccount = () => {
     alert("Redirecting to premium upgrade page");
   };
@@ -104,13 +115,12 @@ const Profile = () => {
   
   return (
     <div className="profile-container">
-
-     <button className="backbtn"><span>Back</span></button>
+      <button className="backbtn"><span>Back</span></button>
 
       <div className="profile-header-bg">
-      <div id="container-stars">
-      <div id="stars" />
-      </div>
+        <div id="container-stars">
+          <div id="stars" />
+        </div>
       </div>
       <div className="profile-content-wrapper">
         <div className="profile-main">
@@ -136,7 +146,6 @@ const Profile = () => {
               <h1>{userData.fullName}</h1>
               <p className="username">{userData.username}</p>
 
-            
               <div className={`account-type-badge ${userData.accountType}`}>
                 {userData.accountType === "premium" ? "Premium" : "Regular"}
               </div>
@@ -149,39 +158,36 @@ const Profile = () => {
                 <div className="data-item">
                   <span className="label">Gender:</span>
                   <span className="value">{userData.gender}</span>
-
-                </div><div className="data-item">
+                </div>
+                <div className="data-item">
                   <span className="label">Account Type:</span>
                   <span className="value">{userData.accountType === "premium" ? "Premium" : "Regular"}</span>
                 </div>
-
               </div>
 
               <div className="profile-actions">
                 {userData.accountType !== "premium" && (
-                    <button 
-                      className="btn-primary upgrade-btn"
-                      onClick={handleUpgradeAccount}
-                    >
-                      Upgrade to Premium
-                    </button>
-                    )}
-                    <button 
-                      className="btn-secondary"
-                      onClick={toggleSettings}>
-                      Settings
-                    </button>
-                    <button 
-                      className="btn-danger"
-                      onClick={handleDeleteUser}
-                >
-                      Delete Account
-                    </button>
+                  <button 
+                    className="btn-primary upgrade-btn"
+                    onClick={handleUpgradeAccount}
+                  >
+                    Upgrade to Premium
+                  </button>
+                )}
+                <button 
+                  className="btn-secondary"
+                  onClick={toggleSettings}>
+                  Settings
+                </button>
+                <button 
+                  className="btn-danger"
+                  onClick={() => handleDeleteUser(userData.username)}>
+                  Delete Account
+                </button>
               </div>
             </div>
           </div>
 
-   
           {showSettings ? (
             <div className="settings-container">
               <div className="settings-header">
@@ -238,7 +244,6 @@ const Profile = () => {
           )}
         </div>
       </div>
-      
     </div>
   );
 };
