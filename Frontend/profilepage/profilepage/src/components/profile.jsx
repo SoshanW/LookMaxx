@@ -1,142 +1,135 @@
 import React, { useState, useEffect } from "react";
- import { motion } from "framer-motion";
- import "../app.css";
- 
- const Profile = () => {
-  const [activeTab, setActiveTab] = useState("profile");
-     
-  const userData = {
+import '../styles/Profilesection.css';
+import '../styles/avatarsection.css';
+
+const Profile = () => {
+  // Define the loading state
+  const [loading, setLoading] = useState(true);
   
-    firstName: "Mariyam",
-    lastName: "Jameela",
+  // Simplified user data structure
+  const userData = {
+    fullName: "Mariyam Jameela",
     email: "mjameela@gmail.com",
     gender: "Female",
     username: "@mariyamj",
-    profileImage: "pfp.jpg"
+    profileImage: "pfp.jpg",
+    accountType: "premium"
   };
-     return (
-       <div className="profile-container">
-         <h1>Profile Page</h1>
-         <div className="profile-header-bg">
-              {/* Main Profile Content */}
-              <div className="profile-content-wrapper">
-                <div className="profile-main">
-                  {/* Left Side - Profile Info */}
-                  <div className="profile-info-section">
-                    <div className="profile-image-container">
-                      <img 
-                        src={userData.profileImage} 
-                        alt="Profile" 
-                        className="profile-image" 
-                      />
-                      <div className="profile-status online"></div>
-                    </div>
-        
-                    <div className="profile-details">
-                      <h1>{userData.firstName} {userData.lastName}</h1>
-                      <p className="username">{userData.username}</p>
-                      
-                      <div className="profile-data">
-                        <div className="data-item">
-                          <span className="label">Email:</span>
-                          <span className="value">{userData.email}</span>
-                        </div>
-                        <div className="data-item">
-                          <span className="label">Gender:</span>
-                          <span className="value">{userData.gender}</span>
-                        </div>
-                      </div>
+  
+  useEffect(() => {
+    // Simulate loading data
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
-                      <div className="profile-actions">
-                 <button className="btn-primary">Edit Profile</button>
-                 <button className="btn-secondary">Settings</button>
-               </div>
-             </div>
-           </div>
-           
-           {/* Right Side - 3D Avatar Display */}
-           <div className="avatar-container">
-             <div className="avatar-display">
-               <div className="avatar-model">
-                 {/* Placeholder for the actual 3D model */}
-                 <div className="avatar-model-placeholder">
-                   <span className="model-label">{userData.gender} Avatar</span>
-                 </div>
-                 <h3>Your 3D Avatar</h3>
-                 <p>Automatically generated based on your gender selection</p>
-               </div>
+  // Handler for delete user button
+  const handleDeleteUser = () => {
+    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      console.log("User deletion initiated");
+      alert("Account deletion request submitted");
+    }
+  };
 
-                    </div>
-                  </div>
+  //handler for upgrading the acc
+  const handleUpgradeAccount = () => {
+    alert("Redirecting to premium upgrade page");
+  };
+  
+  if (loading) {
+    return (
+      <div className="profile-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="profile-container">
+      <div className="profile-header-bg"></div>
+      <div className="profile-content-wrapper">
+        <div className="profile-main">
+          {/* Left Side - Profile Info */}
+          <div className="profile-info-section">
+            <div className="profile-image-container">
+              <img 
+                src={userData.profileImage} 
+                alt="Profile" 
+                className="profile-image" 
+              />
+              <div className="profile-status online"></div>
+
+              {/* Premium Crown for premium users */}
+              {userData.accountType === "premium" && (
+                <div className="premium-crown">
+                  <span className="crown-icon">👑</span>
                 </div>
-              </div>
+              )}
             </div>
+    
+            <div className="profile-details">
+              <h1>{userData.fullName}</h1>
+              <p className="username">{userData.username}</p>
 
-            <div className="profile-nav">
-            <ul>
-              <li 
-                className={activeTab === "profile" ? "active" : ""}
-                onClick={() => setActiveTab("profile")}
-              >
-                Profile
-              </li>
-              <li 
-                className={activeTab === "collections" ? "active" : ""}
-                onClick={() => setActiveTab("collections")}
-              >
-                Collections
-              </li>
-              <li 
-                className={activeTab === "gallery" ? "active" : ""}
-                onClick={() => setActiveTab("gallery")}
-              >
-                Gallery
-              </li>
-              <li 
-                className={activeTab === "settings" ? "active" : ""}
-                onClick={() => setActiveTab("settings")}
-              >
-                Settings
-              </li>
-            </ul>
-            </div>
-
-            {/* Tab Content - Empty placeholders for now */}
-            <div className="tab-content">
-            {activeTab === "profile" && (
-              <div className="content-section">
-                <h2>Personal Information</h2>
-                <p className="placeholder-text">Profile information will appear here</p>
-              </div>
-            )}
-
-            {activeTab === "collections" && (
-              <div className="content-section">
-                <h2>Your Collections</h2>
-                <p className="placeholder-text">Your collections will appear here</p>
-              </div>
-            )}
-
-            {activeTab === "gallery" && (
-              <div className="content-section">
-                <h2>Your Gallery</h2>
-                <p className="placeholder-text">Your gallery will appear here</p>
-              </div>
-            )}
-
-            {activeTab === "settings" && (
-              <div className="content-section">
-                <h2>Account Settings</h2>
-                <p className="placeholder-text">Settings options will appear here</p>
-              </div>
-            )}
-            </div>
-            </div>
             
-
-
+              <div className={`account-type-badge ${userData.accountType}`}>
+                {userData.accountType === "premium" ? "Premium" : "Regular"}
+              </div>
               
-   );
- };
+              <div className="profile-data">
+                <div className="data-item">
+                  <span className="label">Email:</span>
+                  <span className="value">{userData.email}</span>
+                </div>
+                <div className="data-item">
+                  <span className="label">Gender:</span>
+                  <span className="value">{userData.gender}</span>
 
- export default Profile;
+                </div><div className="data-item">
+                  <span className="label">Account Type:</span>
+                  <span className="value">{userData.accountType === "premium" ? "Premium" : "Regular"}</span>
+                </div>
+
+              </div>
+
+              <div className="profile-actions">
+                {userData.accountType !== "premium" && (
+                    <button 
+                      className="btn-primary upgrade-btn"
+                      onClick={handleUpgradeAccount}
+                    >
+                      Upgrade to Premium
+                    </button>
+                  )}
+                <button 
+                  className="btn-danger"
+                  onClick={handleDeleteUser}
+                >
+                  Delete Account
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Side - 3D Avatar Display */}
+          <div className="avatar-container">
+            <div className="avatar-display">
+              <div className="avatar-model">
+                <div className="avatar-model-placeholder">
+                  <span className="model-label">{userData.gender} Avatar</span>
+                </div>
+                <h3>Your 3D Avatar</h3>
+                <p>Automatically generated based on your gender selection</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Profile;
