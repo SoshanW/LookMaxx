@@ -14,7 +14,7 @@ const NeonHeadShaderMaterial = shaderMaterial(
   {
     uColor1: new THREE.Color('#2d00ff'),    // neon color 1 (deep purple)
     uColor2: new THREE.Color('#ff0080'),    // neon color 2 (pinkish)
-    uBaseColor: new THREE.Color('#c4c2c2'),    // base diffuse color for shading
+    uBaseColor: new THREE.Color('#fff'),    // base diffuse color for shading
     uLightDirection: new THREE.Vector3(0.5, 1.0, 0.2).normalize(),
     time: 0,
   },

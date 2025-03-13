@@ -7,12 +7,14 @@ const FeatureContent = ({ description, isExiting = false }) => {
   
   useEffect(() => {
     if (!textRef.current) return
+    
     const textElement = textRef.current
 
-    // Kill any existing animations on child nodes
+    // Clear any existing GSAP animations
     gsap.killTweensOf(textElement.childNodes)
-    
+
     if (isExiting) {
+      // Quick fade-out for text when panel is exiting
       gsap.to(textElement.childNodes, {
         opacity: 0,
         stagger: 0.01,
@@ -20,40 +22,35 @@ const FeatureContent = ({ description, isExiting = false }) => {
       })
       return
     }
-    
-    // Animate text character-by-character
+
+    // Animate the text in, word by word
+    const text = description
     textElement.textContent = ''
-    const words = description.split(' ')
-    let charIndex = 0
-    
-    words.forEach((word, wordIndex) => {
-      if (wordIndex > 0) {
-        const spaceSpan = document.createElement('span')
-        spaceSpan.innerHTML = '&nbsp;'
-        spaceSpan.style.opacity = '0'
-        textElement.appendChild(spaceSpan)
-        gsap.to(spaceSpan, {
-          opacity: 1,
-          duration: 0.03,
-          delay: 0.5 + charIndex * 0.015,
-          ease: 'power1.inOut'
-        })
-        charIndex++
+
+    // Split description into words
+    const words = text.split(' ')
+
+    // For each word, create a span with margin-right
+    words.forEach((word, i) => {
+      const span = document.createElement('span')
+      span.style.opacity = '0'
+      // Use inline-block so GSAP can fade each word
+      span.style.display = 'inline-block'
+      // Set the text of the span
+      span.textContent = word
+      // Add a small margin to separate words
+      if (i < words.length - 1) {
+        span.style.marginRight = '0.3em'
       }
-      
-      for (let i = 0; i < word.length; i++) {
-        const span = document.createElement('span')
-        span.textContent = word[i]
-        span.style.opacity = '0'
-        textElement.appendChild(span)
-        gsap.to(span, {
-          opacity: 1,
-          duration: 0.03,
-          delay: 0.7 + charIndex * 0.015,
-          ease: 'power1.inOut'
-        })
-        charIndex++
-      }
+      textElement.appendChild(span)
+
+      // Animate each word’s opacity with a slight stagger
+      gsap.to(span, {
+        opacity: 1,
+        duration: 0.03,
+        delay: 0.7 + i * 0.03,
+        ease: "power1.inOut"
+      })
     })
   }, [description, isExiting])
 
