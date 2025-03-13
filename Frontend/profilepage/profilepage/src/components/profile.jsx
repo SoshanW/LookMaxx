@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import '../styles/Profilesection.css';
 import '../styles/avatarsection.css';
+import '../styles/settingssection.css';
 
 const Profile = () => {
   // Define the loading state
   const [loading, setLoading] = useState(true);
+  const [isPublic, setIsPublic] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  
   
   // Simplified user data structure
   const userData = {
@@ -13,7 +17,7 @@ const Profile = () => {
     gender: "Female",
     username: "@mariyamj",
     profileImage: "pfp.jpg",
-    accountType: "premium"
+    accountType: "regular"
   };
   
   useEffect(() => {
@@ -36,6 +40,22 @@ const Profile = () => {
   //handler for upgrading the acc
   const handleUpgradeAccount = () => {
     alert("Redirecting to premium upgrade page");
+  };
+
+  // Handler for toggling settings visibility
+  const toggleSettings = () => {
+    setShowSettings(!showSettings);
+  };
+
+  // Handler for changing privacy settings
+  const handlePrivacyChange = () => {
+    setIsPublic(!isPublic);
+  };
+
+  // Handler for saving settings
+  const saveSettings = () => {
+    alert(`Privacy settings updated. Your account is now ${isPublic ? "public" : "private"}.`);
+    setShowSettings(false);
   };
   
   if (loading) {
@@ -103,29 +123,76 @@ const Profile = () => {
                     >
                       Upgrade to Premium
                     </button>
-                  )}
-                <button 
-                  className="btn-danger"
-                  onClick={handleDeleteUser}
+                    )}
+                    <button 
+                      className="btn-secondary"
+                      onClick={toggleSettings}>
+                      Settings
+                    </button>
+                    <button 
+                      className="btn-danger"
+                      onClick={handleDeleteUser}
                 >
-                  Delete Account
-                </button>
+                      Delete Account
+                    </button>
               </div>
             </div>
           </div>
-          
-          {/* Right Side - 3D Avatar Display */}
-          <div className="avatar-container">
-            <div className="avatar-display">
-              <div className="avatar-model">
-                <div className="avatar-model-placeholder">
-                  <span className="model-label">{userData.gender} Avatar</span>
+
+   
+          {showSettings ? (
+            <div className="settings-container">
+              <div className="settings-header">
+                <h2>Account Settings</h2>
+                <button className="settings-close" onClick={toggleSettings}>×</button>
+              </div>
+              <div className="settings-content">
+                <div className="settings-section">
+                  <h3>Privacy Settings</h3>
+                  <div className="settings-option">
+                    <label className="toggle-switch">
+                      <input 
+                        type="checkbox" 
+                        checked={isPublic} 
+                        onChange={handlePrivacyChange}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                    <div className="setting-description">
+                      <p className="setting-title">Public Profile</p>
+                      <p className="setting-info">
+                        {isPublic 
+                          ? "Your profile is visible to everyone" 
+                          : "Your profile is only visible to you"
+                        }
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <h3>Your 3D Avatar</h3>
-                <p>Automatically generated based on your gender selection</p>
+                
+                <div className="settings-actions">
+                  <button className="btn-primary" onClick={saveSettings}>
+                    Save Changes
+                  </button>
+                  <button className="btn-secondary" onClick={toggleSettings}>
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="avatar-container">
+              <div className="avatar-display">
+                <div className="avatar-model">
+                  <div className="avatar-model-placeholder">
+                    <span className="model-label">{userData.gender} Avatar</span>
+                  </div>
+                  <h3>Your 3D Avatar</h3>
+                  <p>Automatically generated based on your gender selection</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
