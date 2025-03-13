@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthContext } from './context/AuthProvider';
+import { ReportGeneratorProvider } from './context/ReportGeneratorContext';
 
 // Common components
 import Navbar from './components/common/Navbar';
@@ -188,7 +189,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <>
+    <ReportGeneratorProvider>
       {/* Only show navbar if not on special pages */}
       {!hideNavbar && (
         <Navbar 
@@ -222,7 +223,7 @@ function App() {
 
       {/* Only show footer on appropriate pages */}
       {!hideFooter && <Footer />}
-    </>
+    </ReportGeneratorProvider>
   );
 }
 

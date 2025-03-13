@@ -221,12 +221,11 @@
   font-style: italic;
 }
 
-/* Minimized version */
 .minimized-progress-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 10000; /* Increased z-index to ensure it's above all other elements */
   background: linear-gradient(135deg, rgba(30, 30, 35, 0.9), rgba(15, 15, 20, 0.95));
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -235,11 +234,28 @@
   overflow: hidden;
   transition: all 0.3s ease;
   pointer-events: auto;
+  /* Make sure it's always visible on all pages */
+  display: flex !important;
+  animation: minimized-pulse 3s infinite ease-in-out;
 }
+
+/* Make it stand out a bit more with a subtle pulse animation */
+@keyframes minimized-pulse {
+  0% {
+    box-shadow: 0 4px 12px rgba(90, 103, 216, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 15px rgba(90, 103, 216, 0.6);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(90, 103, 216, 0.3);
+  }
+}
+
 
 .minimized-progress-container:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 16px rgba(90, 103, 216, 0.7);
 }
 
 .minimized-progress-content {
@@ -277,7 +293,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.3),
     transparent
   );
   animation: shimmer 1.5s infinite;

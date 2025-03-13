@@ -6,12 +6,12 @@ const ReportGenerator = ({
   isActive, 
   onClose, 
   onMinimize,
+  isMinimized = false,
   duration = 30000, // Default duration in ms (30 seconds)
   progressIncrement = 1.5 // Default progress increment per tick
 }) => {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('Initializing...');
-  const [isMinimized, setIsMinimized] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const progressInterval = useRef(null);
   const startTime = useRef(null);
@@ -36,13 +36,7 @@ const ReportGenerator = ({
       const savedStatus = localStorage.getItem('reportStatus');
       const savedStartTime = localStorage.getItem('reportStartTime');
       const savedEndTime = localStorage.getItem('reportEndTime');
-      const savedMinimized = localStorage.getItem('reportMinimized');
       const savedComplete = localStorage.getItem('reportComplete');
-      
-      // Set minimized state based on saved value (if exists)
-      if (savedMinimized !== null) {
-        setIsMinimized(savedMinimized === 'true');
-      }
       
       // Set complete state based on saved value (if exists)
       if (savedComplete !== null) {
@@ -159,14 +153,10 @@ const ReportGenerator = ({
   };
 
   const handleMinimize = () => {
-    setIsMinimized(true);
-    localStorage.setItem('reportMinimized', 'true');
     if (onMinimize) onMinimize(true); // Pass true to indicate minimized state
   };
 
   const handleMaximize = () => {
-    setIsMinimized(false);
-    localStorage.setItem('reportMinimized', 'false');
     if (onMinimize) onMinimize(false); // Pass false to indicate maximized state
   };
   
