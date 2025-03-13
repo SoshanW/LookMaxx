@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import PaymentPop from "./PaymentPop";
 
 const PricingCard = ({ 
   title, 
@@ -247,7 +248,7 @@ const PricingCard = ({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}  // Slower duration
                 >
-                  ${originalPrice}
+                  LKR {originalPrice}
                 </motion.span>
               )}
             </div>
@@ -343,6 +344,14 @@ const PricingCard = ({
           </motion.ul>
         </div>
       </motion.div>
+      {isPopupOpen && 
+        <PaymentPop
+          onClose={closePopup}
+          planId="1" // Set a fixed planId of "1" as you requested
+          planName={title}
+          planPrice={price.replace('$', 'Rs')} // Remove $ if present in the price
+        />
+      }
       
       {/* We can keep this for future use, but it won't open with our updated button behavior */}
       {isPopupOpen && <PaymentPopup onClose={closePopup} />}

@@ -77,7 +77,7 @@ function App() {
         {/* Free Card */}
         <PricingCard
           title="Free"
-          price="$0"
+          price="LKR 0"
           features={freeFeatures}
           buttonColor="bg-gray-600 hover:bg-gray-700 text-white"
           variant="free"
@@ -197,13 +197,13 @@ function App() {
         {/* Pro Card */}
         <PricingCard
           title="PRO Mewer"
-          price="$15"
-          originalPrice="20"
+          price="LKR 4500"
+          originalPrice="6000"
           features={platinumFeatures}
           buttonColor="bg-blue-500 hover:bg-blue-600 text-white"
           variant="pro"
           buttonText="Get PRO"
-          tagline="Per 3 months"
+          tagline="Per 1 month"
         />
       </div>
     </div>
