@@ -1,0 +1,94 @@
+/* Additional styles to fix signup page after study section integration */
+
+/* Restore proper spacing and layout */
+body.signup-page {
+  background: linear-gradient(135deg, #0f031b 0%, #2e1855 50%, #07010b 100%) !important;
+  background-size: 200% 200% !important;
+  background-attachment: fixed !important;
+  overflow-x: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+}
+
+.signup-page-container {
+  display: flex !important;
+  justify-content: center !important;
+  padding: 2rem 1.5rem !important;
+  min-height: 100vh !important;
+  overflow-y: auto !important;
+  padding-top: 80px !important; /* Accommodate navbar */
+}
+
+.auth-container {
+  width: 100% !important;
+  max-width: 30rem !important;
+  margin: 0 auto !important;
+  padding-bottom: 2rem !important;
+}
+
+.auth-content {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  perspective: 2000px !important;
+}
+
+/* Header */
+.header-content {
+  text-align: center !important;
+  margin-bottom: 2.5rem !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+/* Fix any form spacing issues */
+.auth-form {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.2rem !important;
+}
+
+.form-group {
+  margin-bottom: 0.15rem !important;
+}
+
+/* Ensure proper 3D flip animation */
+.auth-wrapper {
+  width: 100% !important;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform-style: preserve-3d !important;
+  position: relative !important;
+  padding: 10px !important;
+}
+
+.auth-card {
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
+  background: rgba(25, 10, 47, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: 25px !important;
+  padding: 2.5rem !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 15px rgba(123, 31, 162, 0.5),
+    inset 0 0 5px rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  overflow-y: auto !important;
+}
+
+.auth-card.front {
+  transform: rotateY(0deg) !important;
+}
+
+.auth-card.back {
+  transform: rotateY(180deg) !important;
+}
+
+.auth-wrapper.flipped {
+  transform: rotateY(180deg) !important;
+}

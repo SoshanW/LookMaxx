@@ -1,8 +1,11 @@
+// src/components/ffr/BlogCard.jsx
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { useNavigate } from 'react-router-dom'; // Add this import
 import '../../styles/ffr/BlogCard.css';
 
 const BlogCard = ({ isVisible }) => {
+  const navigate = useNavigate(); // Add this hook
   const blogCardRef = useRef(null);
   const codeRef = useRef(null);
   const titleRef = useRef(null);
@@ -13,6 +16,12 @@ const BlogCard = ({ isVisible }) => {
     title: "Dive Deep in Facial Aesthetics",
     text: "Curious about the science behind facial analysis? Explore research-backed insights that reveal the fascinating connections between facial features and perception. Tap below to dive into the studies!",
     imgSrc: "https://res.cloudinary.com/muhammederdem/image/upload/q_60/v1535759872/kuldar-kalvik-799168-unsplash.webp", 
+  };
+
+  // Handle navigation to the Study section
+  const handleReadMoreClick = (e) => {
+    e.preventDefault(); // Prevent default anchor behavior
+    navigate('/study'); // Navigate to the Study section
   };
 
   useEffect(() => {
@@ -42,7 +51,13 @@ const BlogCard = ({ isVisible }) => {
         <span className="blog-card__code" ref={codeRef} style={{ opacity: 0, transform: 'translateY(10px)' }}>{blogPost.date}</span>
         <h2 className="blog-card__title" ref={titleRef} style={{ opacity: 0, transform: 'translateY(10px)' }}>{blogPost.title}</h2>
         <p className="blog-card__text" ref={textRef} style={{ opacity: 0, transform: 'translateY(10px)' }}>{blogPost.text}</p>
-        <a href="#" className="blog-card__button">Read More</a>
+        <a 
+          href="#" 
+          className="blog-card__button"
+          onClick={handleReadMoreClick} // Add the click handler
+        >
+          Read More
+        </a>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/common/LoginPrompt.css';
+import '../../styles/common/LoginPrompt-fixes.css'; // Import the fixes
 
 const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
   const navigate = useNavigate();

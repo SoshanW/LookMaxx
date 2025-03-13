@@ -1,0 +1,97 @@
+/* Fix for Login Prompt styling after study section integration */
+
+.login-prompt-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  z-index: 10000 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  animation: fadeIn 0.3s ease-out forwards !important;
+}
+
+.login-prompt-container {
+  width: 90% !important;
+  max-width: 500px !important;
+  background: linear-gradient(135deg, rgba(40, 40, 45, 0.9), rgba(25, 25, 30, 0.95)) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+              0 0 0 1px rgba(255, 255, 255, 0.1),
+              0 0 30px rgba(90, 103, 216, 0.3) !important;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  position: relative !important;
+}
+
+.login-prompt-content {
+  padding: 2.5rem !important;
+  color: white !important;
+  text-align: center !important;
+}
+
+.login-prompt-buttons {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.8rem !important;
+  margin-top: 1.5rem !important;
+}
+
+.login-button, .signup-button, .close-button {
+  font-family: 'Nasalization', sans-serif !important;
+  padding: 0.8rem 1.5rem !important;
+  border-radius: 6px !important;
+  border: none !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+  letter-spacing: 0.05em !important;
+  display: inline-block !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.login-button {
+  background: linear-gradient(135deg, #5a67d8, #4c51bf) !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(76, 81, 191, 0.4) !important;
+}
+
+.signup-button {
+  background: transparent !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.close-button {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin-top: 0.5rem !important; 
+  padding: 0.5rem !important;
+  font-size: 0.9rem !important;
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 6px !important;
+  display: block !important;
+}
+
+/* Restore the original button layout in the LoginPrompt */
+.login-prompt-buttons .close-button {
+  position: static !important; /* Override any absolute positioning */
+  border-radius: 6px !important;
+  width: 100% !important; /* Make it match the width of other buttons */
+  display: inline-block !important;
+  margin-top: 0.5rem !important;
+}

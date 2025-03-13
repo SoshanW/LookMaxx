@@ -1,0 +1,184 @@
+@font-face {
+  font-family: 'Nasalisation';
+  src: url(/fonts/Nasalization\ Rg.otf);
+}
+
+.feature-info-container {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%);
+  width: 40%;
+  max-width: 500px;
+  background: rgba(15, 16, 37, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(77, 155, 255, 0.5);
+  box-shadow: 0 0 20px rgba(77, 155, 255, 0.3),
+              inset 0 0 10px rgba(77, 155, 255, 0.1);
+  color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  z-index: 100;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  overflow: hidden;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-info-container:hover {
+  transform: translateY(-53%) scale(1.02);
+  box-shadow: 0 10px 30px rgba(77, 155, 255, 0.5),
+              inset 0 0 15px rgba(77, 155, 255, 0.3);
+}
+
+.feature-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.feature-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(169, 77, 255, 0.8), transparent);
+}
+
+.feature-info-container:hover .feature-line {
+  background: linear-gradient(90deg, transparent, rgba(169, 77, 255, 1), transparent);
+  animation: pulse-line 2s infinite;
+}
+
+.feature-title {
+  font-family: 'Nasalization';
+  margin: 0 1rem;
+  font-size: 1.5rem;
+  color: #a94dff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 5px rgba(169, 77, 255, 0.8);
+}
+
+.feature-title:hover {
+  animation: glitch 0.4s infinite alternate;
+  text-shadow: 0 0 10px rgba(169, 77, 255, 1);
+}
+
+.feature-info-container:hover .feature-title {
+  font-family: 'Nasalization';
+  cursor: pointer;
+  text-shadow: 0 0 10px rgba(169, 77, 255, 1);
+}
+
+.feature-description {
+  font-family: 'Nasalization';
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+  border-left: 2px solid rgba(169, 77, 255, 0.4);
+  padding-left: 1rem;
+  max-height: calc(80vh - 120px);
+  overflow-y: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(169, 77, 255, 0.6) rgba(15, 16, 37, 0.4);
+}
+
+.feature-info-container:hover .feature-description {
+  border-left: 2px solid rgba(169, 77, 255, 0.8);
+}
+
+.feature-description::-webkit-scrollbar {
+  width: 8px;
+}
+
+.feature-description::-webkit-scrollbar-track {
+  background: rgba(15, 16, 37, 0.4);
+  border-radius: 4px;
+}
+
+.feature-description::-webkit-scrollbar-thumb {
+  background-color: rgba(169, 77, 255, 0.6);
+  border-radius: 4px;
+}
+
+.feature-description p {
+  word-spacing: normal;
+  margin: 0 0 1rem 0;
+  width: 100%;
+}
+
+.feature-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.feature-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(169, 77, 255, 0.8);
+  box-shadow: 0 0 8px rgba(169, 77, 255, 0.8);
+  animation: pulse 2s infinite;
+}
+
+.feature-info-container:hover .feature-dot {
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.4; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.4; }
+}
+
+@keyframes pulse-line {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.8); opacity: 0.4; box-shadow: 0 0 8px rgba(169, 77, 255, 0.8); }
+  50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 15px rgba(169, 77, 255, 1); }
+  100% { transform: scale(0.8); opacity: 0.4; box-shadow: 0 0 8px rgba(169, 77, 255, 0.8); }
+}
+
+@keyframes glitch {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+
+.feature-close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(169, 77, 255, 0.2);
+  border: 1px solid rgba(169, 77, 255, 0.5);
+  color: #ffffff;
+  font-size: 1.5rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.feature-close-button:hover {
+  background: rgba(169, 77, 255, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(169, 77, 255, 0.8);
+}
