@@ -1,0 +1,450 @@
+.hero-section {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #2b0b66;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section_content {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.hero-section_text {
+  flex: 1;
+  background: linear-gradient(to left, #2b0b66, #010103);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 5rem;
+  box-sizing: border-box;
+}
+
+.hero-section_text h1 {
+  font-size:3rem;
+  margin-bottom: 10px;
+}
+
+.hero-section_title-bold {
+  font-weight: 700;
+  color: #fcfcfc;
+}
+
+.hero-section_title-highlight {
+  color: #84ffff;
+  font-weight: 700;
+}
+
+.hero-section_subtitle {
+  font-style: italic;
+  font-size: 1.7rem;
+  margin-bottom: 20px;
+  color: #fcfcfc;
+}
+
+.hero-section_button {
+  background-color: #4466e2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  font-family: 'Neuropolitical', sans-serif;
+}
+
+.hero-section_button:hover {
+  background-color: #1c99d8;
+  text-shadow: 0 0 10px #7fdca6;
+}
+
+.hero-section_image {
+  flex: 1;
+  background-image: url('/assets/casting/model.jpeg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 5rem;
+  box-sizing: border-box;
+}
+
+.discovery-section {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #2b0b66;
+  position: relative;
+  overflow: hidden;
+}
+
+.discovery-section_content {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.discovery-section_text {
+  flex: 1;
+  background: linear-gradient(to right, #2b0b66, #010103);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 5rem;
+  box-sizing: border-box;
+}
+
+.discovery-section_text h2 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.discovery-section_title-bold {
+  font-weight: 700;
+  color: #fcfcfc;
+}
+
+.discovery-section_title-highlight {
+  color: #84ffff;
+  font-weight: 700;
+}
+
+.discovery-section_subtitle {
+  font-style: italic;
+  font-size: 1.7rem;
+  margin-bottom: 20px;
+  color: #fcfcfc;
+}
+
+.discovery-section_button {
+  background-color: #4466e2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  font-family: 'Neuropolitical', sans-serif;
+}
+
+.discovery-section_button:hover {
+  background-color: #1c99d8;
+  text-shadow: 0 0 10px #7fdca6;
+}
+
+.discovery-section_image {
+  flex: 1;
+  background-image: url('/assets/casting/model2.jpeg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 5rem;
+  box-sizing: border-box;
+}
+
+/* FFR Section */
+.ffr-section {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('/assets/casting/ffr.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ffr-section_content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle, rgba(43, 11, 102, 0.167) 10%, rgb(4, 4, 4) 100%);
+}
+
+.ffr-section_left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 5rem;
+  box-sizing: border-box;
+}
+
+.ffr-section h2 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.ffr-section_center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ffr-section_right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 5rem;
+  box-sizing: border-box;
+}
+
+.ffr-section_title-bold {
+  font-weight: 700;
+  color: #fcfcfc;
+  font-size: 3rem;
+}
+
+.ffr-section_title-highlight {
+  color: #84ffff;
+  font-weight: 700;
+  font-size: 3rem;
+}
+
+.ffr-section_subtitle {
+  font-style: italic;
+  font-size: 1.7rem;
+  margin-bottom: 20px;
+  color: #fcfcfc;
+}
+
+.ffr-section_button {
+  background-color: #4466e2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  font-family: 'Neuropolitical', sans-serif;
+}
+
+.ffr-section_button:hover {
+  background-color: #1c99d8;
+  text-shadow: 0 0 10px #7fdca6;
+}
+
+/* Neon Mist Effect */
+.neon-mist {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.neon-mist--active {
+  opacity: 1;
+}
+
+/* Hero Section Neon Mist */
+.hero-section .neon-mist--active {
+  background: radial-gradient(
+    circle at var(--x, 50%) var(--y, 50%), 
+    rgba(132, 255, 255, 0.3) 5%, 
+    rgba(132, 255, 255, 0.1) 15%, 
+    rgba(43, 11, 102, 0.05) 20%, 
+    transparent 70%
+  );
+  animation: pulseHero 2s infinite alternate;
+  filter: blur(20px);
+}
+
+/* Discovery Section Neon Mist */
+.discovery-section .neon-mist--active {
+  background: radial-gradient(
+    circle at var(--x, 50%) var(--y, 50%), 
+    rgba(132, 255, 255, 0.3) 5%, 
+    rgba(132, 255, 255, 0.1) 15%, 
+    rgba(43, 11, 102, 0.05) 20%, 
+    transparent 70%
+  );
+  animation: pulseDiscovery 2s infinite alternate;
+  filter: blur(20px);
+}
+
+/* FFR Section Neon Mist */
+.ffr-section .neon-mist--active {
+  background: radial-gradient(
+    circle at var(--x, 50%) var(--y, 50%), 
+    rgba(132, 255, 255, 0.3) 5%, 
+    rgba(132, 255, 255, 0.1) 15%, 
+    rgba(43, 11, 102, 0.05) 20%, 
+    transparent 70%
+  );
+  animation: pulseFFR 2s infinite alternate;
+  filter: blur(20px);
+}
+
+@keyframes pulseHero {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes pulseDiscovery {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes pulseFFR {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* Styles for section-based scrolling */
+
+/* Main container */
+.page-container {
+  position: relative;
+  height: 100vh;
+  overflow: hidden; /* Change from overflow-y: visible to hidden */
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+/* Apply scroll-snap to all sections */
+.hero-section,
+.discovery-section,
+.ffr-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  height: 100vh; /* Force exact viewport height */
+  max-height: 100vh; /* Prevent overflow */
+  width: 100%;
+  position: relative;
+  will-change: transform; /* Optimize for animations */
+  backface-visibility: hidden; /* Performance optimization */
+  
+  /* Fix for animation timing - make sure animations are ready */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+}
+
+/* Fix for footer issue and section navigation */
+body.casting-page {
+  overflow: hidden !important; /* Force hidden overflow */
+  height: 100vh !important; /* Force exact viewport height */
+  margin: 0;
+  padding: 0;
+}
+
+body.casting-page footer {
+  display: none !important; /* Hide footer on casting page */
+}
+
+/* Improved section navigation styles */
+.section-navigation {
+  position: fixed;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000; /* Increased z-index */
+}
+
+.section-navigation ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.section-navigation button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease; /* Smooth hover effect */
+}
+
+.section-navigation button:hover {
+  transform: scale(1.2); /* Slight grow on hover */
+}
+
+/* Nav dot styling */
+.nav-dot {
+  width: 12px;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+/* Active nav dot styling */
+.section-navigation button.active .nav-dot {
+  background-color: #84ffff;
+  box-shadow: 0 0 10px #84ffff;
+  transform: scale(1.3);
+}
+
+/* Active section styling with improved animations */
+.active-section {
+  z-index: 5;
+}
+
+/* Animation improvement for section content */
+.hero-section_content,
+.discovery-section_content,
+.ffr-section_content {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.active-section .hero-section_content,
+.active-section .discovery-section_content,
+.active-section .ffr-section_content {
+  opacity: 1;
+}
+
+/* Preload images to avoid flicker */
+body.casting-page::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  z-index: -1;
+  background-image: 
+    url('/assets/casting/model.jpeg'),
+    url('/assets/casting/model2.jpeg'),
+    url('/assets/casting/ffr.png');
+}

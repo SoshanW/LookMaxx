@@ -1,0 +1,200 @@
+.login-prompt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Slightly more transparent */
+  backdrop-filter: blur(15px); /* Increased blur strength */
+  -webkit-backdrop-filter: blur(15px); /* For Safari support */
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.login-prompt-container {
+  width: 90%;
+  max-width: 500px;
+  background: linear-gradient(135deg, rgba(40, 40, 45, 0.9), rgba(25, 25, 30, 0.95));
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+              0 0 0 1px rgba(255, 255, 255, 0.1),
+              0 0 30px rgba(90, 103, 216, 0.3);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.login-prompt-content {
+  padding: 2.5rem;
+  color: white;
+  text-align: center;
+}
+
+.login-prompt-content h2 {
+  font-family: 'Nasalization', sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #ffffff, #a0a0a0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.login-prompt-content p {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.login-prompt-description {
+  font-size: 0.95rem !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 2rem !important;
+  line-height: 1.5;
+}
+
+.login-prompt-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.login-button, .signup-button, .close-button {
+  font-family: 'Nasalization', sans-serif;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.05em;
+}
+
+.login-button {
+  background: linear-gradient(135deg, #5a67d8, #4c51bf);
+  color: white;
+  box-shadow: 0 4px 15px rgba(76, 81, 191, 0.4);
+}
+
+.signup-button {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.login-button:hover, .signup-button:hover {
+  transform: translateY(-2px);
+}
+
+.login-button:hover {
+  box-shadow: 0 7px 20px rgba(76, 81, 191, 0.6);
+}
+
+.signup-button:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 7px 15px rgba(255, 255, 255, 0.1);
+}
+
+.close-button:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Add animated glow to the primary button */
+.login-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+
+.login-button:hover::after {
+  opacity: 1;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(1.05);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+/* Add shine effect to the signup button */
+.signup-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  transition: all 0.8s ease;
+}
+
+.signup-button:hover::before {
+  animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 150%;
+  }
+}
