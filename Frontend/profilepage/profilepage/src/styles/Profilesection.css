@@ -430,18 +430,3 @@ strong {
   transition: 100ms;
 }
 
-.backbtn:hover {
-  -webkit-box-shadow: 1px 1px 13px #20232e, -1px -1px 13px #545b78;
-  box-shadow: 1px 1px 13px #20232e, -1px -1px 13px #545b78;
-  color: #d6d6d6;
-  -webkit-transition: 500ms;
-  transition: 500ms;
-}
-
-.backbtn:active {
-  -webkit-box-shadow: 1px 1px 13px #20232e, -1px -1px 33px #545b78;
-  box-shadow: 1px 1px 13px #20232e, -1px -1px 33px #545b78;
-  color: #d6d6d6;
-  -webkit-transition: 100ms;
-  transition: 100ms;
-}
