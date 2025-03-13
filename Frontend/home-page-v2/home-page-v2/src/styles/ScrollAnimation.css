@@ -1,9 +1,12 @@
-/* ScrollAnimation.css */
+/* ScrollAnimation.css - Optimized */
 
 .animation-container {
   position: relative;
   width: 100%;
   height: 100vh;
+  /* Performance optimizations */
+  transform: translateZ(0); /* Hardware acceleration */
+  contain: layout; /* Improve layout calculations */
 }
 
 .scroll-animation-canvas {
@@ -13,6 +16,42 @@
   width: 100%;
   height: 100%;
   z-index: 1;
+  /* Performance optimizations */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; /* Hint for browser optimization */
+  image-rendering: optimizeSpeed; /* Optimize rendering */
+}
+
+/* Loading indicator for animation frames */
+.scroll-animation-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #1e1e36, #0f1233);
+  color: #e0ffff;
+  font-family: "Nasalization", sans-serif;
+  z-index: 10;
+  text-align: center;
+}
+
+.scroll-animation-loading .loading-spinner {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+  border: 5px solid rgba(224, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #e0ffff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Landing text overlay styling */
@@ -27,6 +66,9 @@
   padding: 5%;
   pointer-events: none;
   transition: opacity 0.5s ease-out;
+  /* Performance optimization */
+  will-change: opacity; /* Hint for browser optimization */
+  contain: layout; /* Improve layout calculations */
 }
 
 .brand-name {
@@ -39,6 +81,9 @@
   position: absolute;
   top: 35%;
   left: 4%;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform, opacity; /* Hint for browser optimization */
 }
 
 .brand-tagline {
@@ -51,6 +96,9 @@
   color: #ffffff;
   text-shadow: 0 0 15px rgba(132, 255, 255, 0.725);
   line-height: 1.1;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform, opacity; /* Hint for browser optimization */
 }
 
 .get-started-btn {
@@ -65,11 +113,14 @@
   border-radius: 10px;
   font-size: 1.2em;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
   font-family: "Dune_Rise", sans-serif;
   font-weight: bold;
   box-shadow: #84ffff65 0 0 10px;
   text-shadow: #ffffff 0 0 10px;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; /* Hint for browser optimization */
 }
 
 /* Enhanced hover effect with scale and pulse animation */
@@ -77,8 +128,21 @@
   background: radial-gradient(circle, #8BD0D0, #566097);
   text-shadow: #140541 0 0 10px;
   font-weight: bold;
-  transform: scale(1.05);
-  animation: pulse 1.5s infinite;
+  transform: scale(1.05) translateZ(0); /* Keep hardware acceleration */
+  /* Replace complex animation with simpler version */
+  animation: simplePulse 1.5s infinite;
+}
+
+/* Simplify pulse animation for better performance */
+@keyframes simplePulse {
+  0%, 100% {
+    transform: scale(1.05) translateZ(0);
+    box-shadow: #84ffffdf 0 0 20px;
+  }
+  50% {
+    transform: scale(1.1) translateZ(0); /* Keep hardware acceleration */
+    box-shadow: #84ffff 0 0 25px;
+  }
 }
 
 /* Feature cards styling */
@@ -89,6 +153,10 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: auto;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: opacity, transform; /* Hint for browser optimization */
+  contain: layout style; /* Improve layout and style calculations */
 }
 
 /* Position each card individually */
@@ -117,17 +185,18 @@
   box-shadow: 0 0 20px rgba(132, 255, 255, 0.4);
   color: white;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
   min-height: 200px; /* Ensure consistent height */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
+/* Simplify hover effect for better performance */
 .card-content:hover {
   background: rgba(9, 42, 62, 0.85);
   box-shadow: 0 0 30px rgba(132, 255, 255, 0.6);
-  transform: scale(1.03);
+  transform: scale(1.03) translateZ(0); /* Keep hardware acceleration */
 }
 
 .card-content h2 {
@@ -148,54 +217,41 @@
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
   box-shadow: 0 0 10px rgba(132, 255, 255, 0.3);
   text-shadow: #ffffff 0 0 5px;
   align-self: center;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; /* Hint for browser optimization */
 }
 
+/* Simplify hover effect for better performance */
 .card-button:hover {
   background: radial-gradient(circle, #8BD0D0, #566097);
   text-shadow: #140541 0 0 10px;
-  transform: scale(1.05);
-  animation: cardPulse 1.5s infinite;
+  transform: scale(1.05) translateZ(0); /* Keep hardware acceleration */
+  /* Replace with simpler animation */
+  animation: simpleCardPulse 1.5s infinite;
 }
 
-/* Define the pulse animation */
-@keyframes pulse {
-  0% {
-    transform: scale(1.05);
-    box-shadow: #84ffffdf 0 0 20px;
-  }
-  50% {
-    transform: scale(1.1); /* Grow to 10% larger at peak */
-    box-shadow: #84ffff 0 0 25px; /* Brighter glow at peak */
-  }
-  100% {
-    transform: scale(1.05);
-    box-shadow: #84fffffc 0 0 20px;
-  }
-}
-
-/* Define smaller pulse animation for card buttons */
-@keyframes cardPulse {
-  0% {
-    transform: scale(1.05);
+/* Simplify card pulse animation for better performance */
+@keyframes simpleCardPulse {
+  0%, 100% {
+    transform: scale(1.05) translateZ(0);
     box-shadow: #84ffffdf 0 0 10px;
   }
   50% {
-    transform: scale(1.08); /* Slightly more subtle */
+    transform: scale(1.08) translateZ(0); /* Keep hardware acceleration */
     box-shadow: #84ffff 0 0 15px;
-  }
-  100% {
-    transform: scale(1.05);
-    box-shadow: #84fffffc 0 0 10px;
   }
 }
 
+/* Load fonts more efficiently */
 @font-face {
   font-family: "Dune_Rise";
-  src: url("../fonts/Dune_Rise.ttf");
+  src: url("../fonts/Dune_Rise.ttf") format('truetype');
+  font-display: swap; /* Improve font loading performance */
 }
 
 /* Responsive adjustments */
@@ -241,6 +297,10 @@
 
   .card-content {
     min-height: 180px; /* Slightly smaller on mobile */
+    /* Reduce blur for better performance on mobile */
+    backdrop-filter: blur(3px);
+    /* Reduce shadow complexity on mobile */
+    box-shadow: 0 0 10px rgba(132, 255, 255, 0.3);
   }
 
   .card-content h2 {
@@ -252,33 +312,11 @@
     font-size: 0.9rem;
   }
 
-  /* animation for mobile to be more subtle */
+  /* animation for mobile to be more subtle and efficient */
   .get-started-btn:hover, .card-button:hover {
-    transform: scale(1.03);
-  }
-
-  @keyframes pulse {
-    0% {
-      transform: scale(1.03);
-    }
-    50% {
-      transform: scale(1.06);
-    }
-    100% {
-      transform: scale(1.03);
-    }
-  }
-  
-  @keyframes cardPulse {
-    0% {
-      transform: scale(1.03);
-    }
-    50% {
-      transform: scale(1.06);
-    }
-    100% {
-      transform: scale(1.03);
-    }
+    transform: scale(1.03) translateZ(0);
+    /* Disable animations on mobile for better performance */
+    animation: none;
   }
 }
 
@@ -296,7 +334,9 @@
   text-shadow: 0 0 10px rgba(132, 255, 255, 0.5);
   z-index: 10;
   opacity: 0;
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.5s ease;
+  /* Performance optimization */
+  will-change: opacity; /* Hint for browser optimization */
 }
 
 .scroll-end-indicator span {
@@ -310,10 +350,13 @@
   border-right: 3px solid #e0ffff;
   border-bottom: 3px solid #e0ffff;
   transform: rotate(45deg);
-  animation: bounce 1.5s infinite;
+  animation: simpleBounce 1.5s infinite;
+  /* Performance optimization */
+  will-change: transform; /* Hint for browser optimization */
 }
 
-@keyframes bounce {
+/* Simplify bounce animation for better performance */
+@keyframes simpleBounce {
   0%, 100% { transform: rotate(45deg) translateY(0); }
   50% { transform: rotate(45deg) translateY(10px); }
 }
@@ -323,217 +366,34 @@
   position: relative;
   z-index: 1;
   transition: opacity 0.5s ease;
+  /* Performance optimization */
+  will-change: opacity; /* Hint for browser optimization */
 }
 
-/* model section styling - Properly position h1 below navbar */
-.model-section {
-  position: relative;
-  height: 100vh; 
-  width: 100%;
-  background: linear-gradient(to bottom, #1e1e36, #0f1233);
-  z-index: 2;
-  display: flex;
-  align-items: flex-start; 
-  justify-content: center;
-  overflow: hidden;
-}
-
-.model-section-content {
-  max-width: 1200px;
-  width: 100%;
-  padding: 0 5%;
-  color: #e0ffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* Start content below navbar */
-  padding-top: 70px; /* Based on navbar height (fixed position) + padding */
-  height: 100%;
-}
-
-.model-section h1 {
-  font-family: "Nasalization", sans-serif;
-  font-size: 3rem;
-  margin: 0 0 15px 0;
-  color: #e0ffff;
-  text-shadow: 0 0 15px rgba(132, 255, 255, 0.3);
-  text-align: center;
-}
-
-.model-section p {
-  font-family: "Nasalization", sans-serif;
-  font-size: 1.2rem;
-  line-height: 1.6;
-  margin: 0 0 25px 0;
-  color: #ffffff;
-  max-width: 800px;
-  text-align: center;
-}
-
-/* Model selection container with proper spacing */
-.model-selection-container {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin: 0 0 40px 0; /* Increased gap between models and button */
-  width: 100%;
-}
-
-.model-container {
-  position: relative;
-  width: 275px;
-  height: 375px;
-  background: linear-gradient(to bottom, #1e1e36, #0f1233);
-  border: 2px solid #84ffff;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 0 25px rgba(132, 255, 255, 0.3);
-  transition: all 0.4s ease;
-  cursor: pointer;
-}
-
-.model-container:hover {
-  border-color: #e0ffff;
-  box-shadow: 0 0 30px rgba(132, 255, 255, 0.6);
-}
-
-.model-label {
-  position: absolute;
-  top: 15px;
-  left: 0;
-  width: 100%;
-  font-family: "Nasalization", sans-serif;
-  font-size: 2rem;
-  color: #e0ffff;
-  text-shadow: 0 0 10px rgba(132, 255, 255, 0.7);
-  text-align: center;
-  z-index: 2;
-}
-
-.model-select-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(to right, #092a3e, #84ffff);
-  color: #191C4C;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 35px;
-  font-family: "Dune_Rise", sans-serif;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(132, 255, 255, 0.5);
-  text-shadow: #ffffff 0 0 5px;
-  z-index: 2;
-}
-
-.model-select-btn:hover {
-  background: radial-gradient(circle, #8BD0D0, #566097);
-  text-shadow: #140541 0 0 10px;
-  transform: translateX(-50%) scale(1.05);
-  box-shadow: 0 0 15px rgba(132, 255, 255, 0.8);
-}
-
-/* Position the 3D model elements themselves */
-.model-canvas-wrapper {
-  position: absolute;
+/* Add specific class for when scroll animation is disabled for performance */
+.scroll-animation-disabled {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none; /* Let events pass through to container */
-  display: block !important; /* Ensure visibility */
-}
-
-.model-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Loading indicator */
-.model-loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  height: 100vh;
+  background: linear-gradient(to bottom, #1e1e36, #0f1233);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: rgba(9, 42, 62, 0.7);
+  text-align: center;
   color: #e0ffff;
+}
+
+/* Low-performance device warning */
+.performance-warning {
+  background: rgba(9, 42, 62, 0.8);
+  border: 1px solid #84ffff;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+  max-width: 600px;
+  text-align: center;
   font-family: "Nasalization", sans-serif;
-  z-index: 3;
-  border-radius: 13px;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 15px;
-  border: 4px solid rgba(224, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: #e0ffff;
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Add glow effect around models on hover */
-.model-container::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 13px;
-  box-shadow: inset 0 0 20px rgba(132, 255, 255, 0.3);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.model-container:hover::after {
-  opacity: 1;
-}
-
-/* Mobile layout with proper spacing */
-@media (max-width: 768px) {
-  .model-section-content {
-    padding-top: 50px; /* Adjust for smaller navbar on mobile */
-  }
-  
-  .model-section h1 {
-    font-size: 2.2rem;
-    margin-bottom: 10px;
-  }
-  
-  .model-section p {
-    font-size: 1rem;
-    margin-bottom: 20px;
-  }
-  
-  .model-selection-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-  
-  .model-container {
-    width: 250px;
-    height: 340px;
-  }
 }

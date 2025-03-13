@@ -4,13 +4,15 @@ import Navbar from './components/Navbar'
 import TeamSlider from './components/TeamSlider' // Import the new TeamSlider component
 import './App.css'
 import './styles/ScrollAnimation.css'
+import ModelSection from './components/ModelSection'
 
 function App() {
   return (
     <div className="app">
       <Navbar />
       <ScrollAnimation frameCount={40} imageFormat="jpg" />
-      <TeamSlider /> {/* Add the TeamSlider component here */}
+      <ModelSection />
+      <TeamSlider /> 
     </div>
   )
 }

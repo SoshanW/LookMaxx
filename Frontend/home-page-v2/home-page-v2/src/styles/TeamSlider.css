@@ -17,7 +17,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 70% 30%, rgba(132, 255, 255, 0.15), transparent 40%);
+  background: radial-gradient(circle at 50% 50%, rgba(132, 255, 255, 0.15), transparent 40%);
   pointer-events: none;
 }
 
@@ -117,7 +117,7 @@
 
 .team-img-container {
   width: 100%;
-  height: 180px;
+  height: 200px;
   overflow: hidden;
   position: relative;
   background: linear-gradient(45deg, #092a3e, #191C4C);
@@ -129,7 +129,7 @@
 .team-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   transition: transform 0.3s ease;
 }
@@ -156,7 +156,7 @@
 
 .team-member-role {
   font-family: "Dune_Rise", sans-serif;
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: #84ffff;
   margin: 0 0 15px;
   font-weight: 500;
@@ -164,7 +164,7 @@
 
 .team-member-bio {
   font-family: "Neuropolitical", sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #ffffff;
   margin-bottom: 20px;
   line-height: 1.5;

@@ -12,42 +12,42 @@ const TeamSlider = () => {
   const teamMembers = [
     {
       id: 1,
-      name: "Soshan Perera",
+      name: "Soshan",
       role: "AI Research Lead",
       image: "/team/soshan.jpg",
       bio: "PhD in Computer Vision with 8+ years of experience in facial recognition algorithms."
     },
     {
       id: 2,
-      name: "Naflan Ibrahim",
+      name: "Naflan",
       role: "3D Modeling Expert",
       image: "/team/naflan.jpg",
       bio: "Award-winning 3D artist specializing in anatomically-accurate facial reconstructions."
     },
     {
       id: 3,
-      name: "Vinuki De Silva",
+      name: "Vinuki",
       role: "UX/UI Designer",
       image: "/team/vinuki.jpg",
       bio: "Human-centered design specialist with background in psychology and visual arts."
     },
     {
       id: 4,
-      name: "Vonara Jayasinghe",
+      name: "Vonara",
       role: "Full Stack Developer",
       image: "/team/vonara.jpg",
       bio: "Tech innovator with expertise in React, Three.js, and WebGL implementations."
     },
     {
       id: 5,
-      name: "Shemeshi Fernando",
+      name: "Shemeshi",
       role: "Data Scientist",
       image: "/team/shemeshi.jpg",
       bio: "Statistical modeling expert focused on pattern recognition and feature extraction."
     },
     {
       id: 6,
-      name: "Mariyam Faheem",
+      name: "Mariyam",
       role: "Business Development",
       image: "/team/mariyam.jpg",
       bio: "Former modeling agency director bridging the gap between tech and industry needs."

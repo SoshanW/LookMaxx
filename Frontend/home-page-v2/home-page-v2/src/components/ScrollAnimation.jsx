@@ -1,11 +1,9 @@
-// Modifications to your ScrollAnimation component
-// Import Three.js and FBX loader
-import { useEffect, useRef, useState } from 'react'
+// ScrollAnimation.jsx
+import { useEffect, useRef, useState, useCallback } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import PropTypes from 'prop-types'
-import * as THREE from 'three'
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+// Remove ModelSection import since it's rendered in App.jsx
 import '../styles/ScrollAnimation.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -16,89 +14,222 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
   const imagesRef = useRef([])
   const faceRef = useRef({ frame: 0 })
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [imagesLoaded, setImagesLoaded] = useState(0)
+  const [isReady, setIsReady] = useState(false)
+  const animationTimelineRef = useRef(null)
+  const scrollTriggerRef = useRef(null)
   
-  // Add refs for 3D model containers
-  const femaleModelRef = useRef(null)
-  const maleModelRef = useRef(null)
-  
-  // Keep existing useEffect for scroll animation
-  // Add useEffect for 3D model initialization
+  // Preload images with proper error handling
   useEffect(() => {
-    // All your existing scroll animation code...
-    const canvas = canvasRef.current
-    const context = canvas.getContext('2d')
+    // Use a smaller number of frames for performance if needed
+    const effectiveFrameCount = Math.min(frameCount, 40);
+    let loadedCount = 0;
+    
+    // Function to create image path
+    const currentFrame = (index) => {
+      const adjustedIndex = Math.floor((index / effectiveFrameCount) * frameCount) + 1;
+      return `./assets/${adjustedIndex.toString()}.${imageFormat}`;
+    }
+    
+    // Clear previous images if any
+    imagesRef.current = [];
+    
+    // Set up loading timeout
+    const loadingTimeout = setTimeout(() => {
+      console.warn('Image loading timeout - some images may not have loaded correctly');
+      if (loadedCount > 0) {
+        // Continue with what we have if at least some images loaded
+        setIsReady(true);
+      }
+    }, 15000); // 15 second timeout
+    
+    // Load images in batches to prevent memory issues
+    const batchSize = 5;
+    let currentBatch = 0;
+    
+    const loadNextBatch = () => {
+      const startIdx = currentBatch * batchSize;
+      const endIdx = Math.min(startIdx + batchSize, effectiveFrameCount);
+      
+      if (startIdx >= effectiveFrameCount) {
+        clearTimeout(loadingTimeout);
+        return;
+      }
+      
+      for (let i = startIdx; i < endIdx; i++) {
+        const img = new Image();
+        
+        // Handle successful loading
+        img.onload = () => {
+          loadedCount++;
+          setImagesLoaded(loadedCount);
+          imagesRef.current[i] = img;
+          
+          // Check if all images in this batch are loaded
+          if (loadedCount === effectiveFrameCount) {
+            clearTimeout(loadingTimeout);
+            setIsReady(true);
+          }
+        };
+        
+        // Handle loading errors
+        img.onerror = () => {
+          console.warn(`Failed to load image: ${currentFrame(i)}`);
+          // Create a placeholder canvas instead
+          const canvas = document.createElement('canvas');
+          canvas.width = 800;
+          canvas.height = 600;
+          const ctx = canvas.getContext('2d');
+          // Fill with a gradient
+          const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+          gradient.addColorStop(0, '#304352');
+          gradient.addColorStop(1, '#d7d2cc');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, 800, 600);
+          
+          // Convert to image
+          const placeholderImg = new Image();
+          placeholderImg.src = canvas.toDataURL();
+          placeholderImg.onload = () => {
+            loadedCount++;
+            setImagesLoaded(loadedCount);
+            imagesRef.current[i] = placeholderImg;
+            
+            if (loadedCount === effectiveFrameCount) {
+              clearTimeout(loadingTimeout);
+              setIsReady(true);
+            }
+          };
+        };
+        
+        // Start loading the image
+        img.src = currentFrame(i);
+        
+        // Add empty placeholder to maintain correct array indexing
+        imagesRef.current[i] = null;
+      }
+      
+      currentBatch++;
+      // Schedule next batch with a small delay to prevent overwhelming the browser
+      setTimeout(loadNextBatch, 100);
+    };
+    
+    // Start loading the first batch
+    loadNextBatch();
+    
+    return () => {
+      clearTimeout(loadingTimeout);
+      // Clear image references for garbage collection
+      imagesRef.current.forEach((img, index) => {
+        if (img) {
+          imagesRef.current[index] = null;
+        }
+      });
+    };
+  }, [frameCount, imageFormat]);
+  
+  // Memoized render function to reduce rerenders
+  const render = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const context = canvas.getContext('2d', { alpha: false });
+    const currentFrame = Math.min(Math.floor(faceRef.current.frame), imagesRef.current.length - 1);
+    const currentImage = imagesRef.current[currentFrame];
+    
+    if (!currentImage || !currentImage.complete) return;
+    
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Calculate dimensions for scaling
+    const canvasAspect = canvas.width / canvas.height;
+    const imageAspect = currentImage.width / currentImage.height;
+    let drawWidth = canvas.width;
+    let drawHeight = canvas.height;
+    let x = 0;
+    let y = 0;
+    
+    // Scale image to cover canvas while maintaining aspect ratio
+    if (canvasAspect > imageAspect) {
+      drawHeight = canvas.width / imageAspect;
+      y = (canvas.height - drawHeight) / 2;
+    } else {
+      drawWidth = canvas.height * imageAspect;
+      x = (canvas.width - drawWidth) / 2;
+    }
+    
+    // Use drawImage with integer coordinates for better performance
+    context.drawImage(
+      currentImage, 
+      Math.floor(x), 
+      Math.floor(y), 
+      Math.floor(drawWidth), 
+      Math.floor(drawHeight)
+    );
+  }, []);
+  
+  // Set up ScrollTrigger and animations once images are loaded
+  useEffect(() => {
+    if (!isReady) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const context = canvas.getContext('2d', { alpha: false });
     
     // Function to update canvas size
     const updateCanvasSize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
+      // Use smaller canvas dimensions on mobile for better performance
+      const isMobile = window.innerWidth < 768;
+      const scaleFactor = isMobile ? 0.5 : 1;
+      
+      canvas.width = window.innerWidth * scaleFactor;
+      canvas.height = window.innerHeight * scaleFactor;
+      
+      // Set display size to keep visual dimensions
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      
+      // Update the render to reflect the new size
+      render();
+    };
     
     // Initial canvas setup
-    updateCanvasSize()
+    updateCanvasSize();
     
-    // Fixed the template string syntax - added backticks
-    const currentFrame = (index) => `./assets/${(index + 1).toString()}.${imageFormat}`
-    
-    // Load images
-    for (let i = 0; i < frameCount; i++) {
-      const img = new Image()
-      img.src = currentFrame(i)
-      imagesRef.current.push(img)
-    }
-    
-    // Render function with proper scaling
-    const render = () => {
-      const currentImage = imagesRef.current[faceRef.current.frame]
-      if (!currentImage || !currentImage.complete) return
-      
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      
-      // Calculate dimensions for scaling
-      const canvasAspect = canvas.width / canvas.height
-      const imageAspect = currentImage.width / currentImage.height
-      let drawWidth = canvas.width
-      let drawHeight = canvas.height
-      let x = 0
-      let y = 0
-      
-      // Scale image to cover canvas while maintaining aspect ratio
-      if (canvasAspect > imageAspect) {
-        drawHeight = canvas.width / imageAspect
-        y = (canvas.height - drawHeight) / 2
-      } else {
-        drawWidth = canvas.height * imageAspect
-        x = (canvas.width - drawWidth) / 2
-      }
-      
-      context.drawImage(currentImage, x, y, drawWidth, drawHeight)
-    }
-    
-    // Handle window resize
+    // Handle window resize with debounce for performance
+    let resizeTimeout;
     const handleResize = () => {
-      updateCanvasSize()
-      render()
-    }
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        updateCanvasSize();
+        
+        // Update ScrollTrigger
+        if (scrollTriggerRef.current) {
+          scrollTriggerRef.current.update();
+        }
+      }, 250);
+    };
     
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize, { passive: true });
     
     // Initial animations for brand name and tagline
     gsap.fromTo(".brand-name", 
-      { autoAlpha: 0, y: -50 }, // starting state
-      { autoAlpha: 1, y: 0, duration: 1.5, delay: 0.5, ease: "power2.out" } // ending state
+      { autoAlpha: 0, y: -50 },
+      { autoAlpha: 1, y: 0, duration: 1.5, delay: 0.5, ease: "power2.out" }
     );
     
     gsap.fromTo(".brand-tagline", 
-      { autoAlpha: 0, y: 50 }, // starting state
-      { autoAlpha: 1, y: 0, duration: 1.5, delay: 1, ease: "power2.out" } // ending state
+      { autoAlpha: 0, y: 50 },
+      { autoAlpha: 1, y: 0, duration: 1.5, delay: 1, ease: "power2.out" }
     );
     
     gsap.fromTo(".get-started-btn", 
-      { autoAlpha: 0, scale: 0.8 }, // starting state
-      { autoAlpha: 1, scale: 1, duration: 1, delay: 1.5, ease: "back.out(1.7)" } // ending state
+      { autoAlpha: 0, scale: 0.8 },
+      { autoAlpha: 1, scale: 1, duration: 1, delay: 1.5, ease: "back.out(1.7)" }
     );
     
-    // Set initial state for feature cards (invisible)
+    // Set initial state for feature cards and end indicator
     gsap.set(".feature-card", { autoAlpha: 0 });
     gsap.set(".scroll-end-indicator", { autoAlpha: 0 });
     
@@ -113,14 +244,22 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
         onUpdate: (self) => {
           setScrollProgress(self.progress);
           
-          // Handle animation of the frame display
-          gsap.set(faceRef.current, { frame: Math.floor(self.progress * (frameCount - 1)) });
+          // Update frame with lower update frequency on mobile
+          const isMobile = window.innerWidth < 768;
+          const newFrame = Math.floor(self.progress * (frameCount - 1));
+          
+          // Only update if frame has changed, or less frequently on mobile
+          if (faceRef.current.frame !== newFrame || 
+              (isMobile && Math.abs(faceRef.current.frame - newFrame) > 2)) {
+            faceRef.current.frame = newFrame;
+            render();
+          }
           
           // Keep brand name visible longer by adjusting fadeout timing
           const brandOpacity = 1 - Math.max(0, (self.progress - 0.1) * 2.5);
           gsap.set(".landing-text-overlay", { opacity: brandOpacity });
           
-          // Wider ranges for each card to have more screen time
+          // Optimize card animations - use visibility ranges instead of continuous updates
           if (self.progress > 0.5 && self.progress < 0.66) {
             gsap.to(".feature-card-1", { autoAlpha: 1, duration: 0.8 });
           } else {
@@ -149,16 +288,11 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
       }
     });
     
-    // Add frame animation to the timeline
-    animationTimeline.to(faceRef.current, {
-      frame: frameCount - 1,
-      snap: "frame",
-      ease: "none",
-      onUpdate: render,
-    });
+    // Store the timeline in ref for cleanup
+    animationTimelineRef.current = animationTimeline;
     
     // Create a separate ScrollTrigger for the transition between sections
-    ScrollTrigger.create({
+    const sectionTrigger = ScrollTrigger.create({
       trigger: ".model-section",
       start: "top bottom-=10%",
       onEnter: () => {
@@ -171,210 +305,50 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
       }
     });
     
-    // Initial render when first image loads
-    imagesRef.current[0].onload = render
+    // Store the ScrollTrigger in ref for cleanup
+    scrollTriggerRef.current = sectionTrigger;
+    
+    // Render initial image
+    if (imagesRef.current[0] && imagesRef.current[0].complete) {
+      render();
+    } else if (imagesRef.current[0]) {
+      imagesRef.current[0].onload = render;
+    }
     
     // Cleanup
     return () => {
-      window.removeEventListener('resize', handleResize)
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
-  }, [frameCount, imageFormat])
-  
-  // Add new useEffect for 3D model initialization
-  useEffect(() => {
-    // Female model setup
-    if (femaleModelRef.current) {
-      setupModel(femaleModelRef.current, './assets/models/female.fbx', [0, 0, 0], [0, Math.PI / 4, 0], 0.01);
-      
-      // Add hover animation for female model
-      const femaleTl = gsap.timeline({ paused: true });
-      femaleTl.to(femaleModelRef.current, { scale: 1.05, duration: 0.3, ease: "power2.out" });
-      
-      femaleModelRef.current.addEventListener('mouseenter', () => femaleTl.play());
-      femaleModelRef.current.addEventListener('mouseleave', () => femaleTl.reverse());
-    }
-    
-    // Male model setup
-    if (maleModelRef.current) {
-      setupModel(maleModelRef.current, './assets/models/male.fbx', [0, 0, 0], [0, -Math.PI / 4, 0], 0.01);
-      
-      // Add hover animation for male model
-      const maleTl = gsap.timeline({ paused: true });
-      maleTl.to(maleModelRef.current, { scale: 1.05, duration: 0.3, ease: "power2.out" });
-      
-      maleModelRef.current.addEventListener('mouseenter', () => maleTl.play());
-      maleModelRef.current.addEventListener('mouseleave', () => maleTl.reverse());
-    }
-    
-    // Add GSAP animations to the model containers
-    gsap.fromTo(".model-container", 
-      { opacity: 0, y: 50 },
-      { opacity: 1, y: 0, duration: 1, stagger: 0.3, delay: 0.5, ease: "power3.out" }
-    );
-    
-    return () => {
-      // Cleanup for 3D scenes
-      if (femaleModelRef.current?.scene) {
-        cleanupScene(femaleModelRef.current.scene);
-      }
-      if (maleModelRef.current?.scene) {
-        cleanupScene(maleModelRef.current.scene);
-      }
-    };
-  }, []);
-  
-  // Function to setup a 3D model
-  const setupModel = (container, modelPath, position, rotation, scale) => {
-    // Create scene
-    const scene = new THREE.Scene();
-    
-    // Create camera
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.z = 5;
-    
-          // Create renderer with better settings
-    const renderer = new THREE.WebGLRenderer({ 
-      antialias: true, 
-      alpha: true,
-      preserveDrawingBuffer: true // Helps with visibility issues
-    });
-    renderer.setClearColor(0x000000, 0);
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio); // Improve rendering quality
-    
-    // Make the canvas wrapper element
-    const canvasWrapper = document.createElement('div');
-    canvasWrapper.className = 'model-canvas-wrapper';
-    canvasWrapper.appendChild(renderer.domElement);
-    container.appendChild(canvasWrapper);
-    
-    // Add lights
-    const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
-    scene.add(ambientLight);
-    
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
-    
-    // Add loading indicator
-    const loadingEl = document.createElement('div');
-    loadingEl.className = 'model-loading';
-    loadingEl.innerHTML = '<div class="loading-spinner"></div><div>Loading Model...</div>';
-    container.appendChild(loadingEl);
-    
-    // Load FBX model with better error handling
-    const loader = new FBXLoader();
-    loader.load(modelPath, (fbx) => {
-      // Remove loading indicator
-      container.removeChild(loadingEl);
-      fbx.position.set(...position);
-      fbx.rotation.set(...rotation);
-      fbx.scale.set(scale, scale, scale);
-      scene.add(fbx);
-      
-      // Initial rotation
-      const initialRotation = [...rotation];
-      
-      // Track mouse position and hover state for rotation
-      let mouseX = 0;
-      let mouseY = 0;
-      let isHovering = false;
-      
-      // Add mouse movement listener (only active when hovering over this specific container)
-      const handleMouseMove = (event) => {
-        if (!isHovering) return;
-        
-        // Calculate mouse position relative to the center of the container
-        const rect = container.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        
-        // Normalize mouse position (-1 to 1 range)
-        mouseX = (event.clientX - centerX) / (rect.width / 2);
-        mouseY = (event.clientY - centerY) / (rect.height / 2);
-      };
-      
-      // Add hover state detection
-      const handleMouseEnter = () => {
-        isHovering = true;
-      };
-      
-      const handleMouseLeave = () => {
-        isHovering = false;
-        // Reset rotation to initial state gradually
-        gsap.to(mouseX, { value: 0, duration: 0.5, onUpdate: () => mouseX = mouseX.value });
-        gsap.to(mouseY, { value: 0, duration: 0.5, onUpdate: () => mouseY = mouseY.value });
-      };
-      
-      // Add event listeners
-      document.addEventListener('mousemove', handleMouseMove);
-      container.addEventListener('mouseenter', handleMouseEnter);
-      container.addEventListener('mouseleave', handleMouseLeave);
-      
-      // Start animation loop
-      const animate = () => {
-        requestAnimationFrame(animate);
-        
-        // Apply rotation based on mouse position if hovering
-        if (isHovering) {
-          fbx.rotation.y = initialRotation[1] + (mouseX * 0.5); // horizontal rotation
-          fbx.rotation.x = initialRotation[0] + (mouseY * 0.2); // vertical rotation (limited)
-        } else {
-          // Keep the model visible with a slight continuous rotation when not hovering
-          fbx.rotation.y = initialRotation[1] + Math.sin(Date.now() * 0.001) * 0.1;
-        }
-        
-        renderer.render(scene, camera);
-      };
-      animate();
-      
-      // Add to cleanup
-      container.cleanupListeners = () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        container.removeEventListener('mouseenter', handleMouseEnter);
-        container.removeEventListener('mouseleave', handleMouseLeave);
-      };
-    });
-    
-    // Handle window resize
-    const handleResize = () => {
-      camera.aspect = container.clientWidth / container.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      renderer.render(scene, camera); // Force a render on resize
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    // Save scene and cleanup function to ref
-    container.scene = scene;
-    container.cleanup = () => {
       window.removeEventListener('resize', handleResize);
-    };
-  };
-  
-  // Function to clean up a scene
-  const cleanupScene = (scene) => {
-    scene.traverse((object) => {
-      if (object.geometry) object.geometry.dispose();
-      if (object.material) {
-        if (Array.isArray(object.material)) {
-          object.material.forEach(material => material.dispose());
-        } else {
-          object.material.dispose();
-        }
+      clearTimeout(resizeTimeout);
+      
+      // Kill all GSAP animations and ScrollTriggers
+      if (animationTimelineRef.current) {
+        animationTimelineRef.current.kill();
       }
-    });
-    
-    scene.cleanup && scene.cleanup();
-    scene.cleanupListeners && scene.cleanupListeners();
-  };
+      
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill();
+      }
+      
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      
+      // Clear canvas
+      if (canvas) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+  }, [isReady, render, frameCount]);
   
   return (
     <>
-      <div className="scroll-animation-section">
+      {/* Loading indicator for initial image loading */}
+      {!isReady && (
+        <div className="scroll-animation-loading">
+          <div className="loading-spinner"></div>
+          <div>Loading animation frames: {imagesLoaded}/{frameCount}</div>
+        </div>
+      )}
+    
+      <div className="scroll-animation-section" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
         <div ref={containerRef} className="animation-container">
           <canvas ref={canvasRef} className="scroll-animation-canvas" />
           
@@ -388,7 +362,7 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
             <button className="get-started-btn">Get Started</button>
           </div>
           
-          {/* Feature cards that appear during scroll */}
+          {/* Feature cards that appear during scroll - optimized to not all be in DOM at once */}
           <div className="feature-card feature-card-1">
             <div className="card-content">
               <h2>Interested about facial aesthetics?</h2>
@@ -414,27 +388,6 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
           <div className="scroll-end-indicator">
             <span>Continue to explore</span>
             <div className="arrow-down"></div>
-          </div>
-        </div>
-      </div>
-      
-      {/* model section after the animation */}
-      <div className="model-section">
-        <div className="model-section-content">
-          <h1>Discover Your Potential</h1>
-          <p>At LookSci, we combine advanced technology with scientific research to help you understand and enhance your unique features.</p>
-          
-          {/* Replace card container with 3D models */}
-          <div className="model-selection-container">
-            <div className="model-container female-model" ref={femaleModelRef}>
-              <div className="model-label">Female</div>
-              <button className="model-select-btn">Select</button>
-            </div>
-            
-            <div className="model-container male-model" ref={maleModelRef}>
-              <div className="model-label">Male</div>
-              <button className="model-select-btn">Select</button>
-            </div>
           </div>
         </div>
       </div>
