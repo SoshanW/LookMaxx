@@ -13,46 +13,47 @@ const TeamSlider = () => {
     {
       id: 1,
       name: "Soshan",
-      role: "AI Research Lead",
+      role: "Full Stack & AI Developer",
       image: "/team/soshan.jpg",
-      bio: "PhD in Computer Vision with 8+ years of experience in facial recognition algorithms."
+      bio: "Developing intelligent and scalable applications by integrating AI with full-stack technologies. Passionate about problem-solving and innovation."
     },
     {
       id: 2,
       name: "Naflan",
-      role: "3D Modeling Expert",
+      role: "AI & 3D Modeling Specialist",
       image: "/team/naflan.jpg",
-      bio: "Award-winning 3D artist specializing in anatomically-accurate facial reconstructions."
+      bio: "Combining machine learning with 3D modeling to create precise and dynamic digital representations, pushing the boundaries of AI-driven design."
     },
     {
       id: 3,
       name: "Vinuki",
-      role: "UX/UI Designer",
+      role: "Backend Engineer",
       image: "/team/vinuki.jpg",
-      bio: "Human-centered design specialist with background in psychology and visual arts."
+      bio: "Building and optimizing backend systems for performance and scalability. Experienced in database architecture and API development."
     },
     {
       id: 4,
       name: "Vonara",
-      role: "Full Stack Developer",
+      role: "UI/UX Developer",
       image: "/team/vonara.jpg",
-      bio: "Tech innovator with expertise in React, Three.js, and WebGL implementations."
+      bio: "Designing seamless and visually compelling user experiences with a focus on interactivity, accessibility, and modern web aesthetics."
     },
     {
       id: 5,
       name: "Shemeshi",
-      role: "Data Scientist",
+      role: "Backend Developer",
       image: "/team/shemeshi.jpg",
-      bio: "Statistical modeling expert focused on pattern recognition and feature extraction."
+      bio: "Ensuring efficient server-side performance and system stability, with expertise in data processing and backend optimization."
     },
     {
       id: 6,
       name: "Mariyam",
-      role: "Business Development",
+      role: "UI/UX & 3D Design Engineer",
       image: "/team/mariyam.jpg",
-      bio: "Former modeling agency director bridging the gap between tech and industry needs."
+      bio: "Creating engaging user interfaces and detailed 3D models to enhance digital experiences, blending design principles with technical expertise."
     }
-  ];
+];
+
 
   useEffect(() => {
     // Swiper parameters

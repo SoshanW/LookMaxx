@@ -1,4 +1,4 @@
-/* TeamSlider.css */
+/* TeamSlider.css - Fixed border cutoff and increased element sizes */
 
 /* Main team section styling */
 .team-section {
@@ -31,19 +31,19 @@
 
 .team-heading {
   font-family: "Nasalization", sans-serif;
-  font-size: 3.5rem;
+  font-size: 4rem; /* Increased from 3.5rem */
   color: #e0ffff;
-  margin-bottom: 20px;
+  margin-bottom: 30px; /* Increased from 20px */
   text-shadow: 0 0 15px rgba(132, 255, 255, 0.3);
   letter-spacing: 2px;
 }
 
 .team-subheading {
   font-family: "Nasalization", sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.4rem; /* Increased from 1.2rem */
   color: #ffffff;
   max-width: 800px;
-  margin: 0 auto 60px;
+  margin: 0 auto 10px; /* Increased from 60px */
   line-height: 1.6;
 }
 
@@ -51,29 +51,33 @@
 .team-slider-container {
   position: relative;
   width: 100%;
-  height: 500px;
-  margin: 0 auto 60px;
+  height: 600px; /* Increased from 500px */
+  margin: 0 auto;
   display: flex;
   align-items: center;
+  
 }
 
 .team-swiper {
   width: 100%;
   height: 100%;
-  padding: 50px 0;
+  padding: 40px 0; /* Increased from 50px to fix border cutoff */
+  
 }
 
 .team-slide {
-  width: 320px;
-  height: 400px;
+  width: 380px; /* Increased from 320px */
+  height: 460px; /* Increased from 400px */
   transition: transform 0.3s ease;
+  padding: 10px; /* Added padding to prevent border cutoff */
+  margin-top: 10px;
 }
 
 /* Custom navigation buttons */
 .team-nav-btn {
   position: absolute;
-  width: 48px;
-  height: 48px;
+  width: 56px; /* Increased from 48px */
+  height: 56px; /* Increased from 48px */
   background: rgba(9, 42, 62, 0.6);
   border: 2px solid #84ffff;
   border-radius: 50%;
@@ -93,11 +97,11 @@
 }
 
 .prev-btn {
-  left: 10px;
+  left: 20px; /* Increased from 10px */
 }
 
 .next-btn {
-  right: 10px;
+  right: 20px; /* Increased from 10px */
 }
 
 /* Team member cards */
@@ -105,7 +109,7 @@
   width: 100%;
   height: 100%;
   background: rgba(9, 42, 62, 0.7);
-  border: 2px solid #84ffff;
+  border: 2px solid #84ffff; 
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(132, 255, 255, 0.2);
@@ -117,17 +121,17 @@
 
 .team-img-container {
   width: 100%;
-  height: 200px;
+  height: 300px; /* Increased from 200px */
   overflow: hidden;
   position: relative;
-  background: linear-gradient(45deg, #092a3e, #191C4C);
+  background: linear-gradient(60deg, #092a3e, #191C4C);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .team-img {
-  width: 100%;
+  width: 90%;
   height: 100%;
   object-fit: contain;
   object-position: center;
@@ -140,7 +144,7 @@
 
 /* Card content styling */
 .team-card-content {
-  padding: 20px;
+  padding: 25px; /* Increased from 20px */
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -148,53 +152,27 @@
 
 .team-member-name {
   font-family: "Nasalization", sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.8rem; /* Increased from 1.5rem */
   color: #e0ffff;
-  margin: 0 0 5px;
+  margin: 0 0 8px; /* Increased from 5px */
   text-shadow: 0 0 10px rgba(132, 255, 255, 0.3);
 }
 
 .team-member-role {
   font-family: "Dune_Rise", sans-serif;
-  font-size: 0.8rem;
+  font-size: 1rem; /* Increased from 0.8rem */
   color: #84ffff;
-  margin: 0 0 15px;
+  margin: 0 0 20px; /* Increased from 15px */
   font-weight: 500;
 }
 
 .team-member-bio {
   font-family: "Neuropolitical", sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.95rem; /* Increased from 0.8rem */
   color: #ffffff;
-  margin-bottom: 20px;
+  margin-bottom: 25px; /* Increased from 20px */
   line-height: 1.5;
   flex: 1;
-}
-
-/* Social media links */
-.team-social-links {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: auto;
-}
-
-.social-link {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(to right, #092a3e, #191C4C);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  border: 1px solid #84ffff;
-}
-
-.social-link:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 15px rgba(132, 255, 255, 0.5);
-  background: linear-gradient(to right, #191C4C, #092a3e);
 }
 
 
@@ -229,11 +207,16 @@
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .team-slider-container {
-    height: 450px;
+    height: 520px; /* Increased from 450px */
   }
   
   .team-heading {
-    font-size: 3rem;
+    font-size: 3.5rem; /* Increased from 3rem */
+  }
+  
+  .team-slide {
+    width: 340px; /* Adjusted for medium screens */
+    height: 430px;
   }
 }
 
@@ -243,26 +226,26 @@
   }
   
   .team-heading {
-    font-size: 2.5rem;
+    font-size: 3rem; /* Increased from 2.5rem */
   }
   
   .team-subheading {
-    font-size: 1rem;
-    margin-bottom: 40px;
+    font-size: 1.2rem; /* Increased from 1rem */
+    margin-bottom: 50px; /* Increased from 40px */
   }
   
   .team-slider-container {
-    height: 400px;
+    height: 450px; /* Increased from 400px */
   }
   
   .team-slide {
-    width: 280px;
-    height: 380px;
+    width: 320px; /* Increased from 280px */
+    height: 420px; /* Increased from 380px */
   }
   
   .team-nav-btn {
-    width: 40px;
-    height: 40px;
+    width: 48px; /* Increased from 40px */
+    height: 48px; /* Increased from 40px */
   }
 }
 
@@ -272,24 +255,24 @@
   }
   
   .team-heading {
-    font-size: 2rem;
+    font-size: 2.4rem; /* Increased from 2rem */
   }
   
   .team-slider-container {
-    height: 380px;
+    height: 420px; /* Increased from 380px */
   }
   
   .team-slide {
-    width: 260px;
-    height: 360px;
+    width: 300px; /* Increased from 260px */
+    height: 400px; /* Increased from 360px */
   }
   
   .team-member-name {
-    font-size: 1.3rem;
+    font-size: 1.5rem; /* Increased from 1.3rem */
   }
   
   .team-cta-btn {
-    padding: 10px 25px;
-    font-size: 1rem;
+    padding: 12px 28px; /* Increased from 10px 25px */
+    font-size: 1.1rem; /* Increased from 1rem */
   }
 }
