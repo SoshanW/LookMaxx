@@ -13,12 +13,19 @@ def verify_payment():
     username = get_jwt_identity
     jwt_payload = get_jwt() # Get JWT ID
 
-    if username:
-            # Find the user's subscription in MongoDB and update it
-            mongo.db.users.update_one(
-                {"username": username},  # Match the user by their unique username
-                {"$set": {"subscription_status": "paid"}}  # Update subscription status
-            )
-            return jsonify({"status": "success", "message": "Payment verified and subscription updated"})
-    else:
-        return jsonify({"status": "error", "message": "User not found"}), 404
+    user = mongo.db.users.find_one({"username":username})
+
+    if not user:
+            return jsonify({
+                "status": "error", 
+                "message": "User not found"
+            }), 404
+        
+        # Update the user's subscription status
+        result = mongo.db.users.update_one(
+            {"username": username},
+            {"$set": {
+                "subscription": "paid",
+                "subscription_updated_at": datetime.datetime.utcnow()
+            }}
+        )
