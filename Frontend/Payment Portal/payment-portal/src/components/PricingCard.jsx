@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import PaymentPopup from "./PaymentPopup";
+import PaymentPop from "./PaymentPop";
 
 const PricingCard = ({ 
   title, 
@@ -350,7 +350,7 @@ const PricingCard = ({
         </div>
       </motion.div>
       {isPopupOpen && 
-        <PaymentPopup 
+        <PaymentPop
           onClose={closePopup}
           planId="1" // Set a fixed planId of "1" as you requested
           planName={title}

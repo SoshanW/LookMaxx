@@ -203,7 +203,7 @@ function App() {
           buttonColor="bg-blue-500 hover:bg-blue-600 text-white"
           variant="pro"
           buttonText="Get PRO"
-          tagline="Per 3 months"
+          tagline="Per 1 month"
         />
       </div>
     </div>

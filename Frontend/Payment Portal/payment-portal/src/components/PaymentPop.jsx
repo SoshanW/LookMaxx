@@ -13,7 +13,7 @@ const PAYHERE_CONFIG = {
   NOTIFY_URL: "http://localhost:5000/api/payment/notify"
 };
 
-const PaymentPopup = ({ onClose, planId, planName, planPrice }) => {
+const PaymentPop = ({ onClose, planId, planName, planPrice }) => {
   // Form fields
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -343,4 +343,4 @@ const generateOrderId = () => {
     </motion.div>
   );
 };
-export default PaymentPopup;
+export default PaymentPop;
