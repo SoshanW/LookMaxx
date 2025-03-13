@@ -70,7 +70,14 @@ const Profile = () => {
   
   return (
     <div className="profile-container">
-      <div className="profile-header-bg"></div>
+
+     <button className="backbtn"><span>Back</span></button>
+     
+      <div className="profile-header-bg">
+      <div id="container-stars">
+      <div id="stars" />
+      </div>
+      </div>
       <div className="profile-content-wrapper">
         <div className="profile-main">
           {/* Left Side - Profile Info */}
@@ -197,6 +204,7 @@ const Profile = () => {
           )}
         </div>
       </div>
+      
     </div>
   );
 };

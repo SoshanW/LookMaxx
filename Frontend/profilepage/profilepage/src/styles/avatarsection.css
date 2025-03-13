@@ -79,8 +79,8 @@
   }
 
   .avatar-model-viewer {
-    width: 250px;
-    height: 250px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
@@ -129,8 +129,8 @@
   }
   
   .avatar-model-placeholder {
-    width: 300px;
-    height: 300px;
+    width: 220px;
+    height: 220px;
     margin: 0 auto;
     border-radius: 50%;
     background: radial-gradient(circle, var(--primary-light) 0%, var(--primary) 100%);
