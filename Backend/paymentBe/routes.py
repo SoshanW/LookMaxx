@@ -7,8 +7,8 @@ from config import mongo
 
 app_routes = Blueprint('app_routes', __name__)
 
-@app_routes.route('' , methods = ['POST'])
-def paymentdone():
+@app_routes.route('/verify-payment' , methods = ['POST'])
+def verify_payment():
     jti = get_jwt()["jti"]  # Get JWT ID
     username = get_jwt_identity
 
