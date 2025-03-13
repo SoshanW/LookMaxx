@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import PropTypes from 'prop-types'
-// Remove ModelSection import since it's rendered in App.jsx
+import FeatureCards from './FeatureCards'
 import '../styles/ScrollAnimation.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -259,24 +259,7 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
           const brandOpacity = 1 - Math.max(0, (self.progress - 0.1) * 2.5);
           gsap.set(".landing-text-overlay", { opacity: brandOpacity });
           
-          // Optimize card animations - use visibility ranges instead of continuous updates
-          if (self.progress > 0.5 && self.progress < 0.66) {
-            gsap.to(".feature-card-1", { autoAlpha: 1, duration: 0.8 });
-          } else {
-            gsap.to(".feature-card-1", { autoAlpha: 0, duration: 0.5 });
-          }
-          
-          if (self.progress > 0.66 && self.progress < 0.82) {
-            gsap.to(".feature-card-2", { autoAlpha: 1, duration: 0.8 });
-          } else {
-            gsap.to(".feature-card-2", { autoAlpha: 0, duration: 0.5 });
-          }
-          
-          if (self.progress > 0.82 && self.progress < 0.95) {
-            gsap.to(".feature-card-3", { autoAlpha: 1, duration: 0.8 });
-          } else {
-            gsap.to(".feature-card-3", { autoAlpha: 0, duration: 0.5 });
-          }
+          // Feature card animations are now handled by the FeatureCards component
           
           // Show end indicator near the end
           if (self.progress > 0.95) {
@@ -362,27 +345,8 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
             <button className="get-started-btn">Get Started</button>
           </div>
           
-          {/* Feature cards that appear during scroll - optimized to not all be in DOM at once */}
-          <div className="feature-card feature-card-1">
-            <div className="card-content">
-              <h2>Interested about facial aesthetics?</h2>
-              <button className="card-button">GET STARTED</button>
-            </div>
-          </div>
-          
-          <div className="feature-card feature-card-2">
-            <div className="card-content">
-              <h2>Looking for Modelling opportunities?</h2>
-              <button className="card-button">GET STARTED</button>
-            </div>
-          </div>
-          
-          <div className="feature-card feature-card-3">
-            <div className="card-content">
-              <h2>Find your Style</h2>
-              <button className="card-button">Learn More</button>
-            </div>
-          </div>
+          {/* Feature cards component with scroll progress prop */}
+          <FeatureCards scrollProgress={scrollProgress} />
           
           {/* End of scroll indicator */}
           <div className="scroll-end-indicator">

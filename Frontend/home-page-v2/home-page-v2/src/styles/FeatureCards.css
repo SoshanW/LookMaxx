@@ -1,0 +1,158 @@
+/* FeatureCards.css - Separated styles for feature cards */
+
+/* Feature cards styling */
+.feature-card {
+  position: absolute;
+  width: 350px; /* All cards have the same width */
+  z-index: 3;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: opacity, transform; /* Hint for browser optimization */
+  contain: layout style; /* Improve layout and style calculations */
+}
+
+/* Position each card individually */
+.feature-card-1 {
+  top: 20%;
+  left: 40%;
+}
+
+.feature-card-2 {
+  top: 40%;
+  right: 10%;
+}
+
+.feature-card-3 {
+  top: 70%;
+  left: 40%;
+}
+
+/* Ensure all cards have the same styling */
+.card-content {
+  background: rgba(9, 42, 62, 0.7);
+  border: 1px solid #84ffff;
+  border-radius: 10px;
+  padding: 30px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 20px rgba(132, 255, 255, 0.4);
+  color: white;
+  text-align: center;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
+  min-height: 200px; /* Ensure consistent height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Simplify hover effect for better performance */
+.card-content:hover {
+  background: rgba(9, 42, 62, 0.85);
+  box-shadow: 0 0 30px rgba(132, 255, 255, 0.6);
+  transform: scale(1.03) translateZ(0); /* Keep hardware acceleration */
+}
+
+.card-content h2 {
+  font-family: "Nasalization", sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #e0ffff;
+  text-shadow: 0 0 10px rgba(132, 255, 255, 0.5);
+}
+
+.card-button {
+  font-family: "Dune_Rise", sans-serif;
+  background: linear-gradient(to right, #092a3e, #84ffff);
+  color: #191C4C;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
+  box-shadow: 0 0 10px rgba(132, 255, 255, 0.3);
+  text-shadow: #ffffff 0 0 5px;
+  align-self: center;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; /* Hint for browser optimization */
+}
+
+/* Simplify hover effect for better performance */
+.card-button:hover {
+  background: radial-gradient(circle, #8BD0D0, #566097);
+  text-shadow: #140541 0 0 10px;
+  transform: scale(1.05) translateZ(0); /* Keep hardware acceleration */
+  /* Replace with simpler animation */
+  animation: simpleCardPulse 1.5s infinite;
+}
+
+/* Simplify card pulse animation for better performance */
+@keyframes simpleCardPulse {
+  0%, 100% {
+    transform: scale(1.05) translateZ(0);
+    box-shadow: #84ffffdf 0 0 10px;
+  }
+  50% {
+    transform: scale(1.08) translateZ(0); /* Keep hardware acceleration */
+    box-shadow: #84ffff 0 0 15px;
+  }
+}
+
+/* Load fonts more efficiently - can be moved to a common CSS if needed */
+@font-face {
+  font-family: "Dune_Rise";
+  src: url("../fonts/Dune_Rise.ttf") format('truetype');
+  font-display: swap; /* Improve font loading performance */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  /* Feature cards responsive adjustments */
+  .feature-card {
+    width: 280px;
+  }
+  
+  /* Adjust card positions for mobile */
+  .feature-card-1 {
+    top: 15%;
+    left: 5%;
+  }
+  
+  .feature-card-2 {
+    top: 40%;
+    right: 5%;
+  }
+  
+  .feature-card-3 {
+    top: 65%;
+    left: 5%;
+  }
+
+  .card-content {
+    min-height: 180px; /* Slightly smaller on mobile */
+    /* Reduce blur for better performance on mobile */
+    backdrop-filter: blur(3px);
+    /* Reduce shadow complexity on mobile */
+    box-shadow: 0 0 10px rgba(132, 255, 255, 0.3);
+  }
+
+  .card-content h2 {
+    font-size: 1.4rem;
+  }
+
+  .card-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  /* animation for mobile to be more subtle and efficient */
+  .card-button:hover {
+    transform: scale(1.03) translateZ(0);
+    /* Disable animations on mobile for better performance */
+    animation: none;
+  }
+}
