@@ -1,10 +1,8 @@
-import { useState } from 'react'
-import './App.css'
+// import './App.css'
+import './styles/study-section/study-section.css'
 import AnatomyExplorer from './components/study-section/AnatomyExplorer'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
     {/* <Navbar/> */}
