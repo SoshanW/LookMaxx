@@ -13,13 +13,14 @@ def verify_payment():
     try:
         username = get_jwt_identity
         jwt_payload = get_jwt() # Get JWT ID
+        status_code = request.form.get('status_code')
 
         user = mongo.db.users.find_one({"username":username})
 
-        if not user:
+        if not user or status_code != 2:
                 return jsonify({
                     "status": "error", 
-                    "message": "User not found"
+                    "message": "Payment Verification Failed."
                 }), 404
             
         # Update the user's subscription status
