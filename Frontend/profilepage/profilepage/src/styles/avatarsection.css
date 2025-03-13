@@ -23,21 +23,6 @@
     width: 100%;
   }
   
-  .avatar-model-placeholder {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--primary-light) 0%, var(--primary) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 30px rgba(46, 0, 92, 0.5);
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  
   .model-label {
     color: white;
     font-size: 18px;
@@ -79,4 +64,96 @@
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .avatar-model-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  .avatar-model-viewer {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .avatar-model-viewer canvas {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+  }
+  
+  /* Animation for avatar rotation */
+  @keyframes rotate {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+  
+  /* loading indicator for the 3D model */
+  .avatar-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(46, 0, 92, 0.7);
+    border-radius: 50%;
+    z-index: 3;
+  }
+  
+  .avatar-loading-text {
+    color: white;
+    font-size: 12px;
+    margin-top: 8px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .avatar-model-placeholder {
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--primary-light) 0%, var(--primary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(46, 0, 92, 0.5);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Add a glowing effect for premium users */
+  .premium-user .avatar-model-placeholder {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  }
+  
+  /* Style for model label, now only shown when model is loading */
+  .model-label {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    padding: 20px;
   }

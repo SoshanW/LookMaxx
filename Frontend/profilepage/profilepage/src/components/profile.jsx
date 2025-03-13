@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import '../styles/Profilesection.css';
 import '../styles/avatarsection.css';
 import '../styles/settingssection.css';
+import AvatarModel from './AvatarModel'; 
 
 const Profile = () => {
   // Define the loading state
@@ -185,7 +186,8 @@ const Profile = () => {
               <div className="avatar-display">
                 <div className="avatar-model">
                   <div className="avatar-model-placeholder">
-                    <span className="model-label">{userData.gender} Avatar</span>
+                      {/* The AvatarModel will be rendering here */}
+                      <AvatarModel gender={userData.gender} />
                   </div>
                   <h3>Your 3D Avatar</h3>
                   <p>Automatically generated based on your gender selection</p>
