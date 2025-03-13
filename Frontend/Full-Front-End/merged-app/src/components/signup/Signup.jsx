@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -43,6 +43,7 @@ api.interceptors.response.use(
 
 const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: authLogin } = useAuth();
 
   // Use initialActiveTab to determine if the card is flipped
