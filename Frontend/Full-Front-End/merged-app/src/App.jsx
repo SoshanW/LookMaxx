@@ -1,4 +1,3 @@
-// src/App.jsx - Updated with fixes for tab switching issues
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthContext } from './context/AuthProvider';
@@ -21,8 +20,18 @@ function App() {
   const { isLoggedIn, userName, logout } = useAuthContext();
   const location = useLocation();
   
-  // Check if we're on the signup or face-model pages
-  const hideNavbar = location.pathname.includes('/signup') || location.pathname.includes('/face-model');
+  // Check if we're on the signup, face-model, or casting pages
+  const hideNavbar = 
+    location.pathname.includes('/signup') || 
+    location.pathname.includes('/face-model');
+  
+  // Check if we should hide footer
+  const hideFooter = 
+    location.pathname.includes('/signup') || 
+    location.pathname.includes('/face-model') || 
+    location.pathname.includes('/casting') ||
+    location.pathname === '/' ||
+    location.pathname === '/ffr';
   
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
@@ -62,7 +71,7 @@ function App() {
     };
   }, []);
   
-  // Fix for tab switching issues
+  // Fix for tab switching issues and page-specific styles
   useEffect(() => {
     // Force re-render of components when location changes
     const cleanupFunctions = [];
@@ -93,6 +102,28 @@ function App() {
       setEnableScrollDetection(false);
     }
     
+    // Special handling for the casting page's footer
+    const handleCastingPage = () => {
+      const isCastingPage = location.pathname.includes('/casting');
+      const footer = document.querySelector('footer');
+      
+      // Hide footer on casting page
+      if (isCastingPage && footer) {
+        footer.style.display = 'none';
+      }
+      
+      // Clean up function
+      return () => {
+        if (isCastingPage && footer) {
+          footer.style.display = '';
+        }
+      };
+    };
+    
+    // Run the casting page handler and store its cleanup function
+    const castingCleanup = handleCastingPage();
+    cleanupFunctions.push(castingCleanup);
+    
     // Clean up any existing body classes first
     document.body.classList.remove('ffr-page', 'signup-page', 'casting-page');
     
@@ -101,16 +132,24 @@ function App() {
       document.body.classList.add('signup-page');
     } else if (location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
       document.body.classList.add('casting-page');
+      // Special handling for casting page overflow
+      document.body.style.overflow = 'hidden';
     } else {
       document.body.classList.add('ffr-page');
+      // Reset overflow for other pages
+      document.body.style.overflow = '';
     }
     
-    // Reset scroll position on page navigation
-    window.scrollTo(0, 0);
+    // Reset scroll position on page navigation (except for casting page)
+    if (!location.pathname.includes('/casting')) {
+      window.scrollTo(0, 0);
+    }
     
     return () => {
       // Run all cleanup functions
       cleanupFunctions.forEach(fn => fn());
+      // Always reset overflow style on unmount
+      document.body.style.overflow = '';
     };
   }, [location.pathname]);
 
@@ -142,13 +181,9 @@ function App() {
     }
   }, [location.pathname]);
 
-  // Determine whether to show the footer
-  const showFooter = !location.pathname.includes('/signup') && 
-                    !location.pathname.includes('/face-model');
-
   return (
     <>
-      {/* Only show navbar if not on signup or face-model pages */}
+      {/* Only show navbar if not on special pages */}
       {!hideNavbar && (
         <Navbar 
           isLoggedIn={isLoggedIn}
@@ -180,7 +215,7 @@ function App() {
       </div>
 
       {/* Only show footer on appropriate pages */}
-      {showFooter && <Footer />}
+      {!hideFooter && <Footer />}
     </>
   );
 }

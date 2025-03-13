@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthProvider";
-import "../../styles/casting/CastingPage.css";
+import "../../styles/casting/Casting.css";
 
 // Keeping NeonMist as part of the CastingPage file
 const NeonMist = ({ isActive }) => {
@@ -67,6 +67,7 @@ const useSmoothScroll = () => {
       block: 'start'
     });
     
+    // Set active section immediately rather than waiting for scroll event
     setActiveSection(sectionId);
   };
   
@@ -97,8 +98,8 @@ const useSmoothScroll = () => {
       }
     };
     
-    // Add scroll event listener
-    window.addEventListener('scroll', handleScroll);
+    // Add scroll event listener with passive option for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
     // Initial check for active section
     handleScroll();
@@ -130,8 +131,10 @@ const useSmoothScroll = () => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowUp') {
+        e.preventDefault(); // Prevent default to avoid double scrolling
         navigateSection('up');
       } else if (e.key === 'ArrowDown') {
+        e.preventDefault(); // Prevent default to avoid double scrolling
         navigateSection('down');
       }
     };
@@ -143,36 +146,133 @@ const useSmoothScroll = () => {
     };
   }, [activeSection]);
   
-  // Handle wheel events for section navigation
+  // Handle wheel events for section navigation with improved debounce and scroll accumulation
   useEffect(() => {
-    let wheelTimeout;
+    let scrolling = false;
     let lastScrollTime = 0;
+    const scrollCooldown = 800; // ms to wait before handling another scroll event
     
-    const handleWheel = (e) => {
-      // Prevent too frequent scrolling (debounce)
-      const now = Date.now();
-      if (now - lastScrollTime < 1000) return;
-      
-      // Clear any existing timeout
-      if (wheelTimeout) {
-        clearTimeout(wheelTimeout);
+    // Scroll accumulation to require multiple wheel events to change sections
+    let scrollAccumulator = 0;
+    const scrollThreshold = 200; // Higher threshold means more scrolls needed (increased from 100)
+    const accumulatorResetTime = 500; // ms before accumulator starts to decay (increased for more time)
+    let accumulatorResetTimer = null;
+    let progressIndicatorTimeout = null;
+    
+    // Create scroll progress indicator element
+    const createProgressIndicator = () => {
+      // Check if it already exists
+      let indicator = document.querySelector('.scroll-progress-indicator');
+      if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.className = 'scroll-progress-indicator';
+        
+        const progressFill = document.createElement('div');
+        progressFill.className = 'scroll-progress-fill';
+        indicator.appendChild(progressFill);
+        
+        document.body.appendChild(indicator);
       }
-      
-      // Set a timeout to handle the wheel event
-      wheelTimeout = setTimeout(() => {
-        // Determine direction
-        const direction = e.deltaY > 0 ? 'down' : 'up';
-        navigateSection(direction);
-        lastScrollTime = now;
-      }, 50);
+      return indicator;
     };
     
-    window.addEventListener('wheel', handleWheel, { passive: false });
+    // Update scroll progress indicator
+    const updateProgressIndicator = (progress) => {
+      const indicator = createProgressIndicator();
+      const progressFill = indicator.querySelector('.scroll-progress-fill');
+      
+      // Show indicator
+      indicator.classList.add('active');
+      
+      // Update fill width based on progress (0-100%)
+      if (progressFill) {
+        progressFill.style.width = `${Math.min(100, (progress / scrollThreshold) * 100)}%`;
+      }
+      
+      // Hide indicator after some time with no scrolling
+      clearTimeout(progressIndicatorTimeout);
+      progressIndicatorTimeout = setTimeout(() => {
+        indicator.classList.remove('active');
+      }, 1000);
+    };
+    
+    const handleWheel = (e) => {
+      // Prevent too frequent scrolling
+      const now = Date.now();
+      if (scrolling) return;
+      
+      // Prevent default wheel behavior to avoid browser's native scrolling
+      e.preventDefault();
+      
+      // Determine direction for indicator color
+      const direction = e.deltaY > 0 ? 'down' : 'up';
+      const directionSign = direction === 'down' ? 1 : -1;
+      
+      // Add scroll delta to accumulator (store direction info too)
+      scrollAccumulator += directionSign * Math.abs(e.deltaY);
+      
+      // Make sure we're consistent with direction - reset if direction changes
+      if ((scrollAccumulator > 0 && e.deltaY < 0) || (scrollAccumulator < 0 && e.deltaY > 0)) {
+        scrollAccumulator = directionSign * Math.abs(e.deltaY);
+      }
+      
+      // Update progress indicator
+      updateProgressIndicator(Math.abs(scrollAccumulator));
+      
+      // Clear previous reset timer
+      if (accumulatorResetTimer) {
+        clearTimeout(accumulatorResetTimer);
+      }
+      
+      // Set timer to gradually reset accumulator if user stops scrolling
+      accumulatorResetTimer = setTimeout(() => {
+        scrollAccumulator = 0;
+        // Hide indicator when accumulator resets
+        const indicator = document.querySelector('.scroll-progress-indicator');
+        if (indicator) {
+          indicator.classList.remove('active');
+        }
+      }, accumulatorResetTime);
+      
+      // Only change section if enough scrolling has accumulated and cooldown has passed
+      if (Math.abs(scrollAccumulator) >= scrollThreshold && now - lastScrollTime >= scrollCooldown) {
+        scrolling = true;
+        lastScrollTime = now;
+        scrollAccumulator = 0; // Reset accumulator
+        
+        // Navigate to the next section based on the sign of the accumulator
+        navigateSection(directionSign > 0 ? 'down' : 'up');
+        
+        // Reset scrolling flag after animation completes
+        setTimeout(() => {
+          scrolling = false;
+        }, scrollCooldown);
+      }
+    };
+    
+    const wheelTargets = Object.values(sectionRefs)
+      .filter(ref => ref.current)
+      .map(ref => ref.current);
+    
+    // Add wheel event listener to each section
+    wheelTargets.forEach(target => {
+      target.addEventListener('wheel', handleWheel, { passive: false });
+    });
     
     return () => {
-      window.removeEventListener('wheel', handleWheel);
-      if (wheelTimeout) {
-        clearTimeout(wheelTimeout);
+      // Remove event listeners
+      wheelTargets.forEach(target => {
+        target?.removeEventListener('wheel', handleWheel);
+      });
+      
+      // Clean up timers
+      if (accumulatorResetTimer) clearTimeout(accumulatorResetTimer);
+      if (progressIndicatorTimeout) clearTimeout(progressIndicatorTimeout);
+      
+      // Remove progress indicator from DOM
+      const indicator = document.querySelector('.scroll-progress-indicator');
+      if (indicator && indicator.parentNode) {
+        indicator.parentNode.removeChild(indicator);
       }
     };
   }, [activeSection]);
@@ -215,14 +315,14 @@ const HeroSection = ({ sectionRef, isActive, onApplyNow }) => {
   // Animation variants
   const fadeInVariant = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 1 } }
+    visible: { opacity: 1, transition: { duration: 0.8 } }
   };
   
   const fadeInDelayedVariant = {
     hidden: { opacity: 0 },
     visible: (delay) => ({ 
       opacity: 1, 
-      transition: { duration: 1, delay: delay * 0.2 } 
+      transition: { duration: 0.8, delay: delay * 0.2 } 
     })
   };
 
@@ -262,7 +362,7 @@ const HeroSection = ({ sectionRef, isActive, onApplyNow }) => {
             initial="hidden"
             animate={isActive ? "visible" : "hidden"}
             variants={fadeInDelayedVariant}
-            custom={1} // Delay factor = 2
+            custom={2} // Delay factor = 2
             onClick={onApplyNow} // Handler for Apply Now button
           >
             APPLY NOW
@@ -428,7 +528,7 @@ const FFRSection = ({ sectionRef, isActive }) => {
  * Main CastingPage Component
  * Handles page structure and navigation between sections
  */
-const CastingPage = () => {
+const Casting = () => {
   // Use react-router-dom's navigate hook for programmatic navigation
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthContext();
@@ -449,13 +549,52 @@ const CastingPage = () => {
     navigate('/apply');
   };
 
-  // Add body class for proper styling
+  // Add body class for proper styling and fix footer display
   useEffect(() => {
+    // Immediately hide footer when entering casting page
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.display = 'none';
+    }
+    
+    // Add casting page class to body
     document.body.classList.add('casting-page');
     
+    // Ensure smooth scrolling by disabling native scrolling
+    document.body.style.overflow = 'hidden';
+    
+    // Fix for issues with other page elements interfering with full viewport sections
+    document.body.style.height = '100vh';
+    
     return () => {
+      // Clean up styles when component unmounts
       document.body.classList.remove('casting-page');
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      
+      // Restore footer when leaving page
+      if (footer) {
+        footer.style.display = '';
+      }
     };
+  }, []);
+
+  // Pre-load images to avoid flicker during section changes
+  useEffect(() => {
+    const preloadImages = () => {
+      const images = [
+        '/assets/model.jpeg',
+        '/assets/model2.jpeg',
+        '/assets/ffr.png'
+      ];
+      
+      images.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+    };
+    
+    preloadImages();
   }, []);
 
   return (
@@ -485,4 +624,4 @@ const CastingPage = () => {
   );
 };
 
-export default CastingPage;
+export default Casting;

@@ -1,4 +1,3 @@
-// src/pages/FfrPage.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import ImageSequence from '../components/ffr/ImageSequence';
 import ScrollText from '../components/ffr/ScrollText';
@@ -53,6 +52,12 @@ function FfrPage() {
       window.ScrollTrigger.refresh();
     }
 
+    // Hide footer in FFR page
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.display = 'none';
+    }
+
     return () => {
       // Clean up when component unmounts
       document.body.classList.remove('ffr-page');
@@ -60,6 +65,12 @@ function FfrPage() {
       // Kill any lingering GSAP animations
       if (window.ScrollTrigger) {
         window.ScrollTrigger.getAll().forEach(t => t.kill());
+      }
+      
+      // Restore footer when leaving FFR page
+      const footer = document.querySelector('footer');
+      if (footer) {
+        footer.style.display = '';
       }
     };
   }, []);
