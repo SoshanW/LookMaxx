@@ -5,21 +5,13 @@ import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 import { gsap } from 'gsap'
 import SphereRippleEffect from './SphereRippleEffect'
+import NeonHeadMaterial from './NeonHeadMaterial'
 
 const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnimationComplete, onFeatureClick }) => {
   const headRef = useRef()
   const sphereRefs = useRef({})
   const sphereGroupRefs = useRef({})
   const { nodes } = useGLTF('/models/humanHead.glb')
-
-  const metallicMaterial = new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#bfcbff'),
-    metalness: 1,
-    roughness: 0.2,
-    envMapIntensity: 1.5,
-    clearcoat: 0.5,
-    clearcoatRoughness: 0.2,
-  })
 
   const resetHeadPosition = () => {
     if (!headRef.current) return
@@ -169,8 +161,9 @@ const HumanHeadModel = ({ initialPosition, selectedFeature, featureData, onAnima
             castShadow
             receiveShadow
             geometry={nodes[`Object_${index + 4}`].geometry}
-            material={metallicMaterial}
-          />
+            >
+            <NeonHeadMaterial />
+          </mesh>
         ))}
       </group>
       
