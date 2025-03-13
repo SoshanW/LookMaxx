@@ -1,0 +1,96 @@
+/* Base Styles & Typography */
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #0f1025;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* HTML & Body Reset for Study Section */
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    min-width: 100vw;
+    background: linear-gradient(to bottom, #0f1025 0%, #1a1150 100%);
+    display: flex;
+    place-items: center;
+  }
+  
+  /* Root Container */
+  #root {
+    max-width: 1280px;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    overflow: hidden;
+  }
+  
+  /* Link Styles */
+  a {
+    font-weight: 500;
+    color: #a94dff;
+    text-decoration: inherit;
+  }
+  
+  /* Canvas Container Override (if needed) */
+  div[style*="position: relative"] {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Additional Component-Specific Styles from App.css */
+  
+  /* Logo Styles */
+  .logo {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+    transition: filter 300ms;
+  }
+  .logo:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+  }
+  .logo.react:hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+  }
+  
+  /* Logo Spin Animation */
+  @keyframes logo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Apply spin animation if user hasn’t reduced motion */
+  @media (prefers-reduced-motion: no-preference) {
+    a:nth-of-type(2) .logo {
+      animation: logo-spin infinite 20s linear;
+    }
+  }
+  
+  /* Card Component Padding */
+  .card {
+    padding: 2em;
+  }
+  
+  /* Read-the-Docs Text Color */
+  .read-the-docs {
+    color: #888;
+  }  
