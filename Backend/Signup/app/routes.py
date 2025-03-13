@@ -158,7 +158,8 @@ def signup():
             'gender':gender,
             'email': email,
             'password': generate_password_hash(password),  
-            'profile_picture' : profile_picture_url
+            'profile_picture' : profile_picture_url,
+            'subscription' : 'free'
         }
         
         mongo.db.users.insert_one(user)
