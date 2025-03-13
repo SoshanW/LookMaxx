@@ -7,8 +7,8 @@ const ReportGenerator = ({
   onClose, 
   onMinimize,
   isMinimized = false,
-  duration = 30000, // Default duration in ms (30 seconds)
-  progressIncrement = 1.5 // Default progress increment per tick
+  duration = 60000, // Default duration in ms (30 seconds)
+  progressIncrement = 1 // Default progress increment per tick
 }) => {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('Initializing...');
