@@ -8,6 +8,19 @@
   /* Ensure page scrolling works */
   overflow-y: auto;
   width: 100%;
+  /* Force the container to take up at least the full viewport height */
+  min-height: 100vh;
+  /* Important to override any other CSS that might be disabling scrolling */
+  overflow: auto !important;
+  /* Add this to handle iOS scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Apply styles to the body specifically for the application form page */
+body.application-form-page {
+  /* Override the casting-page class overflow restriction */
+  overflow: auto !important;
+  height: auto !important;
 }
 
 .casting-form-container {
@@ -279,10 +292,5 @@ label {
   
   .primary-button, .secondary-button {
     width: 100%;
-  }
-  
-  /* Adjust for mobile scrolling */
-  .scrollable-container {
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
 }

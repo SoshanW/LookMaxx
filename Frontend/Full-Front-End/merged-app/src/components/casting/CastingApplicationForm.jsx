@@ -6,6 +6,7 @@ import "../../styles/casting/CastingApplicationForm.css";
 function CastingApplicationForm() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthContext();
+  const scrollContainerRef = useRef(null);
   
   // Form state with all required fields including measurements
   const [formData, setFormData] = useState({
@@ -27,12 +28,24 @@ function CastingApplicationForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showFfrResults, setShowFfrResults] = useState(false);
 
-  // Add body class for proper styling
+  // Apply special class for application form page and ensure scrolling works
   useEffect(() => {
-    document.body.classList.add('casting-page');
+    // Apply a specific class for this page
+    document.body.classList.add('application-form-page');
+    
+    // Override any overflow restrictions that might be preventing scrolling
+    document.body.style.overflow = 'auto';
+    document.body.style.height = 'auto';
+    document.documentElement.style.overflowY = 'auto';
+    
+    // Force scroll position to top when component mounts
+    window.scrollTo(0, 0);
     
     return () => {
-      document.body.classList.remove('casting-page');
+      document.body.classList.remove('application-form-page');
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.documentElement.style.overflowY = '';
     };
   }, []);
 
@@ -154,7 +167,7 @@ function CastingApplicationForm() {
   }
 
   return (
-    <div className="scrollable-container">
+    <div className="scrollable-container" ref={scrollContainerRef}>
       {/* FFR Notification Message - explains the facial recognition analysis */}
       <div className="ffr-notification">
         <div className="ffr-notification-content">
@@ -369,4 +382,3 @@ function CastingApplicationForm() {
 }
 
 export default CastingApplicationForm;
-

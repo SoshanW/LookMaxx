@@ -125,15 +125,21 @@ function App() {
     cleanupFunctions.push(castingCleanup);
     
     // Clean up any existing body classes first
-    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page');
+    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page');
     
     // Apply specific body classes based on route
     if (location.pathname.includes('/signup') || location.pathname.includes('/face-model')) {
       document.body.classList.add('signup-page');
-    } else if (location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
+    } else if (location.pathname.includes('/casting') && !location.pathname.includes('/apply')) {
       document.body.classList.add('casting-page');
       // Special handling for casting page overflow
       document.body.style.overflow = 'hidden';
+    } else if (location.pathname.includes('/apply')) {
+      // Special case for application form 
+      document.body.classList.add('application-form-page');
+      // Allow scrolling for the application form
+      document.body.style.overflow = 'auto';
+      document.body.style.height = 'auto';
     } else {
       document.body.classList.add('ffr-page');
       // Reset overflow for other pages
@@ -141,7 +147,7 @@ function App() {
     }
     
     // Reset scroll position on page navigation (except for casting page)
-    if (!location.pathname.includes('/casting')) {
+    if (!location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
       window.scrollTo(0, 0);
     }
     
