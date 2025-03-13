@@ -1,4 +1,4 @@
-// ModelSection.jsx with smooth model movement - FIXED LOADER ERROR
+// ModelSection.jsx with optimized event listeners and reduced lag
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
@@ -279,18 +279,27 @@ const ModelSection = () => {
       }
     );
     
-    // Handle window resize
+    // Handle window resize with requestAnimationFrame for better performance
+    let resizeRequested = false;
     const handleResize = () => {
-      if (!container) return;
+      if (resizeRequested) return;
       
-      camera.aspect = container.clientWidth / container.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      // Maintain the lower pixel ratio on resize
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      resizeRequested = true;
+      requestAnimationFrame(() => {
+        if (!container) return;
+        
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        // Maintain the lower pixel ratio on resize
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        resizeRequested = false;
+      });
     };
     
-    window.addEventListener('resize', handleResize);
+    // Use passive event listener for better performance
+    window.addEventListener('resize', handleResize, { passive: true });
     
     // Save scene and cleanup function to ref
     container.scene = scene;
@@ -306,24 +315,37 @@ const ModelSection = () => {
     };
   };
   
-  // Function to start rendering with smooth movement
+  // Function to start rendering with smooth movement - OPTIMIZED FOR PERFORMANCE
   const startRendering = (model, container, scene, camera, renderer, initialRotation) => {
     // Initial rotation
     const initialRotationValues = [...initialRotation];
     
-    // Track mouse position and hover state for rotation
-    let targetMouseX = 0;
-    let targetMouseY = 0;
-    let currentMouseX = 0;
-    let currentMouseY = 0;
-    let isHovering = false;
+    // Mouse movement state
+    const mouseState = {
+      targetX: 0,
+      targetY: 0,
+      currentX: 0,
+      currentY: 0,
+      isHovering: false,
+      // Use timestamp to throttle event processing
+      lastProcessed: 0
+    };
     
     // Constants for smooth easing
-    const ease = 0.08; // Higher value = faster movement (between 0 and 1)
+    const ease = 0.06; // Lowered for smoother transitions
     
-    // Add mouse movement listener (only process events when hovering over this specific container)
+    // Throttle interval in ms (16ms ≈ 60fps)
+    const throttleInterval = 16;
+    
+    // Add throttled mouse movement listener
     const handleMouseMove = (event) => {
-      if (!isHovering) return;
+      // Skip processing if not hovering (big performance win)
+      if (!mouseState.isHovering) return;
+      
+      // Skip if we processed an event too recently
+      const now = performance.now();
+      if (now - mouseState.lastProcessed < throttleInterval) return;
+      mouseState.lastProcessed = now;
       
       // Calculate mouse position relative to the center of the container
       const rect = container.getBoundingClientRect();
@@ -331,52 +353,50 @@ const ModelSection = () => {
       const centerY = rect.top + rect.height / 2;
       
       // Normalize mouse position (-1 to 1 range)
-      targetMouseX = (event.clientX - centerX) / (rect.width / 2);
-      targetMouseY = (event.clientY - centerY) / (rect.height / 2);
+      mouseState.targetX = (event.clientX - centerX) / (rect.width / 2);
+      mouseState.targetY = (event.clientY - centerY) / (rect.height / 2);
       
       // Clamp values to prevent extreme rotations
-      targetMouseX = Math.max(-1, Math.min(1, targetMouseX));
-      targetMouseY = Math.max(-1, Math.min(1, targetMouseY));
+      mouseState.targetX = Math.max(-1, Math.min(1, mouseState.targetX));
+      mouseState.targetY = Math.max(-1, Math.min(1, mouseState.targetY));
     };
     
-    // Add hover state detection
+    // Add hover state detection - using a simple flag
     const handleMouseEnter = () => {
-      isHovering = true;
+      mouseState.isHovering = true;
     };
     
     const handleMouseLeave = () => {
-      isHovering = false;
+      mouseState.isHovering = false;
       // Gradually return to initial rotation when mouse leaves
-      targetMouseX = 0;
-      targetMouseY = 0;
+      mouseState.targetX = 0;
+      mouseState.targetY = 0;
     };
     
-    // Add event listeners
+    // Use passive event listeners for better performance
     container.addEventListener('mousemove', handleMouseMove, { passive: true });
-    container.addEventListener('mouseenter', handleMouseEnter);
-    container.addEventListener('mouseleave', handleMouseLeave);
+    container.addEventListener('mouseenter', handleMouseEnter, { passive: true });
+    container.addEventListener('mouseleave', handleMouseLeave, { passive: true });
     
-    // Animation time tracking for smooth animations
-    let lastTime = 0;
-    const rotationSpeed = 0.0005; // Lower speed for smoother rotation
+    // Animation variables
+    const rotationSpeed = 0.0003; // Lower for smoother rotation
+    let prevTime = 0;
+    let animationActive = true;
     
-    // Start animation loop with time-based animation for consistent speed
+    // Use visibility API to pause animation when tab is not visible
+    document.addEventListener('visibilitychange', () => {
+      animationActive = !document.hidden;
+    }, { passive: true });
+    
+    // Start animation loop with time-based animation and RAF
     const animate = (time) => {
-      // Smooth interpolation between current and target mouse position
-      currentMouseX += (targetMouseX - currentMouseX) * ease;
-      currentMouseY += (targetMouseY - currentMouseY) * ease;
-      
-      // Apply rotation based on mouse position if hovering
-      if (isHovering) {
-        model.rotation.y = initialRotationValues[1] + (currentMouseX * 0.5); // horizontal rotation
-        model.rotation.x = initialRotationValues[0] + (currentMouseY * 0.2); // vertical rotation (limited)
-      } else {
-        // Gentle automatic rotation when not hovering 
-        model.rotation.y = initialRotationValues[1] + Math.sin(time * rotationSpeed) * 0.1;
-        model.rotation.x = initialRotationValues[0];
+      // Skip frame if animation is paused or container is gone
+      if (!animationActive || !container) {
+        container.animationFrameId = requestAnimationFrame(animate);
+        return;
       }
       
-      // Only render when visible in viewport for performance
+      // Check if this element is in viewport before doing expensive operations
       const rect = container.getBoundingClientRect();
       const isVisible = 
         rect.top < window.innerHeight &&
@@ -384,7 +404,24 @@ const ModelSection = () => {
         rect.left < window.innerWidth &&
         rect.right > 0;
       
+      // Only update and render when visible
       if (isVisible) {
+        // Smooth interpolation between current and target mouse position
+        mouseState.currentX += (mouseState.targetX - mouseState.currentX) * ease;
+        mouseState.currentY += (mouseState.targetY - mouseState.currentY) * ease;
+        
+        // Apply rotation based on mouse position if hovering
+        if (mouseState.isHovering) {
+          model.rotation.y = initialRotationValues[1] + (mouseState.currentX * 0.4); 
+          model.rotation.x = initialRotationValues[0] + (mouseState.currentY * 0.15); 
+        } else {
+          // Gentle automatic rotation when not hovering
+          // Use time for smooth rotation regardless of framerate
+          model.rotation.y = initialRotationValues[1] + Math.sin(time * rotationSpeed) * 0.1;
+          model.rotation.x = initialRotationValues[0];
+        }
+        
+        // Only render when changes are visible
         renderer.render(scene, camera);
       }
       
@@ -397,10 +434,12 @@ const ModelSection = () => {
     
     // Add to cleanup
     container.cleanupListeners = () => {
+      // Remove event listeners
       container.removeEventListener('mousemove', handleMouseMove);
       container.removeEventListener('mouseenter', handleMouseEnter);
       container.removeEventListener('mouseleave', handleMouseLeave);
       
+      // Cancel animation frame
       if (container.animationFrameId) {
         cancelAnimationFrame(container.animationFrameId);
         container.animationFrameId = null;
