@@ -9,8 +9,9 @@ app_routes = Blueprint('app_routes', __name__)
 
 @app_routes.route('/verify-payment' , methods = ['POST'])
 def verify_payment():
-    jti = get_jwt()["jti"]  # Get JWT ID
+    
     username = get_jwt_identity
+    jwt_payload = get_jwt() # Get JWT ID
 
     if username:
             # Find the user's subscription in MongoDB and update it
@@ -20,4 +21,4 @@ def verify_payment():
             )
             return jsonify({"status": "success", "message": "Payment verified and subscription updated"})
     else:
-        return jsonify({"status": "error", "message": "Invalid or expired JWT token"})
+        return jsonify({"status": "error", "message": "User not found"}), 404
