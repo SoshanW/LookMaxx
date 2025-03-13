@@ -159,14 +159,14 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
     
     // Create a separate ScrollTrigger for the transition between sections
     ScrollTrigger.create({
-      trigger: ".next-section",
+      trigger: ".model-section",
       start: "top bottom-=10%",
       onEnter: () => {
-        // When entering the next section, start fading out the animation section
+        // When entering the model section, start fading out the animation section
         gsap.to(".scroll-animation-section", { autoAlpha: 0, duration: 0.5 });
       },
       onLeaveBack: () => {
-        // When leaving the next section (scrolling back up), fade in the animation section
+        // When leaving the model section (scrolling back up), fade in the animation section
         gsap.to(".scroll-animation-section", { autoAlpha: 1, duration: 0.5 });
       }
     });
@@ -418,9 +418,9 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
         </div>
       </div>
       
-      {/* Next section after the animation */}
-      <div className="next-section">
-        <div className="next-section-content">
+      {/* model section after the animation */}
+      <div className="model-section">
+        <div className="model-section-content">
           <h1>Discover Your Potential</h1>
           <p>At LookSci, we combine advanced technology with scientific research to help you understand and enhance your unique features.</p>
           

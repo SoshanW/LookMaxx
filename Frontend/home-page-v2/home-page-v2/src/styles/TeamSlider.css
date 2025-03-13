@@ -1,0 +1,295 @@
+/* TeamSlider.css */
+
+/* Main team section styling */
+.team-section {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(to bottom, #0f1233, #1e1e36);
+  padding: 100px 0 60px;
+  overflow: hidden;
+}
+
+.team-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 70% 30%, rgba(132, 255, 255, 0.15), transparent 40%);
+  pointer-events: none;
+}
+
+.team-section-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  color: #e0ffff;
+  text-align: center;
+}
+
+.team-heading {
+  font-family: "Nasalization", sans-serif;
+  font-size: 3.5rem;
+  color: #e0ffff;
+  margin-bottom: 20px;
+  text-shadow: 0 0 15px rgba(132, 255, 255, 0.3);
+  letter-spacing: 2px;
+}
+
+.team-subheading {
+  font-family: "Nasalization", sans-serif;
+  font-size: 1.2rem;
+  color: #ffffff;
+  max-width: 800px;
+  margin: 0 auto 60px;
+  line-height: 1.6;
+}
+
+/* Swiper container and navigation */
+.team-slider-container {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  margin: 0 auto 60px;
+  display: flex;
+  align-items: center;
+}
+
+.team-swiper {
+  width: 100%;
+  height: 100%;
+  padding: 50px 0;
+}
+
+.team-slide {
+  width: 320px;
+  height: 400px;
+  transition: transform 0.3s ease;
+}
+
+/* Custom navigation buttons */
+.team-nav-btn {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background: rgba(9, 42, 62, 0.6);
+  border: 2px solid #84ffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(132, 255, 255, 0.3);
+}
+
+.team-nav-btn:hover {
+  background: rgba(9, 42, 62, 0.8);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(132, 255, 255, 0.5);
+}
+
+.prev-btn {
+  left: 10px;
+}
+
+.next-btn {
+  right: 10px;
+}
+
+/* Team member cards */
+.team-card {
+  width: 100%;
+  height: 100%;
+  background: rgba(9, 42, 62, 0.7);
+  border: 2px solid #84ffff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(132, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(5px);
+}
+
+.team-img-container {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(45deg, #092a3e, #191C4C);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+.team-card:hover .team-img {
+  transform: scale(1.05);
+}
+
+/* Card content styling */
+.team-card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.team-member-name {
+  font-family: "Nasalization", sans-serif;
+  font-size: 1.5rem;
+  color: #e0ffff;
+  margin: 0 0 5px;
+  text-shadow: 0 0 10px rgba(132, 255, 255, 0.3);
+}
+
+.team-member-role {
+  font-family: "Dune_Rise", sans-serif;
+  font-size: 1rem;
+  color: #84ffff;
+  margin: 0 0 15px;
+  font-weight: 500;
+}
+
+.team-member-bio {
+  font-family: "Neuropolitical", sans-serif;
+  font-size: 0.9rem;
+  color: #ffffff;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Social media links */
+.team-social-links {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: auto;
+}
+
+.social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(to right, #092a3e, #191C4C);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 1px solid #84ffff;
+}
+
+.social-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 15px rgba(132, 255, 255, 0.5);
+  background: linear-gradient(to right, #191C4C, #092a3e);
+}
+
+
+@keyframes teamBtnPulse {
+  0% {
+    transform: scale(1.05);
+    box-shadow: #84ffffdf 0 0 10px;
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: #84ffff 0 0 15px;
+  }
+  100% {
+    transform: scale(1.05);
+    box-shadow: #84fffffc 0 0 10px;
+  }
+}
+
+/* Swiper specific overrides for coverflow effect */
+.swiper-slide-shadow-left,
+.swiper-slide-shadow-right {
+  background-image: linear-gradient(to left, rgba(132, 255, 255, 0.2), transparent) !important;
+}
+
+/* Card special active state */
+.swiper-slide-active .team-card {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(132, 255, 255, 0.35);
+  border-color: #e0ffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .team-slider-container {
+    height: 450px;
+  }
+  
+  .team-heading {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .team-section {
+    padding: 80px 0 40px;
+  }
+  
+  .team-heading {
+    font-size: 2.5rem;
+  }
+  
+  .team-subheading {
+    font-size: 1rem;
+    margin-bottom: 40px;
+  }
+  
+  .team-slider-container {
+    height: 400px;
+  }
+  
+  .team-slide {
+    width: 280px;
+    height: 380px;
+  }
+  
+  .team-nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .team-section {
+    padding: 60px 0 30px;
+  }
+  
+  .team-heading {
+    font-size: 2rem;
+  }
+  
+  .team-slider-container {
+    height: 380px;
+  }
+  
+  .team-slide {
+    width: 260px;
+    height: 360px;
+  }
+  
+  .team-member-name {
+    font-size: 1.3rem;
+  }
+  
+  .team-cta-btn {
+    padding: 10px 25px;
+    font-size: 1rem;
+  }
+}
