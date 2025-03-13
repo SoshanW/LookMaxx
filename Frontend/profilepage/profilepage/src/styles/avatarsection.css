@@ -1,0 +1,159 @@
+.avatar-container {
+    flex: 1;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+  
+  .avatar-display {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(46, 0, 92, 0.2), rgba(3, 218, 198, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .avatar-model {
+    padding: 20px;
+    width: 100%;
+  }
+  
+  .model-label {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+  }
+  
+  .avatar-model h3 {
+    margin: 0 0 10px 0;
+    color: var(--primary-light);
+  }
+  
+  .avatar-model p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+  
+  /* Loading spinner */
+  .profile-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(46, 0, 92, 0.2);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .avatar-model-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  .avatar-model-viewer {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .avatar-model-viewer canvas {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+  }
+  
+  /* Animation for avatar rotation */
+  @keyframes rotate {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+  
+  /* loading indicator for the 3D model */
+  .avatar-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(46, 0, 92, 0.7);
+    border-radius: 50%;
+    z-index: 3;
+  }
+  
+  .avatar-loading-text {
+    color: white;
+    font-size: 12px;
+    margin-top: 8px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .avatar-model-placeholder {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--primary-light) 0%, var(--primary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(46, 0, 92, 0.5);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Add a glowing effect for premium users */
+  .premium-user .avatar-model-placeholder {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  }
+  
+  /* Style for model label, now only shown when model is loading */
+  .model-label {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    padding: 20px;
+  }
