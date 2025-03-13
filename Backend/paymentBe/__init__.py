@@ -32,7 +32,7 @@ def create_app():
         return jwt_payload["jti"] in jwt_blocklist
     
     # Register routes
-    from .routes import app_routes
+    from routes import app_routes
     app.register_blueprint(app_routes)
     
     return app
