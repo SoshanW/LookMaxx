@@ -141,6 +141,9 @@ const Navbar = ({
   const handleLinkClick = (linkName, e) => {
     e.preventDefault(); // Prevent default navigation
     const lowercaseLink = linkName.toLowerCase();
+    
+    console.log(`Link clicked: ${lowercaseLink}`); // Debug log
+    
     setActiveLink(lowercaseLink);
     
     // Force state update before navigation
@@ -150,11 +153,16 @@ const Navbar = ({
         navigate('/', { replace: true });
       } else if (lowercaseLink === 'ffr') {
         navigate('/ffr', { replace: true });
+      } else if (lowercaseLink === 'study') {
+        // Explicitly handle study navigation
+        console.log('Navigating to /study');
+        navigate('/study', { replace: true });
       } else if (lowercaseLink === 'casting') {
         navigate('/casting', { replace: true });
       } else if (lowercaseLink === 'signup' || lowercaseLink === 'login') {
         navigate('/signup', { replace: true });
       } else {
+        // Default case for other routes
         navigate(`/${lowercaseLink}`, { replace: true });
       }
       

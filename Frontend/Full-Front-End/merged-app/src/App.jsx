@@ -13,6 +13,7 @@ import SignupPage from './pages/SignupPage';
 import FaceModelPage from './pages/FaceModelPage';
 import CastingPage from './pages/CastingPage';
 import CastingApplicationPage from './pages/CastingApplicationPage';
+import StudyPage from './pages/StudyPage';
 
 // Import global styles
 import './styles/global.css';
@@ -32,7 +33,8 @@ function App() {
     location.pathname.includes('/face-model') || 
     location.pathname.includes('/casting') ||
     location.pathname === '/' ||
-    location.pathname === '/ffr';
+    location.pathname === '/ffr' ||
+    location.pathname === '/study';
   
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
@@ -126,7 +128,7 @@ function App() {
     cleanupFunctions.push(castingCleanup);
     
     // Clean up any existing body classes first
-    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page');
+    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page');
     
     // Apply specific body classes based on route
     if (location.pathname.includes('/signup') || location.pathname.includes('/face-model')) {
@@ -141,6 +143,11 @@ function App() {
       // Allow scrolling for the application form
       document.body.style.overflow = 'auto';
       document.body.style.height = 'auto';
+    } else if (location.pathname.includes('/study')) {
+      document.body.classList.add('study-page');
+      // Override any overflow restrictions
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     } else {
       document.body.classList.add('ffr-page');
       // Reset overflow for other pages
@@ -150,6 +157,11 @@ function App() {
     // Reset scroll position on page navigation (except for casting page)
     if (!location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
       window.scrollTo(0, 0);
+    }
+    
+    // Add debug log for study page
+    if (location.pathname === '/study') {
+      console.log('Routes configured with Study page at /study');
     }
     
     return () => {
@@ -214,6 +226,9 @@ function App() {
           <Route path="/casting" element={<CastingPage key={`casting-page-${location.pathname}`} />} />
           <Route path="/apply" element={<CastingApplicationPage key={`apply-page-${location.pathname}`} />} />
           
+          {/* Study route */}
+          <Route path="/study" element={<StudyPage key={`study-page-${location.pathname}`} />} />
+          
           {/* Add additional routes for other pages here */}
           
           {/* Fallback route - redirect to home */}
@@ -223,6 +238,8 @@ function App() {
 
       {/* Only show footer on appropriate pages */}
       {!hideFooter && <Footer />}
+      
+      
     </ReportGeneratorProvider>
   );
 }

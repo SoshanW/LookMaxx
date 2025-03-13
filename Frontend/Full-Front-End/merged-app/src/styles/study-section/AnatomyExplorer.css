@@ -1,0 +1,23 @@
+/* Make selectors more specific to avoid conflicts */
+.study-page #root {
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+  overflow: hidden;
+}
+
+body.study-page {
+  overflow: hidden;
+}
+
+/* Make canvas container fill the screen */
+.canvas-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(to bottom, #0f1025 0%, #1a1150 100%);
+}
