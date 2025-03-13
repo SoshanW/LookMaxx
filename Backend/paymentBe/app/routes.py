@@ -3,8 +3,9 @@ import hashlib
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 from pymongo import MongoClient
 import json
-from config import mongo
+from app.config import mongo
 import datetime
+from flask import current_app
 
 app_routes = Blueprint('app_routes', __name__)
 
