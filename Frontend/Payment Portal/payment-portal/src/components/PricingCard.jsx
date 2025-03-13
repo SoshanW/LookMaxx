@@ -32,7 +32,7 @@ const PricingCard = ({
 
   const handleButtonClick = () => {
     // Redirect to home page for both "Get Started" and "Get PRO" buttons
-    window.location.href = '/';
+    setIsPopupOpen(true); // Open the payment popup
   };
 
   const closePopup = () => {
@@ -353,8 +353,6 @@ const PricingCard = ({
         />
       }
       
-      {/* We can keep this for future use, but it won't open with our updated button behavior */}
-      {isPopupOpen && <PaymentPopup onClose={closePopup} />}
     </motion.div>
   );
 };

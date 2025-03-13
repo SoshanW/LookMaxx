@@ -4,12 +4,13 @@ import md5 from 'crypto-js/md5';
 import PayHereComponent from "./PayHereComponent";
 
 // PayHere configuration
+// PayHere configuration
 const PAYHERE_CONFIG = {
   MERCHANT_ID: "1229752",
   MERCHANT_SECRET: "MTk3MzMwOTU3NjI2MjU0ODIxMTMzMTE2MjQzMDgyMzA4MzQxNDg4NA==",
   SANDBOX_URL: "https://sandbox.payhere.lk/pay/checkout",
-  RETURN_URL: "http://localhost:5173/",
-  CANCEL_URL: "http://localhost:5000/payment/cancel",
+  RETURN_URL: `${window.location.protocol}//${window.location.host}/`, // Dynamic return URL
+  CANCEL_URL: `${window.location.protocol}//${window.location.host}/`, // Dynamic cancel URL
   NOTIFY_URL: "http://localhost:5000/api/payment/notify"
 };
 
@@ -132,8 +133,8 @@ const generateOrderId = () => {
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     >
       <motion.div 
-        initial={{ scale: 0.9, opacity: 0.7 }}
-        animate={{ scale: 1, opacity: 1 }}
+        initial={{ scale: 0.8, opacity: 0.7 }}
+        animate={{ scale: 0.9, opacity: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
         className="w-[500px] bg-gradient-to-br from-[rgb(31,41,55)] to-[rgb(55,65,81)] rounded-xl shadow-2xl p-8 relative overflow-hidden"
       >
