@@ -5,6 +5,7 @@ import TeamSlider from './components/TeamSlider' // Import the new TeamSlider co
 import './App.css'
 import './styles/ScrollAnimation.css'
 import ModelSection from './components/ModelSection'
+import Footer from './components/Footer'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <ScrollAnimation frameCount={40} imageFormat="jpg" />
       <ModelSection />
       <TeamSlider /> 
+      <Footer />
     </div>
   )
 }

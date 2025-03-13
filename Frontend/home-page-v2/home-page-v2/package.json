@@ -14,6 +14,7 @@
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^6.30.0",
     "swiper": "^11.2.5",
     "three": "^0.174.0",
     "three-stdlib": "^2.35.14"
