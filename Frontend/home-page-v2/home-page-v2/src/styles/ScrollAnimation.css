@@ -1,0 +1,273 @@
+/* ScrollAnimation.css */
+
+.animation-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.scroll-animation-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Landing text overlay styling */
+.landing-text-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  position: relative;
+  padding: 5%;
+  pointer-events: none;
+  transition: opacity 0.5s ease-out;
+}
+
+.brand-name {
+  font-family: "Nasalization", sans-serif;
+  font-size: 7rem;
+  font-weight: bold;
+  color: #e0ffff;
+  text-shadow: 0 0 15px rgba(132, 255, 255, 0.725);
+  letter-spacing: 3px;
+  position: absolute;
+  top: 35%;
+  left: 4%;
+}
+
+.brand-tagline {
+  position: absolute;
+  right: 12%;
+  bottom: 30%;
+  text-align: left;
+  font-family: "Nasalization", sans-serif;
+  font-size: 4rem;
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(132, 255, 255, 0.725);
+  line-height: 1.1;
+}
+
+.get-started-btn {
+  pointer-events: auto;
+  position: absolute;
+  right: 19%;
+  bottom: 15%;
+  padding: 1.5rem 1.5rem;
+  background: linear-gradient(to right, #092a3e, #84ffff);
+  color: #191C4C;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Dune_Rise", sans-serif;
+  font-weight: bold;
+  box-shadow: #84ffff65 0 0 10px;
+  text-shadow: #ffffff 0 0 10px;
+}
+
+/* Enhanced hover effect with scale and pulse animation */
+.get-started-btn:hover {
+  background: radial-gradient(circle, #8BD0D0, #566097);
+  text-shadow: #140541 0 0 10px;
+  font-weight: bold;
+  transform: scale(1.05);
+  animation: pulse 1.5s infinite;
+}
+
+/* Feature cards styling */
+.feature-card {
+  position: absolute;
+  width: 350px;
+  z-index: 3;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+}
+
+/* Position each card individually */
+.feature-card-1 {
+  top: 30%;
+  left: 10%;
+}
+
+.feature-card-2 {
+  top: 30%;
+  right: 10%;
+}
+
+.feature-card-3 {
+  top: 60%;
+  left: 15%;
+}
+
+.card-content {
+  background: rgba(9, 42, 62, 0.7);
+  border: 1px solid #84ffff;
+  border-radius: 10px;
+  padding: 30px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 20px rgba(132, 255, 255, 0.4);
+  color: white;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.card-content:hover {
+  background: rgba(9, 42, 62, 0.85);
+  box-shadow: 0 0 30px rgba(132, 255, 255, 0.6);
+  transform: scale(1.03);
+}
+
+.card-content h2 {
+  font-family: "Nasalization", sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #e0ffff;
+  text-shadow: 0 0 10px rgba(132, 255, 255, 0.5);
+}
+
+.card-button {
+  font-family: "Dune_Rise", sans-serif;
+  background: linear-gradient(to right, #092a3e, #84ffff);
+  color: #191C4C;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(132, 255, 255, 0.3);
+  text-shadow: #ffffff 0 0 5px;
+}
+
+.card-button:hover {
+  background: radial-gradient(circle, #8BD0D0, #566097);
+  text-shadow: #140541 0 0 10px;
+  transform: scale(1.05);
+  animation: cardPulse 1.5s infinite;
+}
+
+/* Define the pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1.05);
+    box-shadow: #84ffffdf 0 0 20px;
+  }
+  50% {
+    transform: scale(1.1); /* Grow to 10% larger at peak */
+    box-shadow: #84ffff 0 0 25px; /* Brighter glow at peak */
+  }
+  100% {
+    transform: scale(1.05);
+    box-shadow: #84fffffc 0 0 20px;
+  }
+}
+
+/* Define smaller pulse animation for card buttons */
+@keyframes cardPulse {
+  0% {
+    transform: scale(1.05);
+    box-shadow: #84ffffdf 0 0 10px;
+  }
+  50% {
+    transform: scale(1.08); /* Slightly more subtle */
+    box-shadow: #84ffff 0 0 15px;
+  }
+  100% {
+    transform: scale(1.05);
+    box-shadow: #84fffffc 0 0 10px;
+  }
+}
+
+@font-face {
+  font-family: "Dune_Rise";
+  src: url("../fonts/Dune_Rise.ttf");
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .brand-name {
+    font-size: 4rem;
+    top: 25%;
+  }
+
+  .brand-tagline {
+    font-size: 2rem;
+    right: 10%;
+    bottom: 35%;
+  }
+
+  .get-started-btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    right: 15%;
+    bottom: 20%;
+  }
+
+  /* Feature cards responsive adjustments */
+  .feature-card {
+    width: 280px;
+  }
+  
+  /* Adjust card positions for mobile */
+  .feature-card-1 {
+    top: 25%;
+    left: 5%;
+  }
+  
+  .feature-card-2 {
+    top: 25%;
+    right: 5%;
+  }
+  
+  .feature-card-3 {
+    top: 50%;
+    left: 10%;
+  }
+
+  .card-content h2 {
+    font-size: 1.4rem;
+  }
+
+  .card-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  /* animation for mobile to be more subtle */
+  .get-started-btn:hover, .card-button:hover {
+    transform: scale(1.03);
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1.03);
+    }
+    50% {
+      transform: scale(1.06);
+    }
+    100% {
+      transform: scale(1.03);
+    }
+  }
+  
+  @keyframes cardPulse {
+    0% {
+      transform: scale(1.03);
+    }
+    50% {
+      transform: scale(1.06);
+    }
+    100% {
+      transform: scale(1.03);
+    }
+  }
+}

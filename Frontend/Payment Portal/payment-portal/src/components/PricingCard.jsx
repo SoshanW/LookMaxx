@@ -31,13 +31,8 @@ const PricingCard = ({
   };
 
   const handleButtonClick = () => {
-    if (buttonText === "Get Started") {
-      // Redirect to home page for the free plan
-      window.location.href = '/';
-    } else {
-      // Open the payment popup for the pro plan
-      setIsPopupOpen(true);
-    }
+    // Redirect to home page for both "Get Started" and "Get PRO" buttons
+    window.location.href = '/';
   };
 
   const closePopup = () => {
@@ -277,7 +272,7 @@ const PricingCard = ({
               stiffness: 400,
               damping: 15
             }}
-            onClick={handleButtonClick} // Open the payment popup on click
+            onClick={handleButtonClick} // This now redirects to home page for all buttons
           >
             <motion.span
               className="absolute inset-0 bg-white opacity-10"
@@ -357,6 +352,9 @@ const PricingCard = ({
           planPrice={price.replace('$', 'Rs')} // Remove $ if present in the price
         />
       }
+      
+      {/* We can keep this for future use, but it won't open with our updated button behavior */}
+      {isPopupOpen && <PaymentPopup onClose={closePopup} />}
     </motion.div>
   );
 };
