@@ -31,12 +31,46 @@ const Profile = () => {
   }, []);
 
   // Handler for delete user button
-  const handleDeleteUser = () => {
-    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      console.log("User deletion initiated");
-      alert("Account deletion request submitted");
+  const handleDeleteUser = async (username) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      )
+    ) {
+      try {
+        console.log("User deletion initiated");
+  
+        // Get JWT token from local storage
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          alert("Authentication token not found. Please log in again.");
+          return;
+        }
+  
+        // Send DELETE request to backend
+        const response = await axios.delete(
+          `http://your-backend-url/users/${username}`,                                  //add the backend url here
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        alert(response.data.message);
+  
+        // Remove token from local storage and redirect user
+        localStorage.removeItem("access_token");
+        window.location.href = "/login"; // Redirect to login page after deletion
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        alert(
+          error.response?.data?.error || "An error occurred while deleting the account."
+        );
+      }
     }
   };
+  
 
   //handler for upgrading the acc
   const handleUpgradeAccount = () => {
@@ -72,7 +106,7 @@ const Profile = () => {
     <div className="profile-container">
 
      <button className="backbtn"><span>Back</span></button>
-     
+
       <div className="profile-header-bg">
       <div id="container-stars">
       <div id="stars" />
