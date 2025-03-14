@@ -1,23 +1,37 @@
+/* Footer Styles for LookSci Project */
+
+/* Prevent horizontal scrolling and ensure full-width layout */
 .footer {
   background-color: #181a35;
   color: white;
   padding: 2rem 1rem;
   text-align: center;
-  width: 100%;
+  width: 100vw; /* Use viewport width to prevent overflow */
+  max-width: 100%; /* Ensure it doesn't exceed screen width */
+  overflow-x: hidden; /* Prevent any potential horizontal scrolling */
+  box-sizing: border-box; /* Include padding in width calculation */
   font-family: 'Nasalization', sans-serif;
 }
 
+/* Flexible content container with centered alignment */
 .footer-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  width: 100%; /* Full width of the parent */
+  max-width: 1200px; /* Optional: limit maximum width */
+  margin: 0 auto; /* Center the content */
 }
 
+/* Navigation links with responsive layout */
 .footer-nav {
   display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  justify-content: center;
   gap: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .footer-nav a {
@@ -25,30 +39,64 @@
   text-decoration: none;
   font-size: 1rem;
   transition: color 0.3s ease;
+  padding: 0.5rem 0; /* Add some touch target padding */
 }
 
 .footer-nav a:hover {
-  color: #b1e0ee;
+  color: #b1e0ee; /* Soft cyan hover effect */
 }
 
+/* Social media icons container */
 .footer-social {
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .footer-social a {
   color: white;
   font-size: 1.2rem;
-  transition: color 0.3s ease;
-  gap: 1rem;
+  transition: color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Hover effect with subtle scale */
 .footer-social a:hover {
-  color: #b1e0ee;
+  color: #b1e0ee; /* Soft cyan hover color */
+  transform: scale(1.1); /* Slight enlargement on hover */
 }
 
+/* Bottom text with reduced opacity */
 .footer-bottom {
   font-size: 0.9rem;
   opacity: 0.7;
   margin-top: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .footer-nav,
+  .footer-social {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-nav a,
+  .footer-social a {
+    margin: 0.5rem 0;
+  }
+}
+
+/* Ensure accessibility and touch-friendly interactions */
+@media (hover: hover) {
+  .footer-nav a:hover,
+  .footer-social a:hover {
+    cursor: pointer;
+  }
 }

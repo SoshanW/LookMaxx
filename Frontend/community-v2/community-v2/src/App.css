@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Nasalization', sans-serif;
+}
+
+body {
+  background-color: #372958;
+  color: #ffffff;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+@font-face {
+  font-family: 'Nasalization';
+  src: url('../fonts/Nasalization Rg.otf');
+}
+
+@font-face {
+  font-family: 'Dune_Rise';
+  src: url('../fonts/Dune_Rise.otf');
+}
