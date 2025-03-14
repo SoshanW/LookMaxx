@@ -14,6 +14,7 @@ import FaceModelPage from './pages/FaceModelPage';
 import CastingPage from './pages/CastingPage';
 import CastingApplicationPage from './pages/CastingApplicationPage';
 import StudyPage from './pages/StudyPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Import global styles
 import './styles/global.css';
@@ -22,10 +23,11 @@ function App() {
   const { isLoggedIn, userName, logout } = useAuthContext();
   const location = useLocation();
   
-  // Check if we're on the signup, face-model, or casting pages
+  // Check if we're on the signup, face-model, profile, or casting pages
   const hideNavbar = 
     location.pathname.includes('/signup') || 
-    location.pathname.includes('/face-model');
+    location.pathname.includes('/face-model') ||
+    location.pathname.includes('/profile');
   
   // Check if we should hide footer
   const hideFooter = 
@@ -34,7 +36,8 @@ function App() {
     location.pathname.includes('/casting') ||
     location.pathname === '/' ||
     location.pathname === '/ffr' ||
-    location.pathname === '/study';
+    location.pathname === '/study' ||
+    location.pathname === '/profile';
   
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
@@ -128,7 +131,7 @@ function App() {
     cleanupFunctions.push(castingCleanup);
     
     // Clean up any existing body classes first
-    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page');
+    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page', 'profile-page');
     
     // Apply specific body classes based on route
     if (location.pathname.includes('/signup') || location.pathname.includes('/face-model')) {
@@ -148,6 +151,10 @@ function App() {
       // Override any overflow restrictions
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
+    } else if (location.pathname.includes('/profile')) {
+      // Profile page specific class but no global.css changes
+      document.body.classList.add('profile-page');
+      document.body.style.overflow = 'auto';
     } else {
       document.body.classList.add('ffr-page');
       // Reset overflow for other pages
@@ -157,11 +164,6 @@ function App() {
     // Reset scroll position on page navigation (except for casting page)
     if (!location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
       window.scrollTo(0, 0);
-    }
-    
-    // Add debug log for study page
-    if (location.pathname === '/study') {
-      console.log('Routes configured with Study page at /study');
     }
     
     return () => {
@@ -228,6 +230,9 @@ function App() {
           
           {/* Study route */}
           <Route path="/study" element={<StudyPage key={`study-page-${location.pathname}`} />} />
+          
+          {/* Profile route */}
+          <Route path="/profile" element={<ProfilePage key={`profile-page-${location.pathname}`} />} />
           
           {/* Add additional routes for other pages here */}
           

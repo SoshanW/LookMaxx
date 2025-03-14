@@ -220,7 +220,14 @@ const Navbar = ({
                     <span className="user-email">user@example.com</span>
                   </div>
                   <div className="dropdown-divider"></div>
-                  <a href="/profile" className="dropdown-item">
+                  <a 
+                    href="/profile" 
+                    className="dropdown-item"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/profile');
+                    }}
+                  >
                     <i className="icon profile-icon"></i>
                     Profile
                   </a>
