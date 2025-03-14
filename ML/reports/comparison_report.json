@@ -2,57 +2,57 @@
     {
         "Metric": "face_ratio",
         "Calculated": 0.89,
-        "Perfect": 0.8,
-        "Difference": 0.08999999999999997,
-        "Percentage Difference": 11.249999999999996
+        "Perfect": 0.7,
+        "Difference": 0.19000000000000006,
+        "Percentage Difference": 27.142857142857153
     },
     {
         "Metric": "upper_ratio",
         "Calculated": 0.23,
-        "Perfect": 0.31,
-        "Difference": -0.07999999999999999,
-        "Percentage Difference": -25.80645161290322
+        "Perfect": 0.29,
+        "Difference": -0.05999999999999997,
+        "Percentage Difference": -20.689655172413783
     },
     {
         "Metric": "middle_ratio",
         "Calculated": 0.35,
-        "Perfect": 0.3,
-        "Difference": 0.04999999999999999,
-        "Percentage Difference": 16.666666666666664
+        "Perfect": 0.32,
+        "Difference": 0.02999999999999997,
+        "Percentage Difference": 9.374999999999991
     },
     {
         "Metric": "lower_ratio",
         "Calculated": 0.42,
-        "Perfect": 0.38,
-        "Difference": 0.03999999999999998,
-        "Percentage Difference": 10.52631578947368
+        "Perfect": 0.39,
+        "Difference": 0.02999999999999997,
+        "Percentage Difference": 7.6923076923076845
     },
     {
         "Metric": "left_eye_ratio",
         "Calculated": 0.31,
-        "Perfect": 0.34,
-        "Difference": -0.030000000000000027,
-        "Percentage Difference": -8.823529411764714
+        "Perfect": 0.33,
+        "Difference": -0.020000000000000018,
+        "Percentage Difference": -6.060606060606066
     },
     {
         "Metric": "interpupillary_ratio",
         "Calculated": 0.38,
-        "Perfect": 0.36,
-        "Difference": 0.020000000000000018,
-        "Percentage Difference": 5.555555555555561
+        "Perfect": 0.35,
+        "Difference": 0.030000000000000027,
+        "Percentage Difference": 8.57142857142858
     },
     {
         "Metric": "nasal_index",
         "Calculated": 0.87,
-        "Perfect": 0.62,
-        "Difference": 0.25,
-        "Percentage Difference": 40.322580645161295
+        "Perfect": 0.6,
+        "Difference": 0.27,
+        "Percentage Difference": 45.00000000000001
     },
     {
         "Metric": "lip_ratio",
         "Calculated": 0.65,
-        "Perfect": 0.75,
-        "Difference": -0.09999999999999998,
-        "Percentage Difference": -13.33333333333333
+        "Perfect": 0.78,
+        "Difference": -0.13,
+        "Percentage Difference": -16.666666666666664
     }
 ]

@@ -1,4 +1,36 @@
 from fpdf import FPDF
+import boto3
+from urllib.parse import urlparse
+from config2 import AWS
+import tempfile
+import os
+
+# def download_s3_image(s3_url):
+#     """Download image from S3 URL and return as a temp file path"""
+#     # Parse S3 URL
+#     parsed = urlparse(s3_url)
+#     bucket = parsed.netloc
+#     key = parsed.path.lstrip('/')
+    
+#     # Use AWS credentials directly from config2
+#     s3_client = boto3.client(
+#         's3',
+#         aws_access_key_id=AWS.AWS_ACCESS_KEY,
+#         aws_secret_access_key=AWS.AWS_SECRET_ACCESS_KEY,
+#         region_name=AWS.AWS_REGION
+#     )
+    
+#     # Create temp file to store the image
+#     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.png')
+    
+#     try:
+#         s3_client.download_file(bucket, key, temp_file.name)
+#         return temp_file.name
+#     except Exception as e:
+#         print(f"Error downloading from S3: {e}")
+#         temp_file.close()
+#         os.unlink(temp_file.name)
+#         return None
 
 def generate_pdf(prop_results, larger_results, output_file, images=[]):
     pdf = FPDF()

@@ -20,6 +20,11 @@ from werkzeug.utils import secure_filename
 from .config import AWS
 import json
 import io
+import sys
+import subprocess
+import importlib.util
+import importlib.machinery
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 
 ffr_bp = Blueprint('ffr', __name__)
 
@@ -171,7 +176,34 @@ def upload_local_image_to_s3(local_path, filename, username):
         return None
     except FileNotFoundError:
         print(f"Local file not found: {local_path}")
-        return None        
+        return None
+
+def run_report_generation(username):
+    """Run report generation as a separate process"""
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        parent_dir = os.path.dirname(current_dir)
+        grandparent_dir = os.path.dirname(parent_dir)
+        report_gen_path = os.path.join(grandparent_dir, 'report-generation-V2')
+
+        original_path = sys.path.copy()
+        sys.path.insert(0, report_gen_path)
+        
+        main_module_path = os.path.join(report_gen_path, 'main.py')
+        spec = importlib.util.spec_from_file_location('report_gen_main', main_module_path)
+        report_gen_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(report_gen_module)
+            
+        # Call the generate_report function
+        report_gen_module.main(username)
+        
+        print(f"Report generation process started for user: {username}")
+        
+    except Exception as e:
+        print(f"Error starting report generation: {str(e)}")  
+
+    finally:
+        sys.path = original_path      
 
 
 # Define the path for the graphs directory inside the assets folder
@@ -189,11 +221,10 @@ def analyze_face():
     # Check if image file is in request
     if 'image' not in request.files:
         return jsonify({'error': 'No image file provided'}), 400
-    if 'username' not in request.form:
-        return jsonify({'error': 'Username not provided'}), 400
+    username= get_jwt_identity()
     
     file = request.files['image']
-    username = request.form['username']
+    
     try:
         user = mongo.db.users.find_one({'username': username})
         if user:
@@ -346,6 +377,8 @@ def analyze_face():
         
         if not update_result.modified_count:
             return jsonify({'error': 'Failed to save FFR results to database'}), 500
+        
+        run_report_generation(username)
 
         # Return success response with results
         return jsonify({
@@ -358,7 +391,7 @@ def analyze_face():
                 }
             }), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500  
+        return jsonify({"error": str(e)}), 500
     
 # If you need to retrieve FFR results later
 @ffr_bp.route('/get-ffr-results/<username>', methods=['GET'])
