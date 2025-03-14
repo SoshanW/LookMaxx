@@ -89,7 +89,7 @@
 .brand-tagline {
   position: absolute;
   right: 12%;
-  bottom: 30%;
+  top: 36%;
   text-align: left;
   font-family: "Nasalization", sans-serif;
   font-size: 4rem;
@@ -105,7 +105,7 @@
   pointer-events: auto;
   position: absolute;
   right: 19%;
-  bottom: 15%;
+  bottom: 20%;
   padding: 1.5rem 1.5rem;
   background: linear-gradient(to right, #092a3e, #84ffff);
   color: #191C4C;
