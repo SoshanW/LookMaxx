@@ -73,14 +73,14 @@
 
 .brand-name {
   font-family: "Nasalization", sans-serif;
-  font-size: 7rem;
+  font-size: 7.5rem;
   font-weight: bold;
   color: #e0ffff;
   text-shadow: 0 0 15px rgba(132, 255, 255, 0.725);
   letter-spacing: 3px;
   position: absolute;
   top: 35%;
-  left: 4%;
+  left: 2%;
   /* Performance optimization */
   transform: translateZ(0); /* Hardware acceleration */
   will-change: transform, opacity; /* Hint for browser optimization */
@@ -88,11 +88,11 @@
 
 .brand-tagline {
   position: absolute;
-  right: 12%;
-  top: 36%;
+  right: 5%;
+  top: 45%;
   text-align: left;
   font-family: "Nasalization", sans-serif;
-  font-size: 4rem;
+  font-size: 5rem;
   color: #ffffff;
   text-shadow: 0 0 15px rgba(132, 255, 255, 0.725);
   line-height: 1.1;
@@ -104,14 +104,14 @@
 .get-started-btn {
   pointer-events: auto;
   position: absolute;
-  right: 19%;
-  bottom: 20%;
+  right: 70%; 
+  top: 75%; 
   padding: 1.5rem 1.5rem;
   background: linear-gradient(to right, #092a3e, #84ffff);
   color: #191C4C;
   border: none;
   border-radius: 10px;
-  font-size: 1.2em;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
   font-family: "Dune_Rise", sans-serif;
@@ -122,6 +122,7 @@
   transform: translateZ(0); /* Hardware acceleration */
   will-change: transform; /* Hint for browser optimization */
 }
+
 
 /* Enhanced hover effect with scale and pulse animation */
 .get-started-btn:hover {

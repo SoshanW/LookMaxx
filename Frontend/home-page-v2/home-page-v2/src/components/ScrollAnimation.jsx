@@ -338,11 +338,11 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
           {/* Text overlay for landing area */}
           <div className="landing-text-overlay">
             <div className="brand-name">LookSci</div>
+            <button className="get-started-btn">Get Started</button>
             <div className="brand-tagline">
               <div>Beauty</div>
               <div>Redefined.</div>
             </div>
-            <button className="get-started-btn">Get Started</button>
           </div>
           
           {/* Feature cards component with scroll progress prop */}
