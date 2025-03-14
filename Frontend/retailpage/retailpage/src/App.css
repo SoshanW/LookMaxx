@@ -1,3 +1,4 @@
+
 body, html {
     margin: 0;
     padding: 0;
@@ -6,84 +7,57 @@ body, html {
 
   .hero-content { 
     background: linear-gradient(135deg, #000000, #2e005c);
+    display: flex;
+    justify-content: center;
     align-items: center;
-     gap: 20px; 
-     padding: 0%;
-     margin: 0;
- }
- 
-   .side-image{
-     flex: 1;
-     max-width: 38rem; 
-   }
-   
-   .left img, .right img {
-     width: 95%;
-     height: auto;
-     border-radius: 8px; 
-   }
-  
-  .hero-title {
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
+    gap: 20px; 
+    padding: 0%;
+    margin: 0;
+}
+
+  .side-image{
+    flex: 1;
+    max-width: 38rem; 
   }
   
-  .hero-title .highlight {
-    color: #a855f7;
-  }
-  
-  .hero-subtitle {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .hero-tagline {
-    margin-bottom: 2rem;
-  }
-  
-  .try-it {
-    color: #4b5563;
-  }
-  
-  .buy-it {
-    color: #2dd4bf;
-  }
-  
-  .shop-button {
-    background-color: #2dd4bf;
-    color: white;
-    padding: 0.75rem 2rem;
-    border-radius: 0.375rem;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .shop-button:hover {
-    background-color: #14b8a6;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    .hero-section {
-      grid-template-columns: 1fr;
-    }
-    
-    .hero-image.left {
-      display: none;
-    }
-    
-    .hero-image.right {
-      display: none;
-    }
+  .left img, .right img {
+    width: 98%;
+    height: auto;
+    border-radius: 8px; 
   }
 
-  .slider{
-    background: linear-gradient(135deg, #000000, #2e005c);
+  .bannertxt{
+    font-size: 4rem;
+    font-weight:500;
+    margin: -100px;
+    background: linear-gradient(90deg, pink, purple, rgb(181, 121, 226), rgb(109, 109, 232));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    font-family: 'Nasalization', sans-serif;
   }
-  
-  .store{
-    height: 500px;
+
+  .shopBtn{
+    display: block;
+    margin: 30px 60px;
+    position: absolute;
+    background: transparent;
+    border: 2px solid #be80e7;
+    font-family: 'Nasalization', sans-serif;;
+    border-radius: 25px;
+    font-size: 1.5rem;
+    padding: 15px;
+    color: #b692ea;
   }
+
+ .shopBtn:hover {
+    background: linear-gradient(135deg, #2c0047, #441b7d); 
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    color: #d6bcfb;
+    font-size: 1.55rem;
+    transition: 0.5s;
+}
+
 
