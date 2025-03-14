@@ -55,6 +55,15 @@ import { motion } from "framer-motion";
         >
           <img src="right.jpg" alt="right image" />
         </motion.div>
+
+        <div className='slider'>
+         <h1></h1>
+         <img src="kellyfelder.jpg" alt="carnage" className='store'/>
+         <img src="r.jpg" className='store'/>
+         <img src="a.png" className='store'/>
+         <img src="" className='store'/>
+       </div>
+       
       </div>
  
      </>

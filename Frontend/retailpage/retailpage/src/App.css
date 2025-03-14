@@ -79,3 +79,11 @@ body, html {
     }
   }
 
+  .slider{
+    background: linear-gradient(135deg, #000000, #2e005c);
+  }
+  
+  .store{
+    height: 500px;
+  }
+
