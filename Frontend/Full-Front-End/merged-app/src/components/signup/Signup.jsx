@@ -26,20 +26,42 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Check if error is due to expired token (401 status)
-    if (error.response?.status === 401) {
-      // Clear token and redirect to login page
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user_data');
-      
-      // If we're not already on the login page, redirect there
-      if (window.location.pathname !== '/signup') {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const refreshToken = localStorage.getItem('refresh_token');
+
+      if (refreshToken) {
+        try {
+          const response = await axios.post('http://your-api-url/refresh-token', {
+            refresh_token: refreshToken,
+          });
+
+          const newAccessToken = response.data.access_token;
+          localStorage.setItem('access_token', newAccessToken);
+
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return api(originalRequest); // Retry the original request
+        } catch (refreshError) {
+          console.log('Refresh token failed, logging out');
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user_data');
+          window.location.href = '/signup';
+        }
+      } else {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user_data');
         window.location.href = '/signup';
       }
     }
+
     return Promise.reject(error);
   }
 );
+
 
 const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   const navigate = useNavigate();
@@ -109,64 +131,37 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     const { loginUsername, loginPassword } = formData;
-
+  
     if (!loginUsername || !loginPassword) {
       setError('All fields are required.');
       return;
     }
-
+  
     setIsLoading(true);
     setError('');
-
+  
     try {
-      // Create form data to match your backend's expected format
-      const formDataToSend = new FormData();
-      formDataToSend.append('username', loginUsername);
-      formDataToSend.append('password', loginPassword);
-
-      // In a real app, you would send an API request
-      // For now, let's simulate a successful login
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Store mock token and user data
-      localStorage.setItem('access_token', 'mock_token_for_testing');
-      localStorage.setItem('user_data', JSON.stringify({
+      const response = await axios.post('http://your-api-url/login', {
         username: loginUsername,
-        name: loginUsername
-      }));
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userName', loginUsername);
-      
-      // Call auth login function
+        password: loginPassword,
+      });
+  
+      localStorage.setItem('access_token', response.data.access_token);
+      localStorage.setItem('refresh_token', response.data.refresh_token);
+      localStorage.setItem(
+        'user_data',
+        JSON.stringify({ username: loginUsername, name: loginUsername })
+      );
+  
       authLogin(loginUsername);
-      
-      console.log('User logged in:', loginUsername);
-      
-      // Add a slight delay before navigating to ensure state updates
-      setTimeout(() => {
-        navigate('/ffr');
-      }, 100);
+      setTimeout(() => navigate('/ffr'), 100);
     } catch (error) {
-      console.error('Login error:', error);
-      
-      // Handle different error cases
-      if (error.response) {
-        if (error.response.status === 401) {
-          setError('Invalid username or password.');
-        } else {
-          setError(error.response.data.error || 'Login failed. Please try again.');
-        }
-      } else if (error.request) {
-        setError('No response from server. Please check your connection.');
-      } else {
-        setError('Login failed. Please try again.');
-      }
+      setError(error.response?.data.error || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
