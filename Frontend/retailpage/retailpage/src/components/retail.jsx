@@ -61,35 +61,55 @@ import { motion } from "framer-motion";
          <button className='slider-arrow prev' onClick={goToPrevSlide}>
              &lt;
            </button>
-           <div className='slider-content'>
-             {images.map((image, index) => (
-               <div 
-                 key={index} 
-                 className={`slider-slide ${index === currentIndex ? 'active' : ''}`}
-                 style={{ 
-                   transform: `translateX(${100 * (index - currentIndex)}%)`,
-                   opacity: index === currentIndex ? 1 : 0.5
-                 }}
-               >
-                 <img src={image.src} alt={image.alt} className='store-image' />
-               </div>
-             ))}
-           </div>
-           <button className='slider-arrow next' onClick={goToNextSlide}>
-             &gt;
-           </button>
-         </div>
-         <div className='slider-dots'>
-           {images.map((_, index) => (
-             <span 
-               key={index} 
-               className={`slider-dot ${index === currentIndex ? 'active' : ''}`}
-               onClick={() => goToSlide(index)}
-             />
-           ))}
-         </div>
-
-      </div>
+           <div className="slides__wrapper">
+             <div className="slides">
+               {slides.map((slide, index) => (
+                 <div 
+                   key={index} 
+                   className={getSlideClass(index)} 
+                   data-current={index === currentIndex ? '' : null}
+                   data-next={index === (currentIndex + 1) % slides.length ? '' : null}
+                   data-previous={index === (currentIndex - 1 + slides.length) % slides.length ? '' : null}
+                 >
+                   <div className="slide__inner">
+                     <div className="slide--image__wrapper">
+                       <img 
+                         className="slide--image" 
+                         src={slide.image} 
+                         alt={slide.title} 
+                       />
+                     </div>
+                   </div>
+                 </div>
+               ))}
+             </div>
+ 
+             <div className="slides--infos">
+               {slides.map((slide, index) => (
+                 <div 
+                   key={index} 
+                   className="slide-info"
+                   data-current={index === currentIndex ? '' : null}
+                   data-next={index === (currentIndex + 1) % slides.length ? '' : null}
+                   data-previous={index === (currentIndex - 1 + slides.length) % slides.length ? '' : null}
+                 >
+                   <div className="slide-info__inner">
+                     <div className="slide-info--text__wrapper">
+                       <div data-title className="slide-info--text">
+                         <span>{slide.title}</span>
+                       </div>
+                       <div data-subtitle className="slide-info--text">
+                         <span>{slide.subtitle}</span>
+                       </div>
+                       <div data-description className="slide-info--text">
+                         <span>{slide.description}</span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               ))}
+             </div>
+ 
  
      </>
    )
