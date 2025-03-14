@@ -56,14 +56,39 @@ import { motion } from "framer-motion";
           <img src="right.jpg" alt="right image" />
         </motion.div>
 
-        <div className='slider'>
-         <h1></h1>
-         <img src="kellyfelder.jpg" alt="carnage" className='store'/>
-         <img src="r.jpg" className='store'/>
-         <img src="a.png" className='store'/>
-         <img src="" className='store'/>
-       </div>
-       
+        <h1 className='slider-header'>Featured Stores</h1>
+         <div className='slider-wrapper'>
+         <button className='slider-arrow prev' onClick={goToPrevSlide}>
+             &lt;
+           </button>
+           <div className='slider-content'>
+             {images.map((image, index) => (
+               <div 
+                 key={index} 
+                 className={`slider-slide ${index === currentIndex ? 'active' : ''}`}
+                 style={{ 
+                   transform: `translateX(${100 * (index - currentIndex)}%)`,
+                   opacity: index === currentIndex ? 1 : 0.5
+                 }}
+               >
+                 <img src={image.src} alt={image.alt} className='store-image' />
+               </div>
+             ))}
+           </div>
+           <button className='slider-arrow next' onClick={goToNextSlide}>
+             &gt;
+           </button>
+         </div>
+         <div className='slider-dots'>
+           {images.map((_, index) => (
+             <span 
+               key={index} 
+               className={`slider-dot ${index === currentIndex ? 'active' : ''}`}
+               onClick={() => goToSlide(index)}
+             />
+           ))}
+         </div>
+
       </div>
  
      </>
