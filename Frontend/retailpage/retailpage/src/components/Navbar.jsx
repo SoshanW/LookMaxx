@@ -20,7 +20,7 @@ const Navbar = () => {
       y: 0,
       duration: 1,
       stagger: 0.1,
-      delay: 0.1, // Start slightly before the main content
+      delay: 0.1, 
       ease: "power3.out"
     });
 
