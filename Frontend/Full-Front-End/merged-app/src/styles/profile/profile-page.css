@@ -1,0 +1,26 @@
+/* Profile page specific styles */
+body.profile-page {
+  background: linear-gradient(135deg, #0f031b 0%, #2e1855 50%, #07010b 100%);
+  color: #e1e7ef;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* This ensures the profile styles only apply when .profile-page class is present */
+.profile-page .profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Override any conflicting styles from other pages */
+.profile-page .navbar {
+  z-index: 1001; /* Ensure navbar stays above profile content */
+}
+
+/* Ensure the footer is hidden specifically on profile page */
+.profile-page footer {
+  display: none !important;
+}
