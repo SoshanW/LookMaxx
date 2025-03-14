@@ -14,7 +14,7 @@ const BlogCard = ({ isVisible }) => {
     date: "26 December 2019",
     title: "Dive Deep in Facial Aesthetics",
     text: "Curious about the science behind facial analysis? Explore research-backed insights that reveal the fascinating connections between facial features and perception. Tap below to dive into the studies!",
-    imgSrc: "https://res.cloudinary.com/muhammederdem/image/upload/q_60/v1535759872/kuldar-kalvik-799168-unsplash.webp", 
+    imgSrc: "https://media.britishmuseum.org/media/Repository/Documents/2014_10/9_16/53995c6c_992e_4003_ab68_a3bf010a99a1/preview_00526803_001.jpg", 
   };
 
   // Handle navigation to the Study section

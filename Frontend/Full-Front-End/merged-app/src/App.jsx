@@ -15,6 +15,7 @@ import CastingPage from './pages/CastingPage';
 import CastingApplicationPage from './pages/CastingApplicationPage';
 import StudyPage from './pages/StudyPage';
 import ProfilePage from './pages/ProfilePage';
+import PricingPage from './pages/PricingPage'; // Import the new PricingPage
 
 // Import global styles
 import './styles/global.css';
@@ -23,11 +24,12 @@ function App() {
   const { isLoggedIn, userName, logout } = useAuthContext();
   const location = useLocation();
   
-  // Check if we're on the signup, face-model, profile, or casting pages
+  // Check if we're on pages where navbar should be hidden
   const hideNavbar = 
     location.pathname.includes('/signup') || 
     location.pathname.includes('/face-model') ||
-    location.pathname.includes('/profile');
+    location.pathname.includes('/profile') ||
+    location.pathname.includes('/pricing'); // Add pricing to the hideNavbar condition
   
   // Check if we should hide footer
   const hideFooter = 
@@ -37,7 +39,8 @@ function App() {
     location.pathname === '/' ||
     location.pathname === '/ffr' ||
     location.pathname === '/study' ||
-    location.pathname === '/profile';
+    location.pathname === '/profile' ||
+    location.pathname === '/pricing'; // Add pricing to the hideFooter condition
   
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
@@ -131,7 +134,7 @@ function App() {
     cleanupFunctions.push(castingCleanup);
     
     // Clean up any existing body classes first
-    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page', 'profile-page');
+    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page', 'profile-page', 'pricing-page');
     
     // Apply specific body classes based on route
     if (location.pathname.includes('/signup') || location.pathname.includes('/face-model')) {
@@ -154,6 +157,10 @@ function App() {
     } else if (location.pathname.includes('/profile')) {
       // Profile page specific class but no global.css changes
       document.body.classList.add('profile-page');
+      document.body.style.overflow = 'auto';
+    } else if (location.pathname.includes('/pricing')) {
+      // Add pricing page specific class
+      document.body.classList.add('pricing-page');
       document.body.style.overflow = 'auto';
     } else {
       document.body.classList.add('ffr-page');
@@ -234,6 +241,9 @@ function App() {
           {/* Profile route */}
           <Route path="/profile" element={<ProfilePage key={`profile-page-${location.pathname}`} />} />
           
+          {/* Pricing route - new */}
+          <Route path="/pricing" element={<PricingPage key={`pricing-page-${location.pathname}`} />} />
+          
           {/* Add additional routes for other pages here */}
           
           {/* Fallback route - redirect to home */}
@@ -243,8 +253,6 @@ function App() {
 
       {/* Only show footer on appropriate pages */}
       {!hideFooter && <Footer />}
-      
-      
     </ReportGeneratorProvider>
   );
 }

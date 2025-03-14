@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthProvider';
+import AvatarModel from './AvatarModel';
 import '../../styles/profile/ProfileSection.css';
 import '../../styles/profile/AvatarSection.css';
 import '../../styles/profile/SettingsSection.css';
-import AvatarModel from './AvatarModel';
-import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../../context/AuthProvider';
 
 const ProfileSection = () => {
   const navigate = useNavigate();
@@ -40,37 +40,6 @@ const ProfileSection = () => {
       setUserData(mockUserData);
       setLoading(false);
     }, 1000);
-
-    // In a real application, here's where you'd fetch user data from backend
-    /*
-    const fetchUserData = async () => {
-      try {
-        // Get JWT token from local storage
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          alert("Authentication token not found. Please log in again.");
-          navigate('/signup', { state: { activeTab: 'login' } });
-          return;
-        }
-  
-        // Send GET request to backend
-        const response = await axios.get('http://your-backend-url/users/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        // Set user data to state
-        setUserData(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        alert("An error occurred while fetching the user data.");
-      }
-    };
-
-    fetchUserData();
-    */
   }, [isLoggedIn, userName, navigate]);
 
   // Handler for delete user button
@@ -96,7 +65,7 @@ const ProfileSection = () => {
   
   // Handler for upgrading the account
   const handleUpgradeAccount = () => {
-    alert("Redirecting to premium upgrade page");
+    navigate('/pricing'); // Navigate to the pricing page
   };
 
   // Handler for toggling settings visibility

@@ -1,0 +1,40 @@
+body.pricing-page {
+  background: linear-gradient(135deg, #0f031b 0%, #2e1855 50%, #07010b 100%);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: 'Nasalization', sans-serif;
+}
+
+.pricing-page footer {
+  display: none !important;
+}
+
+/* Fix any potential z-index issues with other elements */
+.pricing-page .bg-dark-purple {
+  z-index: 1;
+}
+
+/* Ensure scrollbar is still hidden */
+.pricing-page::-webkit-scrollbar {
+  display: none;
+}
+
+/* Make sure Tailwind styles work properly */
+.pricing-page .bg-dark-purple {
+  background-color: #1a1327;
+}
+
+/* Add hover effect for animated elements */
+.pricing-page .hover\:bg-gray-700:hover {
+  background-color: rgba(55, 65, 81, 0.9) !important;
+}
+
+.pricing-page .hover\:bg-blue-600:hover {
+  background-color: rgb(37, 99, 235) !important;
+}
+
+.pricing-page .hover\:bg-gray-700:hover {
+  background-color: rgb(55, 65, 81) !important;
+}
