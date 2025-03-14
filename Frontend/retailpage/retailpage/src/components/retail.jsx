@@ -1,7 +1,8 @@
 import React from 'react';
-import '../app.css';
+import '../styles/Hero.css';
 import '../styles/Slider.css';
 import { motion } from "framer-motion";
+import FitOnSection from './FitOnSection';
 
 const RetailpageWithSlider = () => {
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -182,9 +183,7 @@ const RetailpageWithSlider = () => {
           </button>
         </div>
       </div>
-      <div className='fit-on-section'>
-              
-      </div>
+      <FitOnSection />
     </>
   );
 };
