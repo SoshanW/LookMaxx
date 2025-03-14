@@ -1,5 +1,5 @@
 from flask import Blueprint,request, jsonify, current_app
-from . import mongo
+from extensions import mongo
 from .fda import (
     calculate_face_ratio,
     calculate_facial_thirds,

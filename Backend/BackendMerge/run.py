@@ -1,7 +1,7 @@
 from flask import Flask
 from extensions import mongo, jwt
 from Signup.app.routes import signup_routes
-from ML.facial-landmark-detection.ffr.routes import ffr_bp
+from ML.facial_landmark_detection.ffr.routes import ffr_bp
 
 def create_unified_app():
     app = Flask(__name__)

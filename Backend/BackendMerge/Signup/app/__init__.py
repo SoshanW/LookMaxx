@@ -3,9 +3,8 @@ from flask_pymongo import PyMongo
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 import datetime
+from extensions import mongo, jwt
 
-mongo = PyMongo()
-jwt= JWTManager()
 jwt_blocklist = set()
 
 def create_app():

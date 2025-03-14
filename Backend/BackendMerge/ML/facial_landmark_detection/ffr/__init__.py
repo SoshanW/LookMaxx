@@ -2,6 +2,7 @@ from flask import Flask
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from config import Config  # Updated import path
+from .routes import ffr_bp
 
 mongo = PyMongo()
 
