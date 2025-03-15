@@ -6,6 +6,7 @@ import { ReportGeneratorProvider } from './context/ReportGeneratorContext';
 // Common components
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
+import './styles/navbar-fix.css'; // Import navbar consistency fixes
 
 // Pages
 import FfrPage from './pages/FfrPage';
@@ -192,8 +193,8 @@ function App() {
       return {
         name: linkName,
         active: linkName.toLowerCase() === path || 
-               (linkName.toLowerCase() === 'casting' && path === 'apply') ||
-               (linkName.toLowerCase() === 'home' && path === '')
+              (linkName.toLowerCase() === 'casting' && path === 'apply') ||
+              (linkName.toLowerCase() === 'home' && path === '')
       };
     });
     
