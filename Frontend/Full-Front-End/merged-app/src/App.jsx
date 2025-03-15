@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthContext } from './context/AuthProvider';
 import { ReportGeneratorProvider } from './context/ReportGeneratorContext';
+import { getCookie } from './utils/cookies';
 
 // Common components
 import Navbar from './components/common/Navbar';
@@ -54,14 +55,13 @@ function App() {
 
   // Initialize auth state on app load
   useEffect(() => {
-    // Check if user should be logged in
-    const savedLoginState = localStorage.getItem('isLoggedIn');
-    const hasToken = localStorage.getItem('access_token') !== null;
-    const savedUserName = localStorage.getItem('userName');
+    // Check if user should be logged in based on cookies
+    const hasToken = getCookie('access_token') !== null;
+    const savedUserName = getCookie('user_data');
     
     // If there's evidence of a logged in state but context doesn't show it,
     // force a refresh of the app to ensure state is loaded
-    if ((savedLoginState === 'true' || hasToken) && !isLoggedIn && savedUserName) {
+    if (hasToken && !isLoggedIn && savedUserName) {
       // Instead of hard refresh, trigger a state update to re-render
       setForceUpdate(prev => prev + 1);
     }
