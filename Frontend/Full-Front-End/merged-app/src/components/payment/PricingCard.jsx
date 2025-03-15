@@ -31,8 +31,14 @@ const PricingCard = ({
   };
 
   const handleButtonClick = () => {
-    // Redirect to home page for both "Get Started" and "Get PRO" buttons
-    setIsPopupOpen(true); // Open the payment popup
+    // If this is the current plan (button text is "Current Plan"), redirect to profile page
+    if (buttonText === "Current Plan") {
+      window.location.href = '/profile';
+      return;
+    }
+    
+    // Otherwise open payment popup for upgrading
+    setIsPopupOpen(true);
   };
 
   const closePopup = () => {
@@ -274,7 +280,7 @@ const PricingCard = ({
               stiffness: 400,
               damping: 15
             }}
-            onClick={handleButtonClick} // This now redirects to home page for all buttons
+            onClick={handleButtonClick} // Updated to use the new handler
           >
             <motion.span
               className="absolute inset-0 bg-white opacity-10"

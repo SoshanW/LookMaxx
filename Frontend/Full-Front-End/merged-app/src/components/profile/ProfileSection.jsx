@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../../context/AuthProvider';
-import AvatarModel from './AvatarModel';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/profile/ProfileSection.css';
 import '../../styles/profile/AvatarSection.css';
 import '../../styles/profile/SettingsSection.css';
+import AvatarModel from './AvatarModel';
+import { useAuthContext } from '../../context/AuthProvider';
 
 const ProfileSection = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isLoggedIn, userName, logout } = useAuthContext();
   
   // Define the loading state
@@ -22,6 +23,12 @@ const ProfileSection = () => {
     if (!isLoggedIn) {
       navigate('/signup', { state: { activeTab: 'login' } });
       return;
+    }
+
+    // Check if we should show settings tab by default
+    const activeTab = location.state?.activeTab;
+    if (activeTab === 'settings') {
+      setShowSettings(true);
     }
 
     // For demo purposes, creating mock user data
@@ -40,7 +47,38 @@ const ProfileSection = () => {
       setUserData(mockUserData);
       setLoading(false);
     }, 1000);
-  }, [isLoggedIn, userName, navigate]);
+
+    // In a real application, here's where you'd fetch user data from backend
+    /*
+    const fetchUserData = async () => {
+      try {
+        // Get JWT token from local storage
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+          alert("Authentication token not found. Please log in again.");
+          navigate('/signup', { state: { activeTab: 'login' } });
+          return;
+        }
+  
+        // Send GET request to backend
+        const response = await axios.get('http://your-backend-url/users/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        // Set user data to state
+        setUserData(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        alert("An error occurred while fetching the user data.");
+      }
+    };
+
+    fetchUserData();
+    */
+  }, [isLoggedIn, userName, navigate, location.state]);
 
   // Handler for delete user button
   const handleDeleteUser = async (username) => {
@@ -65,7 +103,7 @@ const ProfileSection = () => {
   
   // Handler for upgrading the account
   const handleUpgradeAccount = () => {
-    navigate('/pricing'); // Navigate to the pricing page
+    navigate('/pricing'); // Navigate to pricing page
   };
 
   // Handler for toggling settings visibility
