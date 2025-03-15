@@ -1,0 +1,58 @@
+[
+    {
+        "Metric": "face_ratio",
+        "Calculated": 0.89,
+        "Perfect": 0.7,
+        "Difference": 0.19000000000000006,
+        "Percentage Difference": 27.142857142857153
+    },
+    {
+        "Metric": "upper_ratio",
+        "Calculated": 0.23,
+        "Perfect": 0.29,
+        "Difference": -0.05999999999999997,
+        "Percentage Difference": -20.689655172413783
+    },
+    {
+        "Metric": "middle_ratio",
+        "Calculated": 0.35,
+        "Perfect": 0.32,
+        "Difference": 0.02999999999999997,
+        "Percentage Difference": 9.374999999999991
+    },
+    {
+        "Metric": "lower_ratio",
+        "Calculated": 0.42,
+        "Perfect": 0.39,
+        "Difference": 0.02999999999999997,
+        "Percentage Difference": 7.6923076923076845
+    },
+    {
+        "Metric": "left_eye_ratio",
+        "Calculated": 0.31,
+        "Perfect": 0.33,
+        "Difference": -0.020000000000000018,
+        "Percentage Difference": -6.060606060606066
+    },
+    {
+        "Metric": "interpupillary_ratio",
+        "Calculated": 0.38,
+        "Perfect": 0.35,
+        "Difference": 0.030000000000000027,
+        "Percentage Difference": 8.57142857142858
+    },
+    {
+        "Metric": "nasal_index",
+        "Calculated": 0.87,
+        "Perfect": 0.6,
+        "Difference": 0.27,
+        "Percentage Difference": 45.00000000000001
+    },
+    {
+        "Metric": "lip_ratio",
+        "Calculated": 0.65,
+        "Perfect": 0.78,
+        "Difference": -0.13,
+        "Percentage Difference": -16.666666666666664
+    }
+]

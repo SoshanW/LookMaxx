@@ -80,7 +80,7 @@ def upload_image_to_s3(img_array, filename, username, content_type='image/png'):
     :return: S3 URL of the uploaded file
     """
     # Format full path with username folder
-    s3_path = f"{current_app.config.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    s3_path = f"{current_app.config['S3_FFR_PICTURES_GENERATED']}{username}/{filename}_ffr.png"
     s3_client = get_s3_client()
     
     try:
@@ -95,7 +95,7 @@ def upload_image_to_s3(img_array, filename, username, content_type='image/png'):
         # Upload to S3
         s3_client.upload_fileobj(
             io_buf,
-            current_app.config.S3_BUCKET,
+            current_app.config['S3_BUCKET'],
             s3_path,
             ExtraArgs={
                 'ContentType': content_type
@@ -103,7 +103,7 @@ def upload_image_to_s3(img_array, filename, username, content_type='image/png'):
         )
         
         # Generate the URL for the uploaded file
-        s3_url = f"s3://{current_app.config.S3_BUCKET}/{s3_path}"
+        s3_url = f"s3://{current_app.config['S3_BUCKET']}/{s3_path}"
         return s3_url
     
     except ClientError as e:
@@ -119,8 +119,7 @@ def save_plot_to_s3(fig, filename, username):
     :param username: Username for folder structure
     :return: S3 URL of the uploaded file
     """
-
-    s3_path = f"{current_app.config.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    s3_path = f"{current_app.config['S3_FFR_PICTURES_GENERATED']}{username}/{filename}_ffr.png"
     s3_client = get_s3_client()
     
     try:
@@ -132,7 +131,7 @@ def save_plot_to_s3(fig, filename, username):
         # Upload to S3
         s3_client.upload_fileobj(
             buf,
-            current_app.config.S3_BUCKET,
+            current_app.config['S3_BUCKET'],
             s3_path,
             ExtraArgs={
                 'ContentType': 'image/png'
@@ -140,7 +139,7 @@ def save_plot_to_s3(fig, filename, username):
         )
         
         # Generate the URL for the uploaded file
-        s3_url = f"s3://{current_app.config.S3_BUCKET}/{s3_path}"
+        s3_url = f"s3://{current_app.config['S3_BUCKET']}/{s3_path}"
         return s3_url
     
     except ClientError as e:
@@ -158,14 +157,14 @@ def upload_local_image_to_s3(local_path, filename, username):
     :param username: Username for folder structure
     :return: S3 URL of the uploaded file
     """
-    s3_path = f"{current_app.config.S3_FFR_PICTURES_GENERATED}{username}/{filename}_ffr.png"
+    s3_path = f"{current_app.config['S3_FFR_PICTURES_GENERATED']}{username}/{filename}_ffr.png"
     s3_client = get_s3_client()
     
     try:
         with open(local_path, 'rb') as file_data:
             s3_client.upload_fileobj(
                 file_data,
-                current_app.config.S3_BUCKET,
+                current_app.config['S3_BUCKET'],
                 s3_path,
                 ExtraArgs={
                     'ContentType': 'image/png'
@@ -173,7 +172,7 @@ def upload_local_image_to_s3(local_path, filename, username):
             )
             
         # Generate the URL for the uploaded file
-        s3_url = f"s3://{current_app.config.S3_BUCKET}/{s3_path}"
+        s3_url = f"s3://{current_app.config['S3_BUCKET']}/{s3_path}"
         return s3_url
     
     except ClientError as e:
@@ -181,7 +180,7 @@ def upload_local_image_to_s3(local_path, filename, username):
         return None
     except FileNotFoundError:
         print(f"Local file not found: {local_path}")
-        return None
+
 
 def run_report_generation(username):
     """Run report generation as a separate process"""
