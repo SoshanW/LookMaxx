@@ -3,6 +3,7 @@ from Signup.app.routes import signup_routes, register_jwt_callbacks
 from ML.facial_landmark_detection.ffr.routes import ffr_bp
 from community.app.routes import community_routes
 from paymentBe.app.routes import payment_routes
+from casting.app.routes import casting_route
 import os
 import sys
 from flask_cors import CORS
@@ -73,6 +74,7 @@ def create_unified_app():
     app.register_blueprint(ffr_bp, url_prefix='/ffr')
     app.register_blueprint(community_routes, url_prefix='/community')
     app.register_blueprint(payment_routes, url_prefix='/payments')
+    app.register_blueprint(casting_route, url_prefix='/casting')
 
     return app
 
