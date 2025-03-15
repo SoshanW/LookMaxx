@@ -7,16 +7,14 @@ import { useAuth } from '../../hooks/useAuth';
 // Create an axios instance for API calls
 const api = axios.create({
   baseURL: 'http://your-api-url', // Replace with your actual API URL
-  timeout: 10000
+  timeout: 10000,
+  withCredentials: true // Important: allows cookies to be sent and received
 });
 
-// Configure request interceptor to add JWT to every request
+// Configure request interceptor - we no longer need to manually add the token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // The cookie with the token will be automatically sent
     return config;
   },
   (error) => Promise.reject(error)
@@ -26,42 +24,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      const refreshToken = localStorage.getItem('refresh_token');
-
-      if (refreshToken) {
-        try {
-          const response = await axios.post('http://your-api-url/refresh-token', {
-            refresh_token: refreshToken,
-          });
-
-          const newAccessToken = response.data.access_token;
-          localStorage.setItem('access_token', newAccessToken);
-
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return api(originalRequest); // Retry the original request
-        } catch (refreshError) {
-          console.log('Refresh token failed, logging out');
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('user_data');
-          window.location.href = '/signup';
-        }
-      } else {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user_data');
+    // Check if error is due to expired token (401 status)
+    if (error.response?.status === 401) {
+      // Redirect to login page
+      if (window.location.pathname !== '/signup') {
         window.location.href = '/signup';
       }
     }
-
     return Promise.reject(error);
   }
 );
-
 
 const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   const navigate = useNavigate();
@@ -128,35 +100,57 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
     return passwordRegex.test(password);
   };
 
+  // Updated handleLoginSubmit function
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     const { loginUsername, loginPassword } = formData;
-  
+
     if (!loginUsername || !loginPassword) {
       setError('All fields are required.');
       return;
     }
-  
+
     setIsLoading(true);
     setError('');
   
     try {
-      const response = await axios.post('http://your-api-url/login', {
+      // In a real app, you would send an API request
+      // For now, let's simulate a successful login
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Simulate a successful login response with a token
+      const mockToken = 'mock_token_for_testing';
+      const userData = {
         username: loginUsername,
-        password: loginPassword,
-      });
-  
-      localStorage.setItem('access_token', response.data.access_token);
-      localStorage.setItem('refresh_token', response.data.refresh_token);
-      localStorage.setItem(
-        'user_data',
-        JSON.stringify({ username: loginUsername, name: loginUsername })
-      );
-  
-      authLogin(loginUsername);
-      setTimeout(() => navigate('/ffr'), 100);
+        name: loginUsername
+      };
+      
+      // Call auth login function - this now uses cookies
+      authLogin(loginUsername, mockToken, userData);
+      
+      console.log('User logged in:', loginUsername);
+      
+      // Add a slight delay before navigating to ensure state updates
+      setTimeout(() => {
+        navigate('/ffr');
+      }, 100);
     } catch (error) {
-      setError(error.response?.data.error || 'Login failed. Please try again.');
+      console.error('Login error:', error);
+      
+      // Handle different error cases
+      if (error.response) {
+        if (error.response.status === 401) {
+          setError('Invalid username or password.');
+        } else {
+          setError(error.response.data.error || 'Login failed. Please try again.');
+        }
+      } else if (error.request) {
+        setError('No response from server. Please check your connection.');
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -198,6 +192,7 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
     e.preventDefault();
     const { fullName, username, email, gender, password, confirmPassword, profilePicture } = formData;
 
+    // Validation checks remain the same
     if (!fullName || !username || !email || !gender || !password || !confirmPassword || !profilePicture) {
       setError('All fields including profile picture are required.');
       return;
@@ -243,19 +238,19 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Store login info to auto-login after signup
-      localStorage.setItem('access_token', 'mock_token_for_testing');
-      localStorage.setItem('user_data', JSON.stringify({
-        username: username,
-        name: fullName
-      }));
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userName', fullName);
+      // Mock successful registration with token
+      const mockToken = 'mock_token_for_testing';
+      const userData = {
+        username,
+        name: fullName,
+        email,
+        gender
+      };
       
-      // Call auth login with full name
-      authLogin(fullName);
+      // Call auth login with user data - this now uses cookies
+      authLogin(fullName, mockToken, userData);
       
-      // Mock success response
+      // Set success state
       setSuccess(true);
       
       // Navigate to face-model page with gender parameter after a short delay
@@ -266,8 +261,8 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
     } catch (error) {
       console.error('Registration error:', error);
       
+      // Error handling remains the same
       if (error.response) {
-        // Handle specific error cases
         if (error.response.status === 409) {
           setError('Username or email already exists.');
         } else {

@@ -1,53 +1,68 @@
 import { useState, useEffect, useCallback } from 'react';
+import { setCookie, getCookie, deleteCookie, hasCookie } from '../utils/cookies';
 
 export const useAuth = (initialState = null) => {
-  // Initialize from localStorage if available, or use provided initialState
+  // Initialize from cookies if available, or use provided initialState
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     if (initialState !== null) return initialState;
     
-    const savedLoginState = localStorage.getItem('isLoggedIn');
-    const hasToken = localStorage.getItem('access_token') !== null;
-    return savedLoginState === 'true' || hasToken;
+    // Check for token in cookies
+    return hasCookie('access_token');
   });
   
   const [userName, setUserName] = useState(() => {
-    const savedUserName = localStorage.getItem('userName');
-    const userData = localStorage.getItem('user_data');
+    // Try to get userName from user_data cookie
+    const userData = getCookie('user_data');
     
-    if (savedUserName) return savedUserName;
     if (userData) {
       try {
         const parsed = JSON.parse(userData);
         return parsed.name || parsed.username || 'Guest';
       } catch (e) {
+        console.error('Error parsing user data from cookie:', e);
         return 'Guest';
       }
     }
     return 'Guest';
   });
 
-  // Use useCallback to prevent unnecessary function recreations
-  const login = useCallback((name = 'Guest') => {
+  // Login function - stores auth data in cookies
+  const login = useCallback((name = 'Guest', token = null, userData = null) => {
     setIsLoggedIn(true);
     setUserName(name);
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userName', name);
     
-    // Dispatch a custom event that other components can listen for
+    // Store token in cookie (if provided)
+    if (token) {
+      // Set token expiration to 7 days
+      setCookie('access_token', token, { expires: 7 });
+    }
+    
+    // Store user data
+    if (userData) {
+      setCookie('user_data', JSON.stringify(userData), { expires: 7 });
+    } else {
+      // Basic user data with just the name
+      setCookie('user_data', JSON.stringify({ name }), { expires: 7 });
+    }
+    
+    // Store login state in a separate cookie for quick access
+    setCookie('isLoggedIn', 'true', { expires: 7 });
+    
+    // Dispatch global event for components to listen
     window.dispatchEvent(new CustomEvent('authStateChanged', { 
       detail: { isLoggedIn: true, userName: name } 
     }));
   }, []);
 
+  // Logout function - removes auth cookies
   const logout = useCallback(() => {
     setIsLoggedIn(false);
     setUserName('');
     
-    // Clear auth data from localStorage
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user_data');
+    // Clear auth cookies
+    deleteCookie('access_token');
+    deleteCookie('user_data');
+    deleteCookie('isLoggedIn');
     
     // Reset any scroll detection or app state
     window.scrollTo(0, 0);
@@ -63,26 +78,41 @@ export const useAuth = (initialState = null) => {
     }, 100);
   }, []);
 
-  // Listen for auth state changes from other components
+  // Listen for auth state changes from cookies
   useEffect(() => {
-    const handleAuthChange = (event) => {
-      if (event.detail) {
-        setIsLoggedIn(event.detail.isLoggedIn);
-        if (event.detail.userName) {
-          setUserName(event.detail.userName);
+    const checkCookieChanges = () => {
+      const cookieLoginState = hasCookie('access_token');
+      
+      // If cookie state doesn't match component state, update component state
+      if (cookieLoginState !== isLoggedIn) {
+        setIsLoggedIn(cookieLoginState);
+        
+        // Update username if needed
+        if (cookieLoginState) {
+          const userData = getCookie('user_data');
+          if (userData) {
+            try {
+              const parsed = JSON.parse(userData);
+              setUserName(parsed.name || parsed.username || 'Guest');
+            } catch (e) {
+              console.error('Error parsing user data:', e);
+            }
+          }
+        } else {
+          setUserName('');
         }
       }
     };
     
-    window.addEventListener('authStateChanged', handleAuthChange);
+    // Check cookie changes on load
+    checkCookieChanges();
+    
+    // Set up interval to periodically check for cookie changes (e.g., in other tabs)
+    const intervalId = setInterval(checkCookieChanges, 5000);
+    
     return () => {
-      window.removeEventListener('authStateChanged', handleAuthChange);
+      clearInterval(intervalId);
     };
-  }, []);
-  
-  // Update localStorage whenever auth state changes
-  useEffect(() => {
-    localStorage.setItem('isLoggedIn', isLoggedIn);
   }, [isLoggedIn]);
   
   return {

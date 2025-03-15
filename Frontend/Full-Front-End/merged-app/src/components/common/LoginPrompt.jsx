@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth'; // Import the auth hook
 import '../../styles/common/LoginPrompt.css';
-import '../../styles/common/LoginPrompt-fixes.css'; // Import the fixes
+import '../../styles/common/LoginPrompt-fixes.css';
 
 const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Get the login function from auth hook
 
   useEffect(() => {
     // Prevent background scrolling when prompt is open
@@ -22,7 +24,10 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
   if (!isOpen) return null;
 
   const handleSignupClick = () => {
-    // Dispatch global auth state event with login info before navigating
+    // Use our new cookie-based login method
+    login('Guest', 'guest_token', { username: 'Guest', isGuest: true });
+    
+    // Dispatch global auth state event
     window.dispatchEvent(new CustomEvent('authStateChanged', { 
       detail: { isLoggedIn: true, userName: 'Guest' } 
     }));
@@ -37,7 +42,10 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
   };
 
   const handleLoginClick = () => {
-    // Dispatch global auth state event with login info before navigating
+    // Use our new cookie-based login method
+    login('Guest', 'guest_token', { username: 'Guest', isGuest: true });
+    
+    // Dispatch global auth state event
     window.dispatchEvent(new CustomEvent('authStateChanged', { 
       detail: { isLoggedIn: true, userName: 'Guest' } 
     }));
