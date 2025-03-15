@@ -222,6 +222,7 @@ for directory in [graphs_dir, reports_dir]:
 
 #route to accept the picture
 @ffr_bp.route('/analyze-face', methods=['POST'])
+@jwt_required
 def analyze_face():
     # Check if image file is in request
     if 'image' not in request.files:
