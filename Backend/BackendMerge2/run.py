@@ -1,14 +1,13 @@
 from flask import Flask
 from Signup.app.routes import signup_routes, register_jwt_callbacks
 from ML.facial_landmark_detection.ffr.routes import ffr_bp
+from community.app.routes import community_routes
 import os
 import sys
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 import datetime
-from extensions import mongo, jwt
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from extensions import mongo, jwt,init_limiter
 import logging
 import urllib.parse
 
@@ -21,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 def create_unified_app():
     app = Flask(__name__)
+    limiter = init_limiter(app)
     app.config.from_pyfile('configuration.py')
 
     # Enable CORS
@@ -58,10 +58,19 @@ def create_unified_app():
     except Exception as e:
         print(f"Error connecting to MongoDB: {e}")
         raise e
+    
+    try:
+        mongo.db.users.create_index([('posts.created_on', -1)])
+        mongo.db.users.create_index([('posts.id', 1)])
+        mongo.db.users.create_index([('comments.id', 1)])
+        logger.info("MongoDB indexes created successfully")
+    except Exception as e:
+        logger.error(f"Failed to create MongoDB indexes: {str(e)}")
 
     # Register blueprints
     app.register_blueprint(signup_routes, url_prefix='/auth')
     app.register_blueprint(ffr_bp, url_prefix='/ffr')
+    app.register_blueprint(community_routes, url_prefix='/community')
 
     return app
 

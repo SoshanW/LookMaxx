@@ -1,59 +1,61 @@
-from flask import request, jsonify
+from flask import request, jsonify, Blueprint
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
-from . import mongo, app, limiter
+from extensions import mongo, limiter
 from app.model import create_comment, create_post, create_user, serial_post, serial_comment, serial_user
 from bson import ObjectId
 from bson.errors import InvalidId
 import logging
 
+community_routes = Blueprint('community', __name__)
+
 logger = logging.getLogger(__name__)
 
-@app.route('/')
+@community_routes.route('/')
 @limiter.limit("10 per minute")
 def home():
     logger.info("Home endpoint accessed")
     return jsonify({"message":"Welcome to the API"}), 200
 
-@app.route('/register', methods=['POST'])
-@limiter.limit("5 per minute")
-def register():
-    username = request.json.get('username')
-    if not username:
-        return jsonify({'error': 'Username is required'}), 400
+# @app.route('/register', methods=['POST'])
+# @limiter.limit("5 per minute")
+# def register():
+#     username = request.json.get('username')
+#     if not username:
+#         return jsonify({'error': 'Username is required'}), 400
 
-    existing_user = mongo.db.users.find_one({'username': username})
-    if existing_user:
-        return jsonify({'error': 'Username already taken'}), 400
+#     existing_user = mongo.db.users.find_one({'username': username})
+#     if existing_user:
+#         return jsonify({'error': 'Username already taken'}), 400
     
-    try:
-        user = create_user(username)
-        user_id = mongo.db.users.insert_one(user).inserted_id
-        access_token = create_access_token(identity=str(user_id))
-        return jsonify({
-            'message': 'User created successfully',
-            'access_token': access_token
-        }), 201
-    except Exception as e:
-        logger.error(f"Error creating user: {str(e)}")
-        return jsonify({"error": "Database error"}), 500
+#     try:
+#         user = create_user(username)
+#         user_id = mongo.db.users.insert_one(user).inserted_id
+#         access_token = create_access_token(identity=str(user_id))
+#         return jsonify({
+#             'message': 'User created successfully',
+#             'access_token': access_token
+#         }), 201
+#     except Exception as e:
+#         logger.error(f"Error creating user: {str(e)}")
+#         return jsonify({"error": "Database error"}), 500
     
 
-@app.route('/login', methods=['POST'])
-def login():
-    username = request.json.get('username')
-    if not username: 
-        return jsonify({"error":"Missing Username"}), 400
+# @app.route('/login', methods=['POST'])
+# def login():
+#     username = request.json.get('username')
+#     if not username: 
+#         return jsonify({"error":"Missing Username"}), 400
     
-    user = mongo.db.users.find_one({'username':username})
-    if not user: 
-        return jsonify({'error':'user not found'}), 400
+#     user = mongo.db.users.find_one({'username':username})
+#     if not user: 
+#         return jsonify({'error':'user not found'}), 400
     
-    access_token = create_access_token(identity=str(user['_id']))
-    return jsonify(access_token=access_token), 200
+#     access_token = create_access_token(identity=str(user['_id']))
+#     return jsonify(access_token=access_token), 200
 
 
-@app.route('/posts', methods=['GET'])
+@community_routes.route('/posts', methods=['GET'])
 def get_posts():
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 10))
@@ -96,7 +98,7 @@ def get_posts():
         return jsonify({'error':f'Databse error: {str(e)}'}), 500
 
 
-@app.route('/posts', methods=['POST'])
+@community_routes.route('/posts', methods=['POST'])
 @jwt_required()
 def create_new_post():
     data = request.json
@@ -125,7 +127,7 @@ def create_new_post():
 print('Imported create_post function:', create_post)
 
 
-@app.route('/posts/<post_id>/comments', methods=['GET'])
+@community_routes.route('/posts/<post_id>/comments', methods=['GET'])
 def get_comments(post_id):
     try:
         post_object_id = ObjectId(post_id)
@@ -174,7 +176,7 @@ def get_comments(post_id):
         return jsonify({'error':f'Internal server error: {str(e)}'}), 500
     
 
-@app.route('/posts/<post_id>/comments', methods=['POST'])
+@community_routes.route('/posts/<post_id>/comments', methods=['POST'])
 @jwt_required()
 def create_new_comment(post_id):
     try:
@@ -216,7 +218,7 @@ def create_new_comment(post_id):
         return jsonify({'error': 'Database error'}), 500
 
 
-@app.route('/posts/<post_id>/like', methods=['POST'])
+@community_routes.route('/posts/<post_id>/like', methods=['POST'])
 @jwt_required()
 def like_post(post_id):
     try:
@@ -251,7 +253,7 @@ def like_post(post_id):
         return jsonify({'error': 'Database error'}), 500
 
 
-@app.route('/posts/<post_id>/likes', methods=['GET'])
+@community_routes.route('/posts/<post_id>/likes', methods=['GET'])
 def get_post_likes(post_id):
     try:
         post_object_id = ObjectId(post_id)
@@ -285,7 +287,7 @@ def get_post_likes(post_id):
         return jsonify({'error': 'Database error'}), 500
 
 
-@app.route('/posts/<post_id>/unlike', methods=['POST'])
+@community_routes.route('/posts/<post_id>/unlike', methods=['POST'])
 @jwt_required()
 def unlike_post(post_id):
     try:
@@ -319,7 +321,7 @@ def unlike_post(post_id):
         return jsonify({'error': 'Database error'}), 500
 
 
-@app.route('/posts/<post_id>', methods=['DELETE'])
+@community_routes.route('/posts/<post_id>', methods=['DELETE'])
 @jwt_required()
 def delete_post(post_id):
     try:
@@ -347,7 +349,7 @@ def delete_post(post_id):
         return jsonify({'error':f'Database error:{str(e)}'}), 500
     
 
-@app.route('/posts/<post_id>/comments/<comment_id>', methods=['DELETE'])
+@community_routes.route('/posts/<post_id>/comments/<comment_id>', methods=['DELETE'])
 @jwt_required()
 def delete_comment(post_id, comment_id):
     try:
@@ -372,7 +374,7 @@ def delete_comment(post_id, comment_id):
         if comment['author_id'] != user_id:
             return jsonify({'error': 'You can only delete your own comments'}), 403  
 
-       
+
         mongo.db.posts.update_one(
         {'_id': post_object_id},
         {'$pull': {'comments': {'_id': comment_object_id}}}
@@ -392,7 +394,7 @@ def delete_comment(post_id, comment_id):
         return jsonify({'error': 'Database error'}), 500
     
 
-@app.route('/users/profile', methods=['GET'])
+@community_routes.route('/users/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
     try:
