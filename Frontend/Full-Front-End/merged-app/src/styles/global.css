@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 /* Font declarations */
 @font-face {
   font-family: 'Nasalization';
@@ -143,4 +148,19 @@ body.profile-page {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+}
+
+/* For pricing page */
+body.pricing-page {
+  background: linear-gradient(135deg, #0f031b 0%, #2e1855 50%, #07010b 100%);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Hide footer on pricing page */
+body.pricing-page footer {
+  display: none !important;
 }

@@ -135,11 +135,7 @@ const ImageSequence = ({ frameCount = 225, imageFormat = 'jpg' }) => {
   return (
     <div className="relative">
       <canvas ref={canvasRef} className="image-sequence-canvas" />
-      {loadingProgress < frameCount && (
-        <div className="fixed top-4 left-4 bg-white p-4 rounded shadow">
-          Loading: {Math.round((loadingProgress / frameCount) * 100)}%
-        </div>
-      )}
+      
     </div>
   );
 };

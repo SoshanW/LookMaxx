@@ -226,12 +226,21 @@ const Navbar = ({
                     onClick={(e) => {
                       e.preventDefault();
                       navigate('/profile');
+                      setDropdownOpen(false);
                     }}
                   >
                     <i className="icon profile-icon"></i>
                     Profile
                   </a>
-                  <a href="/settings" className="dropdown-item">
+                  <a 
+                    href="/profile" 
+                    className="dropdown-item"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/profile', { state: { activeTab: 'settings' } });
+                      setDropdownOpen(false);
+                    }}
+                  >
                     <i className="icon settings-icon"></i>
                     Settings
                   </a>

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../../styles/profile/ProfileSection.css';
 import '../../styles/profile/AvatarSection.css';
 import '../../styles/profile/SettingsSection.css';
 import AvatarModel from './AvatarModel';
-import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthProvider';
 
 const ProfileSection = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isLoggedIn, userName, logout } = useAuthContext();
   
   // Define the loading state
@@ -22,6 +23,12 @@ const ProfileSection = () => {
     if (!isLoggedIn) {
       navigate('/signup', { state: { activeTab: 'login' } });
       return;
+    }
+
+    // Check if we should show settings tab by default
+    const activeTab = location.state?.activeTab;
+    if (activeTab === 'settings') {
+      setShowSettings(true);
     }
 
     // For demo purposes, creating mock user data
@@ -71,7 +78,7 @@ const ProfileSection = () => {
 
     fetchUserData();
     */
-  }, [isLoggedIn, userName, navigate]);
+  }, [isLoggedIn, userName, navigate, location.state]);
 
   // Handler for delete user button
   const handleDeleteUser = async (username) => {
@@ -96,7 +103,7 @@ const ProfileSection = () => {
   
   // Handler for upgrading the account
   const handleUpgradeAccount = () => {
-    alert("Redirecting to premium upgrade page");
+    navigate('/pricing'); // Navigate to pricing page
   };
 
   // Handler for toggling settings visibility

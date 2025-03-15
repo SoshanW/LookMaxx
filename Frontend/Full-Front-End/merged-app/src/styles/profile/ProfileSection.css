@@ -18,11 +18,12 @@
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
-  min-height: 100vh;
-  padding: 20px;
+  min-height: calc(100vh - 60px); /* Adjust height to account for the back button */
+  padding: 20px 20px 20px 20px; /* Adjust padding as needed */
   font-family: 'Nasalization', sans-serif;
   color: var(--text-primary);
 }
+
 
 .profile-page .profile-header-bg {
   position: absolute;
@@ -39,6 +40,7 @@
 .profile-page .profile-content-wrapper {
   padding: 0px;
   position: relative;
+
 }
 
 .profile-page .profile-main {
@@ -47,7 +49,7 @@
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-  margin-top: 40px;
+  margin-top: 20px;
   flex-direction: column;
 }
 
@@ -377,30 +379,24 @@
 }
 
 .profile-page .backbtn {
+  position: absolute; /* Change to absolute positioning */
+  top: 40px; /* Adjust the top margin */
+  left: 20px; /* Adjust the left margin */
+  z-index: 1000; /* Ensure it stays above other content */
   height: 50px;
-  margin: 5px;
   width: 120px;
   background: #333;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
   justify-content: center;
   cursor: pointer;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
   font-family: Consolas, Courier New, monospace;
-  border: solid #404c5d 1px;
-  border-radius: 40px;
+  border: solid #31394500 1px;
+  border-radius: 5px;
   font-size: 16px;
   color: rgb(161, 161, 161);
-  -webkit-transition: 500ms;
   transition: 500ms;
-  border-radius: 5px;
   background: linear-gradient(145deg, #2e2d2d, #212121);
-  -webkit-box-shadow: -1px -5px 15px #41465b, 5px 5px 15px #41465b,
-    inset 5px 5px 10px #212121, inset -5px -5px 10px #212121;
-  box-shadow: -1px -5px 15px #41465b, 5px 5px 15px #41465b,
-    inset 5px 5px 10px #212121, inset -5px -5px 10px #212121;
+;
 }
 
 .profile-page .backbtn:hover {
