@@ -11,29 +11,33 @@ import LoginPrompt from '../components/common/LoginPrompt';
 import BottomNavBar from '../components/ffr/BottomNavBar';
 import { useAuth } from '../hooks/useAuth';
 import { useReportGenerator } from '../context/ReportGeneratorContext';
+import { getCookie, setCookie } from '../utils/cookies';
 import '../styles/ffr/ffrstyles.css';
 
 function FfrPage() {
   // Use the authentication hook
   const { isLoggedIn, login } = useAuth();
   
-  // Use the report generator context
-  const { 
-    startReportGeneration, 
-    showReportGenerator, 
-    isReportMinimized
-  } = useReportGenerator();
-  
   const [showDesignCard, setShowDesignCard] = useState(false);
   const [showUploadPhoto, setShowUploadPhoto] = useState(false);
   const [showBlogCard, setShowBlogCard] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showReportGenerator, setShowReportGenerator] = useState(false);
+  const [isReportMinimized, setIsReportMinimized] = useState(() => {
+    return getCookie('reportMinimized') === 'true';
+  });
   
-  // No longer needed as report generator settings are in the context
+  // Check if there's an ongoing report generation from a previous session
+  const [reportGeneratorActive, setReportGeneratorActive] = useState(() => {
+    return getCookie('reportProgress') !== null;
+  });
   
   const hasScrolled = useRef(false);
   const initialScrollLock = useRef(false);
   const bottomSectionRef = useRef(null);
+  
+  // Report generator settings
+  const reportDuration = 60000; // 60 seconds (adjust as needed)
 
   // Apply proper page class
   useEffect(() => {
@@ -81,27 +85,28 @@ function FfrPage() {
 
   // Handle login
   const handleLogin = () => {
-    // Call login function from auth hook to update auth state
-    login('Guest');
-    
-    // Broadcast auth state change for immediate UI update
-    window.dispatchEvent(new CustomEvent('authStateChanged', { 
-      detail: { isLoggedIn: true, userName: 'Guest' } 
-    }));
+    // Call login function from auth hook to update auth state with cookies
+    login('Guest', 'guest_token', { username: 'Guest', isGuest: true });
     
     // Update local component state
     setShowLoginPrompt(false);
     document.body.style.overflow = 'auto';
     initialScrollLock.current = false;
     hasScrolled.current = false;
+    
+    // Check for unfinished report after login
+    checkForUnfinishedReport();
   };
 
-  // Handle starting report generation
-  const handleStartReportGeneration = () => {
-    // Call the startReportGeneration function from the context
-    startReportGeneration();
-    // Hide upload photo component when report generator is active
-    setShowUploadPhoto(false);
+  // Check if there's an unfinished report in cookies
+  const checkForUnfinishedReport = () => {
+    const savedProgress = getCookie('reportProgress');
+    const savedMinimized = getCookie('reportMinimized');
+    
+    if (savedProgress && parseFloat(savedProgress) < 100) {
+      setShowReportGenerator(true);
+      setIsReportMinimized(savedMinimized === 'true');
+    }
   };
 
   // Close login prompt and go back to home
@@ -111,6 +116,78 @@ function FfrPage() {
     hasScrolled.current = false;
     document.body.style.overflow = 'auto';
   };
+
+  // Handle starting report generation
+  const handleStartReportGeneration = () => {
+    setShowReportGenerator(true);
+    setIsReportMinimized(false);
+    setCookie('reportMinimized', 'false');
+    
+    // Hide upload photo component when report generator is active
+    setShowUploadPhoto(false);
+    
+    // Scroll to top for better view of the report generator
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle closing report generator
+  const handleCloseReportGenerator = () => {
+    setShowReportGenerator(false);
+    setIsReportMinimized(false);
+  };
+
+  // Handle minimizing/maximizing report generator
+  const handleReportMinimizeChange = (isMinimized) => {
+    setIsReportMinimized(isMinimized);
+    setCookie('reportMinimized', isMinimized.toString());
+    
+    // When maximizing from minimized state, scroll to top
+    if (!isMinimized) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // When minimizing, allow the user to interact with the site
+    if (isMinimized) {
+      document.body.style.overflow = 'auto';
+    }
+  };
+
+  // Listen for custom event from Navbar
+  useEffect(() => {
+    const handleShowPromptEvent = () => {
+      console.log("Show login prompt event received");
+      setShowLoginPrompt(true);
+      hasScrolled.current = true;
+      document.body.style.overflow = 'hidden';
+    };
+    
+    // Listen for auth state changes to update component state accordingly
+    const handleAuthStateChanged = (event) => {
+      if (event.detail && event.detail.isLoggedIn !== undefined) {
+        // If user is now logged in, we might need to update component state
+        if (event.detail.isLoggedIn && showLoginPrompt) {
+          setShowLoginPrompt(false);
+          document.body.style.overflow = 'auto';
+          hasScrolled.current = false;
+        }
+      }
+    };
+    
+    window.addEventListener('showLoginPrompt', handleShowPromptEvent);
+    window.addEventListener('authStateChanged', handleAuthStateChanged);
+    
+    return () => {
+      window.removeEventListener('showLoginPrompt', handleShowPromptEvent);
+      window.removeEventListener('authStateChanged', handleAuthStateChanged);
+    };
+  }, [showLoginPrompt]);
+
+  // Check for unfinished report on initial load
+  useEffect(() => {
+    if (isLoggedIn) {
+      checkForUnfinishedReport();
+    }
+  }, [isLoggedIn]);
 
   // Add a bottom section div as the final element
   useEffect(() => {
@@ -254,7 +331,13 @@ function FfrPage() {
         onLogin={handleLogin}
       />
       
-      {/* Note: ReportGenerator is now rendered by the ReportGeneratorContext provider */}
+      <ReportGenerator 
+        isActive={showReportGenerator}
+        duration={reportDuration} // Pass the duration in milliseconds
+        onClose={handleCloseReportGenerator}
+        onMinimize={handleReportMinimizeChange}
+        isMinimized={isReportMinimized}
+      />
     </div>
   );
 }

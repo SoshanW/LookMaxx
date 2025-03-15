@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Minimize2, Maximize2, Download } from 'lucide-react';
+import { setCookie, getCookie, deleteCookie } from '../../utils/cookies';
 import '../../styles/ffr/ReportGenerator.css';
 
 const ReportGenerator = ({ 
@@ -7,7 +8,7 @@ const ReportGenerator = ({
   onClose, 
   onMinimize,
   isMinimized = false,
-  duration = 60000, // Default duration in ms (30 seconds)
+  duration = 60000, // Default duration in ms
   progressIncrement = 1 // Default progress increment per tick
 }) => {
   const [progress, setProgress] = useState(0);
@@ -29,14 +30,14 @@ const ReportGenerator = ({
     "Finalizing your report..."
   ];
 
-  // Load progress from localStorage on initial render
+  // Load progress from cookies on initial render
   useEffect(() => {
     if (isActive) {
-      const savedProgress = localStorage.getItem('reportProgress');
-      const savedStatus = localStorage.getItem('reportStatus');
-      const savedStartTime = localStorage.getItem('reportStartTime');
-      const savedEndTime = localStorage.getItem('reportEndTime');
-      const savedComplete = localStorage.getItem('reportComplete');
+      const savedProgress = getCookie('reportProgress');
+      const savedStatus = getCookie('reportStatus');
+      const savedStartTime = getCookie('reportStartTime');
+      const savedEndTime = getCookie('reportEndTime');
+      const savedComplete = getCookie('reportComplete');
       
       // Set complete state based on saved value (if exists)
       if (savedComplete !== null) {
@@ -53,7 +54,7 @@ const ReportGenerator = ({
           setProgress(100);
           setStatus("Report complete!");
           setIsComplete(true);
-          localStorage.setItem('reportComplete', 'true');
+          setCookie('reportComplete', 'true');
           return;
         }
         
@@ -75,7 +76,7 @@ const ReportGenerator = ({
           setProgress(100);
           setStatus("Report complete!");
           setIsComplete(true);
-          localStorage.setItem('reportComplete', 'true');
+          setCookie('reportComplete', 'true');
         }
       } else {
         // Start a new progress tracking if no saved state
@@ -134,17 +135,17 @@ const ReportGenerator = ({
         const newStatus = statusMessages[Math.min(statusIndex, statusMessages.length - 1)];
         setStatus(newStatus);
         
-        // Save to localStorage
-        localStorage.setItem('reportProgress', newProgress.toString());
-        localStorage.setItem('reportStatus', newStatus);
+        // Save to cookies
+        setCookie('reportProgress', newProgress.toString());
+        setCookie('reportStatus', newStatus);
         
         // When completed
         if (newProgress >= 100) {
           clearInterval(progressInterval.current);
           setStatus("Report complete!");
           setIsComplete(true);
-          localStorage.setItem('reportStatus', "Report complete!");
-          localStorage.setItem('reportComplete', 'true');
+          setCookie('reportStatus', "Report complete!");
+          setCookie('reportComplete', 'true');
         }
         
         return newProgress;
@@ -153,22 +154,28 @@ const ReportGenerator = ({
   };
 
   const handleMinimize = () => {
-    if (onMinimize) onMinimize(true); // Pass true to indicate minimized state
+    if (onMinimize) {
+      onMinimize(true); // Pass true to indicate minimized state
+      setCookie('reportMinimized', 'true');
+    }
   };
 
   const handleMaximize = () => {
-    if (onMinimize) onMinimize(false); // Pass false to indicate maximized state
+    if (onMinimize) {
+      onMinimize(false); // Pass false to indicate maximized state
+      setCookie('reportMinimized', 'false');
+    }
   };
   
   const handleClose = () => {
     clearInterval(progressInterval.current);
-    // Clear localStorage when closing
-    localStorage.removeItem('reportProgress');
-    localStorage.removeItem('reportStatus');
-    localStorage.removeItem('reportStartTime');
-    localStorage.removeItem('reportEndTime');
-    localStorage.removeItem('reportMinimized');
-    localStorage.removeItem('reportComplete');
+    // Clear cookies when closing
+    deleteCookie('reportProgress');
+    deleteCookie('reportStatus');
+    deleteCookie('reportStartTime');
+    deleteCookie('reportEndTime');
+    deleteCookie('reportMinimized');
+    deleteCookie('reportComplete');
     if (onClose) onClose();
   };
   
