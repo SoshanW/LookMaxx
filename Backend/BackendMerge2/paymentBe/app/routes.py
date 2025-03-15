@@ -3,13 +3,13 @@ import hashlib
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 from pymongo import MongoClient
 import json
-from app.config import mongo
+from extensions import mongo
 import datetime
-from flask import current_app
+#from flask import current_app
 
-app_routes = Blueprint('app_routes', __name__)
+payment_routes = Blueprint('payment_routes', __name__)
 
-@app_routes.route('/verify-payment' , methods = ['POST'])
+@payment_routes.route('/verify-payment' , methods = ['POST'])
 def verify_payment():
     try:
         username = get_jwt_identity()
