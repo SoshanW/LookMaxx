@@ -7,6 +7,17 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 import datetime
 from extensions import mongo, jwt
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import logging
+import urllib.parse
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger(__name__)
 
 def create_unified_app():
     app = Flask(__name__)
