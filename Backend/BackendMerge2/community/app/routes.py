@@ -2,7 +2,7 @@ from flask import request, jsonify, Blueprint
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from datetime import datetime
 from extensions import mongo, limiter
-from app.model import create_comment, create_post, create_user, serial_post, serial_comment, serial_user
+from community.app.model import create_comment, create_post, create_user, serial_post, serial_comment, serial_user
 from bson import ObjectId
 from bson.errors import InvalidId
 import logging
@@ -84,7 +84,7 @@ def get_posts():
                 serialized_post.append(post_data)
             except Exception as post_error:
                 
-                app.logger.error(f"Error processing post {post.get('_id', 'unknown')}: {str(post_error)}")
+                community_routes.logger.error(f"Error processing post {post.get('_id', 'unknown')}: {str(post_error)}")
 
         return jsonify({
             'posts': serialized_post,
@@ -94,7 +94,7 @@ def get_posts():
         }), 200
     
     except Exception as e:
-        app.logger.error(f'Error fetching posts: {str(e)}')
+        community_routes.logger.error(f'Error fetching posts: {str(e)}')
         return jsonify({'error':f'Databse error: {str(e)}'}), 500
 
 
@@ -172,7 +172,7 @@ def get_comments(post_id):
         }), 200
 
     except Exception as e:
-        app.logger.error(f'Error getting comments: {str(e)}')
+        community_routes.logger.error(f'Error getting comments: {str(e)}')
         return jsonify({'error':f'Internal server error: {str(e)}'}), 500
     
 
