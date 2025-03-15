@@ -10,10 +10,10 @@ import datetime
 payment_routes = Blueprint('payment_routes', __name__)
 
 @payment_routes.route('/verify-payment' , methods = ['POST'])
+@jwt_required()
 def verify_payment():
     try:
         username = get_jwt_identity()
-        jwt_payload = get_jwt() # Get JWT ID
         status_code = request.form.get('status_code')
 
         user = mongo.db.users.find_one({"username":username})
