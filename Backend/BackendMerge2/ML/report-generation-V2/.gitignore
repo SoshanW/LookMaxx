@@ -1,0 +1,18 @@
+# Ignore environment files
+.env
+
+# Ignore Python cache
+/services/__pycache__
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Google Cloud API key file
+helical-mile-450717-d3-616bca69b639.json
+aerobic-optics-451906-f5-7b66d6b0810e.json
+look-sci-452706-a22a2c702387.json
+look-sci-452706-ba857d314931.json
+
+# AWS setup
+config2.py
