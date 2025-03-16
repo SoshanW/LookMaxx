@@ -25,78 +25,54 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
 
   if (!isOpen) return null;
 
-  const handleSignupClick = async () => {
+  const handleSignupClick = () => {
     setIsLoading(true);
-    setError('');
     
     try {
       // Store the current page for later return
       const currentPath = window.location.pathname;
       
-      // Guest login with skip refresh since we're navigating
-      await login('Guest', 'guest_token', 
-        { username: 'Guest', isGuest: true },
-        { 
-          skipRefresh: true,
-          source: 'signupPrompt',
-          redirectPath: currentPath
-        }
-      );
-      
-      // Call the onLogin callback
-      if (onLogin) {
-        onLogin();
-      }
-      
-      // Navigate to signup page
+      // Simply navigate to signup page with the signup tab active
       navigate('/signup', { 
         state: { 
           activeTab: 'signup',
           returnPath: currentPath
         }
       });
+      
+      // Call the onClose callback to close the prompt
+      if (onClose) {
+        onClose();
+      }
     } catch (err) {
-      setError('Failed to log in. Please try again.');
-      console.error('Login error:', err);
-    } finally {
+      setError('Failed to navigate. Please try again.');
+      console.error('Navigation error:', err);
       setIsLoading(false);
     }
   };
 
-  const handleLoginClick = async () => {
+  const handleLoginClick = () => {
     setIsLoading(true);
-    setError('');
     
     try {
       // Store the current page for later return
       const currentPath = window.location.pathname;
       
-      // Guest login with skip refresh since we're navigating
-      await login('Guest', 'guest_token', 
-        { username: 'Guest', isGuest: true },
-        { 
-          skipRefresh: true,
-          source: 'loginPrompt',
-          redirectPath: currentPath
-        }
-      );
-      
-      // Call the onLogin callback
-      if (onLogin) {
-        onLogin();
-      }
-      
-      // Navigate to login page
+      // Simply navigate to signup page with the login tab active
       navigate('/signup', { 
         state: { 
           activeTab: 'login',
           returnPath: currentPath
         }
       });
+      
+      // Call the onClose callback to close the prompt
+      if (onClose) {
+        onClose();
+      }
     } catch (err) {
-      setError('Failed to log in. Please try again.');
-      console.error('Login error:', err);
-    } finally {
+      setError('Failed to navigate. Please try again.');
+      console.error('Navigation error:', err);
       setIsLoading(false);
     }
   };
