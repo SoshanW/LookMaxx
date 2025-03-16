@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import PropTypes from 'prop-types';
@@ -10,13 +10,27 @@ const ImageSequence = ({ frameCount = 225, imageFormat = 'jpg' }) => {
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
   const faceRef = useRef({ frame: 0 });
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const loadingRef = useRef({
+    inProgress: false,
+    count: 0,
+    currentBatch: 0
+  });
+  // Remove state update entirely - it's causing the infinite loop
+  // const [loadingProgress, setLoadingProgress] = useState(0); 
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
-    let currentLoadingBatch = 0;
-    const BATCH_SIZE = 20;
+    const mountedRef = { current: true };
+    
+    // Reset loading on each effect run
+    loadingRef.current = {
+      inProgress: false,
+      count: 0,
+      currentBatch: 0
+    };
+    
+    imagesRef.current = new Array(frameCount).fill(null);
 
     const updateCanvasSize = () => {
       canvas.width = window.innerWidth;
@@ -27,38 +41,63 @@ const ImageSequence = ({ frameCount = 225, imageFormat = 'jpg' }) => {
 
     const currentFrame = (index) => `/assets/ffr/${(index + 1).toString()}.${imageFormat}`;
     
-    imagesRef.current = new Array(frameCount).fill(null);
-
-    const loadImageBatch = (startIdx) => {
+    // Load images in batches without using setState
+    const loadNextBatch = () => {
+      if (!mountedRef.current || loadingRef.current.inProgress) return;
+      
+      const BATCH_SIZE = 20;
+      const startIdx = loadingRef.current.currentBatch * BATCH_SIZE;
+      
+      // Check if we're done
+      if (startIdx >= frameCount) return;
+      
       const endIdx = Math.min(startIdx + BATCH_SIZE, frameCount);
-      const loadPromises = [];
-
+      loadingRef.current.inProgress = true;
+      
+      let loadedInBatch = 0;
+      
+      // Load each image in the batch
       for (let i = startIdx; i < endIdx; i++) {
-        loadPromises.push(new Promise((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => {
-            imagesRef.current[i] = img;
-            setLoadingProgress(prev => prev + 1);
-            resolve();
-          };
-          img.onerror = (e) => {
-            console.error(`Failed to load image ${i + 1}`, e);
-            reject(e);
-          };
-          img.src = currentFrame(i);
-        }));
-      }
-
-      Promise.all(loadPromises)
-        .then(() => {
-          currentLoadingBatch++;
-          if (currentLoadingBatch * BATCH_SIZE < frameCount) {
-            loadImageBatch(currentLoadingBatch * BATCH_SIZE);
+        const img = new Image();
+        
+        img.onload = () => {
+          if (!mountedRef.current) return;
+          
+          imagesRef.current[i] = img;
+          loadingRef.current.count++;
+          loadedInBatch++;
+          
+          // When batch is complete, schedule next batch
+          if (loadedInBatch === endIdx - startIdx) {
+            loadingRef.current.inProgress = false;
+            loadingRef.current.currentBatch++;
+            
+            // Schedule next batch with a small delay
+            if (loadingRef.current.currentBatch * BATCH_SIZE < frameCount) {
+              setTimeout(loadNextBatch, 50);
+            }
           }
-        })
-        .catch(error => {
-          console.error('Error loading image batch:', error);
-        });
+        };
+        
+        img.onerror = (e) => {
+          if (!mountedRef.current) return;
+          
+          console.error(`Failed to load image ${i + 1}`, e);
+          loadedInBatch++;
+          
+          // Continue to next batch even if there are errors
+          if (loadedInBatch === endIdx - startIdx) {
+            loadingRef.current.inProgress = false;
+            loadingRef.current.currentBatch++;
+            
+            if (loadingRef.current.currentBatch * BATCH_SIZE < frameCount) {
+              setTimeout(loadNextBatch, 50);
+            }
+          }
+        };
+        
+        img.src = currentFrame(i);
+      }
     };
 
     const render = () => {
@@ -109,7 +148,9 @@ const ImageSequence = ({ frameCount = 225, imageFormat = 'jpg' }) => {
     };
 
     window.addEventListener('resize', handleResize);
-    loadImageBatch(0);
+    
+    // Start loading the first batch
+    loadNextBatch();
 
     // Image sequence animation
     gsap.to(faceRef.current, {
@@ -127,6 +168,7 @@ const ImageSequence = ({ frameCount = 225, imageFormat = 'jpg' }) => {
     });
 
     return () => {
+      mountedRef.current = false;
       window.removeEventListener('resize', handleResize);
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
@@ -135,7 +177,6 @@ const ImageSequence = ({ frameCount = 225, imageFormat = 'jpg' }) => {
   return (
     <div className="relative">
       <canvas ref={canvasRef} className="image-sequence-canvas" />
-      
     </div>
   );
 };

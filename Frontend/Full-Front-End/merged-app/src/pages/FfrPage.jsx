@@ -10,6 +10,7 @@ import BlogCard from '../components/ffr/BlogCard';
 import LoginPrompt from '../components/common/LoginPrompt';
 import BottomNavBar from '../components/ffr/BottomNavBar';
 import { useAuth } from '../hooks/useAuth';
+import { getCookie, setCookie } from '../utils/cookies';
 import { useReportGenerator } from '../context/ReportGeneratorContext';
 import '../styles/ffr/ffrstyles.css';
 
@@ -21,15 +22,13 @@ function FfrPage() {
   const { 
     startReportGeneration, 
     showReportGenerator, 
-    isReportMinimized
+    isReportMinimized 
   } = useReportGenerator();
   
   const [showDesignCard, setShowDesignCard] = useState(false);
   const [showUploadPhoto, setShowUploadPhoto] = useState(false);
   const [showBlogCard, setShowBlogCard] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  
-  // No longer needed as report generator settings are in the context
   
   const hasScrolled = useRef(false);
   const initialScrollLock = useRef(false);
@@ -81,27 +80,14 @@ function FfrPage() {
 
   // Handle login
   const handleLogin = () => {
-    // Call login function from auth hook to update auth state
-    login('Guest');
-    
-    // Broadcast auth state change for immediate UI update
-    window.dispatchEvent(new CustomEvent('authStateChanged', { 
-      detail: { isLoggedIn: true, userName: 'Guest' } 
-    }));
+    // Call login function from auth hook to update auth state with cookies
+    login('Guest', 'guest_token', { username: 'Guest', isGuest: true });
     
     // Update local component state
     setShowLoginPrompt(false);
     document.body.style.overflow = 'auto';
     initialScrollLock.current = false;
     hasScrolled.current = false;
-  };
-
-  // Handle starting report generation
-  const handleStartReportGeneration = () => {
-    // Call the startReportGeneration function from the context
-    startReportGeneration();
-    // Hide upload photo component when report generator is active
-    setShowUploadPhoto(false);
   };
 
   // Close login prompt and go back to home
@@ -111,6 +97,43 @@ function FfrPage() {
     hasScrolled.current = false;
     document.body.style.overflow = 'auto';
   };
+
+  // Handle starting report generation (using context)
+  const handleStartReportGeneration = () => {
+    startReportGeneration();
+    // Hide upload photo component when report generator is active
+    setShowUploadPhoto(false);
+  };
+
+  // Listen for custom event from Navbar
+  useEffect(() => {
+    const handleShowPromptEvent = () => {
+      console.log("Show login prompt event received");
+      setShowLoginPrompt(true);
+      hasScrolled.current = true;
+      document.body.style.overflow = 'hidden';
+    };
+    
+    // Listen for auth state changes to update component state accordingly
+    const handleAuthStateChanged = (event) => {
+      if (event.detail && event.detail.isLoggedIn !== undefined) {
+        // If user is now logged in, we might need to update component state
+        if (event.detail.isLoggedIn && showLoginPrompt) {
+          setShowLoginPrompt(false);
+          document.body.style.overflow = 'auto';
+          hasScrolled.current = false;
+        }
+      }
+    };
+    
+    window.addEventListener('showLoginPrompt', handleShowPromptEvent);
+    window.addEventListener('authStateChanged', handleAuthStateChanged);
+    
+    return () => {
+      window.removeEventListener('showLoginPrompt', handleShowPromptEvent);
+      window.removeEventListener('authStateChanged', handleAuthStateChanged);
+    };
+  }, [showLoginPrompt]);
 
   // Add a bottom section div as the final element
   useEffect(() => {
@@ -254,7 +277,7 @@ function FfrPage() {
         onLogin={handleLogin}
       />
       
-      {/* Note: ReportGenerator is now rendered by the ReportGeneratorContext provider */}
+      {/* ReportGenerator is now rendered by the ReportGeneratorProvider context */}
     </div>
   );
 }

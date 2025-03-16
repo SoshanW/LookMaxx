@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import '../../styles/common/LoginPrompt.css';
-import '../../styles/common/LoginPrompt-fixes.css'; // Import the fixes
+import '../../styles/common/LoginPrompt-fixes.css';
 
 const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // Prevent background scrolling when prompt is open
@@ -22,33 +26,55 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
   if (!isOpen) return null;
 
   const handleSignupClick = () => {
-    // Dispatch global auth state event with login info before navigating
-    window.dispatchEvent(new CustomEvent('authStateChanged', { 
-      detail: { isLoggedIn: true, userName: 'Guest' } 
-    }));
+    setIsLoading(true);
     
-    // Call the onLogin callback first to update auth state
-    if (onLogin) {
-      onLogin();
+    try {
+      // Store the current page for later return
+      const currentPath = window.location.pathname;
+      
+      // Simply navigate to signup page with the signup tab active
+      navigate('/signup', { 
+        state: { 
+          activeTab: 'signup',
+          returnPath: currentPath
+        }
+      });
+      
+      // Call the onClose callback to close the prompt
+      if (onClose) {
+        onClose();
+      }
+    } catch (err) {
+      setError('Failed to navigate. Please try again.');
+      console.error('Navigation error:', err);
+      setIsLoading(false);
     }
-    
-    // Then navigate to signup page
-    navigate('/signup', { state: { activeTab: 'signup' } });
   };
 
   const handleLoginClick = () => {
-    // Dispatch global auth state event with login info before navigating
-    window.dispatchEvent(new CustomEvent('authStateChanged', { 
-      detail: { isLoggedIn: true, userName: 'Guest' } 
-    }));
+    setIsLoading(true);
     
-    // Call the onLogin callback first to update auth state
-    if (onLogin) {
-      onLogin();
+    try {
+      // Store the current page for later return
+      const currentPath = window.location.pathname;
+      
+      // Simply navigate to signup page with the login tab active
+      navigate('/signup', { 
+        state: { 
+          activeTab: 'login',
+          returnPath: currentPath
+        }
+      });
+      
+      // Call the onClose callback to close the prompt
+      if (onClose) {
+        onClose();
+      }
+    } catch (err) {
+      setError('Failed to navigate. Please try again.');
+      console.error('Navigation error:', err);
+      setIsLoading(false);
     }
-    
-    // Then navigate to login page
-    navigate('/signup', { state: { activeTab: 'login' } });
   };
 
   return (
@@ -63,14 +89,27 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
           <p className="login-prompt-description">
             Unlock the full experience with all features by creating an account or logging in with your existing credentials.
           </p>
+          {error && <div className="error-alert">{error}</div>}
           <div className="login-prompt-buttons">
-            <button className="login-button" onClick={handleLoginClick}>
-              Login
+            <button 
+              className="login-button" 
+              onClick={handleLoginClick}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Processing...' : 'Login'}
             </button>
-            <button className="signup-button" onClick={handleSignupClick}>
-              Sign Up
+            <button 
+              className="signup-button" 
+              onClick={handleSignupClick}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Processing...' : 'Sign Up'}
             </button>
-            <button className="close-button" onClick={onClose}>
+            <button 
+              className="close-button" 
+              onClick={onClose}
+              disabled={isLoading}
+            >
               Back to Home
             </button>
           </div>

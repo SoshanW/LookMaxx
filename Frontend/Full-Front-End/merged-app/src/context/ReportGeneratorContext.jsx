@@ -1,5 +1,7 @@
+// src/context/ReportGeneratorContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import ReportGenerator from '../components/ffr/ReportGenerator';
+import { getCookie, setCookie } from '../utils/cookies';
 
 // Create context for the report generator state
 const ReportGeneratorContext = createContext(null);
@@ -8,25 +10,28 @@ export const ReportGeneratorProvider = ({ children }) => {
   // Report generator state
   const [showReportGenerator, setShowReportGenerator] = useState(false);
   const [isReportMinimized, setIsReportMinimized] = useState(false);
+  const [reportProgress, setReportProgress] = useState(0);
+  const [reportStatus, setReportStatus] = useState('');
   
   // Check for unfinished reports on mount
   useEffect(() => {
-    // Check if there's an ongoing report from a previous session
-    const savedProgress = localStorage.getItem('reportProgress');
-    const savedMinimized = localStorage.getItem('reportMinimized');
-    const savedComplete = localStorage.getItem('reportComplete');
+    // Check if there's an ongoing report from cookies
+    const savedProgress = getCookie('reportProgress');
+    const savedMinimized = getCookie('reportMinimized');
+    const savedComplete = getCookie('reportComplete');
+    const savedStatus = getCookie('reportStatus');
     
     if (savedProgress) {
       // If there's a saved progress, show the report generator
       setShowReportGenerator(true);
+      setReportProgress(parseFloat(savedProgress));
       
       // Set minimized state based on saved value
       setIsReportMinimized(savedMinimized === 'true');
       
-      // If the report is complete and it's minimized, keep it minimized
-      // Otherwise, show the full report for completed reports
-      if (savedComplete === 'true' && savedMinimized !== 'true') {
-        setIsReportMinimized(false);
+      // Set status if available
+      if (savedStatus) {
+        setReportStatus(savedStatus);
       }
     }
   }, []);
@@ -48,7 +53,7 @@ export const ReportGeneratorProvider = ({ children }) => {
   // Handle minimizing/maximizing report generator
   const handleReportMinimizeChange = (isMinimized) => {
     setIsReportMinimized(isMinimized);
-    localStorage.setItem('reportMinimized', isMinimized.toString());
+    setCookie('reportMinimized', isMinimized.toString());
     
     // When maximizing from minimized state, scroll to top
     if (!isMinimized) {
@@ -56,14 +61,23 @@ export const ReportGeneratorProvider = ({ children }) => {
     }
   };
 
+  // Update progress and status
+  const updateReportProgress = (progress, status) => {
+    setReportProgress(progress);
+    if (status) setReportStatus(status);
+  };
+
   return (
     <ReportGeneratorContext.Provider
       value={{
         showReportGenerator,
         isReportMinimized,
+        reportProgress,
+        reportStatus,
         startReportGeneration,
         handleCloseReportGenerator,
-        handleReportMinimizeChange
+        handleReportMinimizeChange,
+        updateReportProgress
       }}
     >
       {children}
@@ -76,6 +90,9 @@ export const ReportGeneratorProvider = ({ children }) => {
           onClose={handleCloseReportGenerator}
           onMinimize={handleReportMinimizeChange}
           isMinimized={isReportMinimized}
+          progress={reportProgress}
+          status={reportStatus}
+          onProgressUpdate={updateReportProgress}
         />
       )}
     </ReportGeneratorContext.Provider>

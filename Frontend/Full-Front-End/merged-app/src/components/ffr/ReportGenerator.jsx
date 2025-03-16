@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Minimize2, Maximize2, Download } from 'lucide-react';
+import { setCookie, getCookie, deleteCookie } from '../../utils/cookies';
 import '../../styles/ffr/ReportGenerator.css';
 
 const ReportGenerator = ({ 
@@ -7,15 +8,21 @@ const ReportGenerator = ({
   onClose, 
   onMinimize,
   isMinimized = false,
-  duration = 60000, // Default duration in ms (30 seconds)
-  progressIncrement = 1 // Default progress increment per tick
+  duration = 60000, // Default duration in ms
+  progress = null, // Accept external progress value
+  status = null, // Accept external status value
+  onProgressUpdate = null // Callback for progress updates
 }) => {
-  const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState('Initializing...');
+  const [internalProgress, setInternalProgress] = useState(progress !== null ? progress : 0);
+  const [internalStatus, setInternalStatus] = useState(status !== null ? status : 'Initializing...');
   const [isComplete, setIsComplete] = useState(false);
   const progressInterval = useRef(null);
   const startTime = useRef(null);
   const endTime = useRef(null);
+  
+  // Using the provided progress/status if available, otherwise use internal state
+  const currentProgress = progress !== null ? progress : internalProgress;
+  const currentStatus = status !== null ? status : internalStatus;
   
   // Status messages to show during generation
   const statusMessages = [
@@ -29,16 +36,16 @@ const ReportGenerator = ({
     "Finalizing your report..."
   ];
 
-  // Load progress from localStorage on initial render
+  // Load progress from cookies on initial render
   useEffect(() => {
     if (isActive) {
-      const savedProgress = localStorage.getItem('reportProgress');
-      const savedStatus = localStorage.getItem('reportStatus');
-      const savedStartTime = localStorage.getItem('reportStartTime');
-      const savedEndTime = localStorage.getItem('reportEndTime');
-      const savedComplete = localStorage.getItem('reportComplete');
+      const savedProgress = getCookie('reportProgress');
+      const savedStatus = getCookie('reportStatus');
+      const savedStartTime = getCookie('reportStartTime');
+      const savedEndTime = getCookie('reportEndTime');
+      const savedComplete = getCookie('reportComplete');
       
-      // Set complete state based on saved value (if exists)
+      // Set complete state based on saved value
       if (savedComplete !== null) {
         setIsComplete(savedComplete === 'true');
       }
@@ -50,16 +57,26 @@ const ReportGenerator = ({
         
         // If the report was completed in a previous session
         if (parsedProgress >= 100 || savedComplete === 'true') {
-          setProgress(100);
-          setStatus("Report complete!");
+          setInternalProgress(100);
+          setInternalStatus("Report complete!");
           setIsComplete(true);
-          localStorage.setItem('reportComplete', 'true');
+          setCookie('reportComplete', 'true');
+          
+          // Notify parent component
+          if (onProgressUpdate) {
+            onProgressUpdate(100, "Report complete!");
+          }
           return;
         }
         
         // If the report was in progress
-        setProgress(parsedProgress);
-        if (savedStatus) setStatus(savedStatus);
+        setInternalProgress(parsedProgress);
+        if (savedStatus) setInternalStatus(savedStatus);
+        
+        // Notify parent component
+        if (onProgressUpdate) {
+          onProgressUpdate(parsedProgress, savedStatus);
+        }
         
         // Calculate how much time has passed and adjust progress accordingly
         const now = Date.now();
@@ -72,10 +89,15 @@ const ReportGenerator = ({
           startProgressWithDuration(remainingDuration, 100 - parsedProgress);
         } else {
           // If time should be up but progress wasn't completed, complete it now
-          setProgress(100);
-          setStatus("Report complete!");
+          setInternalProgress(100);
+          setInternalStatus("Report complete!");
           setIsComplete(true);
-          localStorage.setItem('reportComplete', 'true');
+          setCookie('reportComplete', 'true');
+          
+          // Notify parent component
+          if (onProgressUpdate) {
+            onProgressUpdate(100, "Report complete!");
+          }
         }
       } else {
         // Start a new progress tracking if no saved state
@@ -86,26 +108,31 @@ const ReportGenerator = ({
     return () => {
       clearInterval(progressInterval.current);
     };
-  }, [isActive, duration]);
+  }, [isActive, duration, onProgressUpdate]);
 
   // Initialize new progress tracking
   const initializeNewProgress = () => {
     // Clear any previous progress
-    setProgress(0);
-    setStatus(statusMessages[0]);
+    setInternalProgress(0);
+    setInternalStatus(statusMessages[0]);
     setIsComplete(false);
     
     // Set start and end times
     startTime.current = Date.now();
     endTime.current = startTime.current + duration;
     
-    // Save to localStorage
-    localStorage.setItem('reportStartTime', startTime.current);
-    localStorage.setItem('reportEndTime', endTime.current);
-    localStorage.setItem('reportProgress', '0');
-    localStorage.setItem('reportStatus', statusMessages[0]);
-    localStorage.setItem('reportMinimized', 'false');
-    localStorage.setItem('reportComplete', 'false');
+    // Save to cookies
+    setCookie('reportStartTime', startTime.current.toString());
+    setCookie('reportEndTime', endTime.current.toString());
+    setCookie('reportProgress', '0');
+    setCookie('reportStatus', statusMessages[0]);
+    setCookie('reportMinimized', 'false');
+    setCookie('reportComplete', 'false');
+    
+    // Notify parent component
+    if (onProgressUpdate) {
+      onProgressUpdate(0, statusMessages[0]);
+    }
     
     // Start progress tracking
     startProgressWithDuration(duration, 100);
@@ -125,26 +152,36 @@ const ReportGenerator = ({
     
     // Start the interval
     progressInterval.current = setInterval(() => {
-      setProgress(prevProgress => {
+      setInternalProgress(prevProgress => {
         // Calculate new progress
         const newProgress = Math.min(prevProgress + incrementPerTick, 100);
         
         // Update status text based on progress percentage
         const statusIndex = Math.floor((newProgress / 100) * statusMessages.length);
         const newStatus = statusMessages[Math.min(statusIndex, statusMessages.length - 1)];
-        setStatus(newStatus);
+        setInternalStatus(newStatus);
         
-        // Save to localStorage
-        localStorage.setItem('reportProgress', newProgress.toString());
-        localStorage.setItem('reportStatus', newStatus);
+        // Save to cookies
+        setCookie('reportProgress', newProgress.toString());
+        setCookie('reportStatus', newStatus);
+        
+        // Notify parent component
+        if (onProgressUpdate) {
+          onProgressUpdate(newProgress, newStatus);
+        }
         
         // When completed
         if (newProgress >= 100) {
           clearInterval(progressInterval.current);
-          setStatus("Report complete!");
+          setInternalStatus("Report complete!");
           setIsComplete(true);
-          localStorage.setItem('reportStatus', "Report complete!");
-          localStorage.setItem('reportComplete', 'true');
+          setCookie('reportStatus', "Report complete!");
+          setCookie('reportComplete', 'true');
+          
+          // Notify parent component
+          if (onProgressUpdate) {
+            onProgressUpdate(100, "Report complete!");
+          }
         }
         
         return newProgress;
@@ -153,22 +190,28 @@ const ReportGenerator = ({
   };
 
   const handleMinimize = () => {
-    if (onMinimize) onMinimize(true); // Pass true to indicate minimized state
+    if (onMinimize) {
+      onMinimize(true); // Pass true to indicate minimized state
+      setCookie('reportMinimized', 'true');
+    }
   };
 
   const handleMaximize = () => {
-    if (onMinimize) onMinimize(false); // Pass false to indicate maximized state
+    if (onMinimize) {
+      onMinimize(false); // Pass false to indicate maximized state
+      setCookie('reportMinimized', 'false');
+    }
   };
   
   const handleClose = () => {
     clearInterval(progressInterval.current);
-    // Clear localStorage when closing
-    localStorage.removeItem('reportProgress');
-    localStorage.removeItem('reportStatus');
-    localStorage.removeItem('reportStartTime');
-    localStorage.removeItem('reportEndTime');
-    localStorage.removeItem('reportMinimized');
-    localStorage.removeItem('reportComplete');
+    // Clear cookies when closing
+    deleteCookie('reportProgress');
+    deleteCookie('reportStatus');
+    deleteCookie('reportStartTime');
+    deleteCookie('reportEndTime');
+    deleteCookie('reportMinimized');
+    deleteCookie('reportComplete');
     if (onClose) onClose();
   };
   

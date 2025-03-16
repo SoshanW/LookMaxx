@@ -4,15 +4,15 @@ import gsap from 'gsap';
 import '../../styles/common/Navbar.css';
 
 /**
- * A reusable Navbar component that can be used across different parts of the app
- */
+* A reusable Navbar component that can be used across different parts of the app
+*/
 const Navbar = ({ 
   isLoggedIn, 
   userName = 'User', 
   setIsLoggedIn,
   navLinks = ['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community'],
   enableScrollDetection = false
-}) => {
+  }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -90,27 +90,13 @@ const Navbar = ({
         setDropdownOpen(false);
       }
     };
-
-    // Function to update the navbar based on auth state
-    const handleAuthChange = () => {
-      // The navbar will re-render when isLoggedIn prop changes
-      // We can use this to force animations for the auth section on login state change
-      if (authRef.current) {
-        gsap.fromTo(authRef.current, 
-          { scale: 0.8, opacity: 0.5 },
-          { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" }
-        );
-      }
-    };
     
     window.addEventListener('scroll', handleScroll);
     document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('authStateChanged', handleAuthChange);
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('authStateChanged', handleAuthChange);
     };
   }, [enableScrollDetection, isLoggedIn]);
 
@@ -124,25 +110,28 @@ const Navbar = ({
     setDropdownOpen(!dropdownOpen);
   };
 
-  const handleLogout = () => {
-    // Update login status to false
-    if (setIsLoggedIn) setIsLoggedIn(false);
-    setDropdownOpen(false);
-    // Scroll back to top when logging out
-    window.scrollTo(0, 0);
-    
-    // Reset scroll detection state
-    setTimeout(() => {
-      const resetEvent = new CustomEvent('resetScrollDetection');
-      window.dispatchEvent(resetEvent);
-    }, 100);
+  const handleLogout = async () => {
+    try {
+      // Call the logout function asynchronously
+      await setIsLoggedIn();
+      setDropdownOpen(false);
+      
+      // Scroll back to top when logging out
+      window.scrollTo(0, 0);
+      
+      // Reset scroll detection state
+      setTimeout(() => {
+        const resetEvent = new CustomEvent('resetScrollDetection');
+        window.dispatchEvent(resetEvent);
+      }, 100);
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   const handleLinkClick = (linkName, e) => {
     e.preventDefault(); // Prevent default navigation
     const lowercaseLink = linkName.toLowerCase();
-    
-    console.log(`Link clicked: ${lowercaseLink}`); // Debug log
     
     setActiveLink(lowercaseLink);
     
@@ -155,7 +144,6 @@ const Navbar = ({
         navigate('/ffr', { replace: true });
       } else if (lowercaseLink === 'study') {
         // Explicitly handle study navigation
-        console.log('Navigating to /study');
         navigate('/study', { replace: true });
       } else if (lowercaseLink === 'casting') {
         navigate('/casting', { replace: true });
@@ -178,7 +166,7 @@ const Navbar = ({
     }, 0);
   };
 
-  const handleLoginSignup = (type) => {
+  const handleLoginSignup = async (type) => {
     navigate('/signup', { state: { activeTab: type === 'login' ? 'login' : 'signup' } });
   };
 

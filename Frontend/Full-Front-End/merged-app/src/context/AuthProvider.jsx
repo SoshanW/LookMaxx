@@ -1,37 +1,89 @@
-import React, { createContext, useContext, useEffect } from 'react';
-import useAuth from '../hooks/useAuth';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { setCookie, getCookie, deleteCookie } from '../utils/cookies';
 
-// Create the auth context
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const auth = useAuth();
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    // Initialize from cookies on mount
+    return getCookie('access_token') !== null;
+  });
   
-  // Listen for external auth state changes (from localStorage)
-  useEffect(() => {
-    const checkAuthState = () => {
-      const savedLoginState = localStorage.getItem('isLoggedIn') === 'true';
-      const savedUserName = localStorage.getItem('userName');
-      
-      if (savedLoginState !== auth.isLoggedIn) {
-        // If there's a mismatch, update the context state
-        auth.setIsLoggedIn(savedLoginState);
+  const [userName, setUserName] = useState(() => {
+    // Initialize user data from cookies
+    const userData = getCookie('user_data');
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        return parsed.name || parsed.username || 'Guest';
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        return 'Guest';
       }
-    };
-    
-    // Check initially and also when storage changes
-    checkAuthState();
-    
-    // Listen for storage events (in case localStorage changes in another tab)
-    window.addEventListener('storage', checkAuthState);
-    
-    return () => {
-      window.removeEventListener('storage', checkAuthState);
-    };
-  }, [auth]);
+    }
+    return 'Guest';
+  });
   
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  
+  // Initialize auth state on mount
+  useEffect(() => {
+    // Mark auth as ready after initial state is set
+    setIsAuthReady(true);
+  }, []);
+
+  // Login function that returns a Promise
+  const login = useCallback(async (name = 'Guest', token = null, userData = null) => {
+    return new Promise((resolve) => {
+      // Set cookie first to ensure it's available immediately
+      if (token) {
+        setCookie('access_token', token, { expires: 7 });
+      }
+      
+      // Store user data
+      if (userData) {
+        setCookie('user_data', JSON.stringify(userData), { expires: 7 });
+      } else {
+        setCookie('user_data', JSON.stringify({ name }), { expires: 7 });
+      }
+      
+      // Update state after cookies are set
+      setIsLoggedIn(true);
+      setUserName(name);
+      
+      // Small delay to ensure cookies are properly set
+      setTimeout(resolve, 50);
+    });
+  }, []);
+
+  // Logout function that returns a Promise
+  const logout = useCallback(async () => {
+    return new Promise((resolve) => {
+      // Delete cookies first
+      deleteCookie('access_token');
+      deleteCookie('user_data');
+      deleteCookie('isLoggedIn');
+      
+      // Update state after cookies are deleted
+      setIsLoggedIn(false);
+      setUserName('');
+      
+      // Small delay to ensure cookies are properly deleted
+      setTimeout(resolve, 50);
+    });
+  }, []);
+
+  // Context value with all auth-related states and functions
+  const contextValue = {
+    isLoggedIn,
+    userName,
+    login,
+    logout,
+    isAuthReady
+  };
+
   return (
-    <AuthContext.Provider value={auth}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

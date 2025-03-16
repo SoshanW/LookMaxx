@@ -5,11 +5,19 @@ import '../../styles/ffr/CustomScrollbar.css';
 const CustomScrollbar = () => {
   const thumbRef = useRef(null);
   const lastScrollPercent = useRef(0);
+  const isInitializedRef = useRef(false);
 
   const handleScroll = () => {
+    // Guard against null ref
+    if (!thumbRef.current) return;
+    
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     const scrollTop = window.scrollY;
+    
+    // Guard against divide by zero
+    if (documentHeight <= windowHeight) return;
+    
     const scrollPercent = (scrollTop / (documentHeight - windowHeight)) * 100;
     
     // Use GSAP for smooth animation
@@ -23,11 +31,17 @@ const CustomScrollbar = () => {
   };
 
   useEffect(() => {
+    // Mark the component as initialized after first render
+    isInitializedRef.current = true;
+    
+    // Initial scroll check
+    handleScroll();
+    
     // Throttle the scroll event for better performance
     let ticking = false;
     
     const onScroll = () => {
-      if (!ticking) {
+      if (!ticking && isInitializedRef.current) {
         window.requestAnimationFrame(() => {
           handleScroll();
           ticking = false;
@@ -37,7 +51,12 @@ const CustomScrollbar = () => {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    
+    // Cleanup function
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      isInitializedRef.current = false;
+    };
   }, []);
 
   return (
