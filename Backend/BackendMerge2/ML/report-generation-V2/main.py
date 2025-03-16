@@ -1,5 +1,6 @@
 from config import Config
 import os
+from flask import jsonify
 from generate_pdf import generate_pdf
 from services.ai_service import AISerivce
 from services.text_splitter_service import TextSplitterService
@@ -238,7 +239,7 @@ def main(username):
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{username}_report.pdf")
 
-    images = [("facial-landmark-detection/assets/facial_ratio_graphs/face_mesh_tessellation.png", "Face Tessellation"), ("facial-landmark-detection/assets/facial_ratio_graphs/face_ratio.png", "Face Width to Height Ratio"), ("facial-landmark-detection/assets/facial_ratio_graphs/facial_thirds.png", "Facial Thirds"), ("facial-landmark-detection/assets/facial_ratio_graphs/eye_measurements.png", "Interpupilary Ratios"), ("facial-landmark-detection/assets/facial_ratio_graphs/lip_ratio.png", "Vermillion Ratios"), ("facial-landmark-detection/assets/facial_ratio_graphs/nasal_index.png", "Nasal Index")]
+    images = [("assets/facial_ratio_graphs/face_mesh_tessellation.png", "Face Tessellation"), ("assets/facial_ratio_graphs/face_ratio.png", "Face Width to Height Ratio"), ("assets/facial_ratio_graphs/facial_thirds.png", "Facial Thirds"), ("assets/facial_ratio_graphs/eye_measurements.png", "Interpupilary Ratios"), ("assets/facial_ratio_graphs/lip_ratio.png", "Vermillion Ratios"), ("assets/facial_ratio_graphs/nasal_index.png", "Nasal Index")]
 
     generate_pdf(prop_results,larger_results, output_path, images)
     print(f"PDF generated and stored at {output_path}")
@@ -247,6 +248,7 @@ def main(username):
     
     if s3_url:
         print(f"PDF successfully processed and stored in AWS S3 at: {s3_url}")
+        return jsonify({"Pdf": {s3_url}}), 401
     else:
         print("Failed to upload PDF to AWS S3")
 
