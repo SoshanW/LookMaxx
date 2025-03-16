@@ -20,6 +20,13 @@ const FaceModelPage = () => {
     }
     
     setLoading(false);
+    
+    // Check if this is part of a signup flow
+    const postLoginAction = sessionStorage.getItem('post_login_action');
+    if (postLoginAction && postLoginAction.includes('"source":"signup"')) {
+      // We're in a signup flow - we'll handle the final refresh on continue button click
+      console.log('Detected signup flow - will complete auth on continue');
+    }
   }, [location, navigate]);
 
   const handleBackClick = () => {
@@ -27,8 +34,20 @@ const FaceModelPage = () => {
   };
 
   const handleContinue = () => {
-    // Navigate to the next step in your app flow
-    navigate('/ffr');
+    // For signup flow, trigger a full refresh to complete the login process
+    const postLoginAction = sessionStorage.getItem('post_login_action');
+    if (postLoginAction && postLoginAction.includes('"source":"signup"')) {
+      // Clear session storage items that were used for the signup flow
+      sessionStorage.removeItem('post_login_action');
+      sessionStorage.removeItem('auth_redirect');
+      sessionStorage.removeItem('auth_query');
+      
+      // Redirect to FFR page with refresh to complete login
+      window.location.href = '/ffr';
+    } else {
+      // Regular navigation for non-signup flows
+      navigate('/ffr');
+    }
   };
 
   if (loading) {

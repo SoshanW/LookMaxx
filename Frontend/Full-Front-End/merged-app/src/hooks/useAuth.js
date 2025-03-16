@@ -26,101 +26,148 @@ export const useAuth = (initialState = null) => {
     return 'Guest';
   });
 
-  // Login function - stores auth data in cookies
-  const login = useCallback((name = 'Guest', token = null, userData = null) => {
-    setIsLoggedIn(true);
-    setUserName(name);
-    
-    // Store token in cookie (if provided)
-    if (token) {
-      // Set token expiration to 7 days
-      setCookie('access_token', token, { expires: 7 });
-    }
-    
-    // Store user data
-    if (userData) {
-      setCookie('user_data', JSON.stringify(userData), { expires: 7 });
-    } else {
-      // Basic user data with just the name
-      setCookie('user_data', JSON.stringify({ name }), { expires: 7 });
-    }
-    
-    // Store login state in a separate cookie for quick access
-    setCookie('isLoggedIn', 'true', { expires: 7 });
-    
-    // Dispatch global event for components to listen
-    window.dispatchEvent(new CustomEvent('authStateChanged', { 
-      detail: { isLoggedIn: true, userName: name } 
-    }));
-  }, []);
-
-  // Logout function - removes auth cookies
-  const logout = useCallback(() => {
-    setIsLoggedIn(false);
-    setUserName('');
-    
-    // Clear auth cookies
-    deleteCookie('access_token');
-    deleteCookie('user_data');
-    deleteCookie('isLoggedIn');
-    
-    // Reset any scroll detection or app state
-    window.scrollTo(0, 0);
-    
-    // Dispatch auth change event
-    window.dispatchEvent(new CustomEvent('authStateChanged', { 
-      detail: { isLoggedIn: false, userName: '' } 
-    }));
-    
-    setTimeout(() => {
-      const resetEvent = new CustomEvent('resetScrollDetection');
-      window.dispatchEvent(resetEvent);
-    }, 100);
-  }, []);
-
-  // Listen for auth state changes from cookies
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  
+  // Initialize auth state
   useEffect(() => {
-    const checkCookieChanges = () => {
-      const cookieLoginState = hasCookie('access_token');
+    setIsAuthReady(true);
+  }, []);
+
+  // Login function with customizable redirect
+  const login = useCallback(async (name = 'Guest', token = null, userData = null, options = {}) => {
+    return new Promise((resolve) => {
+      // Set cookies synchronously
+      if (token) {
+        setCookie('access_token', token, { expires: 7 });
+      }
       
-      // If cookie state doesn't match component state, update component state
-      if (cookieLoginState !== isLoggedIn) {
-        setIsLoggedIn(cookieLoginState);
-        
-        // Update username if needed
-        if (cookieLoginState) {
-          const userData = getCookie('user_data');
-          if (userData) {
-            try {
-              const parsed = JSON.parse(userData);
-              setUserName(parsed.name || parsed.username || 'Guest');
-            } catch (e) {
-              console.error('Error parsing user data:', e);
-            }
+      if (userData) {
+        setCookie('user_data', JSON.stringify(userData), { expires: 7 });
+      } else {
+        setCookie('user_data', JSON.stringify({ name }), { expires: 7 });
+      }
+      
+      setCookie('isLoggedIn', 'true', { expires: 7 });
+      
+      // Default redirect is to current page, but can be overridden in options
+      const redirectPath = options.redirectPath || window.location.pathname;
+      const redirectQuery = options.redirectQuery || window.location.search;
+      const loginSource = options.source || 'general';
+      
+      // Store redirect information
+      sessionStorage.setItem('auth_redirect', redirectPath);
+      sessionStorage.setItem('auth_query', redirectQuery);
+      
+      // Store login info with source for specialized handling
+      sessionStorage.setItem('post_login_action', JSON.stringify({
+        action: 'login_complete',
+        username: name,
+        source: loginSource
+      }));
+      
+      // Update local state
+      setIsLoggedIn(true);
+      setUserName(name);
+      
+      // Resolve the promise before refresh
+      resolve();
+      
+      // If skipRefresh option is provided, don't refresh yet (for multi-step flows)
+      if (!options.skipRefresh) {
+        // Reload the page for immediate state update
+        window.location.reload();
+      }
+    });
+  }, []);
+
+  // Logout function - removes auth cookies and triggers refresh
+  const logout = useCallback(async () => {
+    return new Promise((resolve) => {
+      // Clear auth cookies
+      deleteCookie('access_token');
+      deleteCookie('user_data');
+      deleteCookie('isLoggedIn');
+      
+      // Reset any scroll detection or app state
+      window.scrollTo(0, 0);
+      
+      // Store current location for redirect after refresh
+      const currentPath = window.location.pathname;
+      sessionStorage.setItem('auth_redirect', currentPath);
+      
+      // Update local state
+      setIsLoggedIn(false);
+      setUserName('');
+      
+      // Resolve the promise before refresh
+      resolve();
+      
+      // Reload the page for immediate state update
+      window.location.reload();
+    });
+  }, []);
+
+  // Check for post-login actions after page load/refresh
+  useEffect(() => {
+    const handlePostLoginActions = () => {
+      const postLoginAction = sessionStorage.getItem('post_login_action');
+      if (postLoginAction) {
+        try {
+          const action = JSON.parse(postLoginAction);
+          if (action.action === 'login_complete') {
+            // Dispatch event for components that need to know
+            window.dispatchEvent(new CustomEvent('authStateChanged', { 
+              detail: { isLoggedIn: true, userName: action.username } 
+            }));
           }
-        } else {
-          setUserName('');
+        } catch (e) {
+          console.error('Error processing post-login action:', e);
+        }
+        
+        // Only clear in certain cases - if it's a signup flow we might still need it
+        if (!postLoginAction.includes('"source":"signup"')) {
+          sessionStorage.removeItem('post_login_action');
         }
       }
     };
     
-    // Check cookie changes on load
-    checkCookieChanges();
-    
-    // Set up interval to periodically check for cookie changes (e.g., in other tabs)
-    const intervalId = setInterval(checkCookieChanges, 5000);
-    
-    return () => {
-      clearInterval(intervalId);
+    // Handle redirect after refresh if there's a stored path
+    const handleRedirect = () => {
+      const redirectPath = sessionStorage.getItem('auth_redirect');
+      const queryParams = sessionStorage.getItem('auth_query') || '';
+      
+      if (redirectPath) {
+        // Check if we're in a special flow that shouldn't redirect
+        const postLoginAction = sessionStorage.getItem('post_login_action');
+        if (postLoginAction && postLoginAction.includes('"source":"signup"')) {
+          // Don't redirect for signup flow
+          return;
+        }
+        
+        // Clear stored path before redirect to prevent loops
+        sessionStorage.removeItem('auth_redirect');
+        sessionStorage.removeItem('auth_query');
+        
+        // Only redirect if we're not already on the right path
+        if (window.location.pathname !== redirectPath) {
+          window.location.href = redirectPath + queryParams;
+        }
+      }
     };
-  }, [isLoggedIn]);
+    
+    if (isAuthReady) {
+      handlePostLoginActions();
+      handleRedirect();
+    }
+  }, [isAuthReady]);
   
   return {
     isLoggedIn,
     userName,
     login,
     logout,
-    setIsLoggedIn
+    setIsLoggedIn,
+    isAuthReady
   };
 };
 

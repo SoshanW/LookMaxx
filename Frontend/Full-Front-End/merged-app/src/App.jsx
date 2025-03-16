@@ -7,7 +7,7 @@ import { getCookie } from './utils/cookies';
 // Common components
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
-import './styles/navbar-fix.css'; // Import navbar consistency fixes
+import './styles/navbar-fix.css';
 
 // Pages
 import FfrPage from './pages/FfrPage';
@@ -17,13 +17,13 @@ import CastingPage from './pages/CastingPage';
 import CastingApplicationPage from './pages/CastingApplicationPage';
 import StudyPage from './pages/StudyPage';
 import ProfilePage from './pages/ProfilePage';
-import PricingPage from './pages/PricingPage'; // Import the new PricingPage
+import PricingPage from './pages/PricingPage';
 
 // Import global styles
 import './styles/global.css';
 
 function App() {
-  const { isLoggedIn, userName, logout } = useAuthContext();
+  const { isLoggedIn, userName, logout, isAuthReady } = useAuthContext();
   const location = useLocation();
   
   // Check if we're on pages where navbar should be hidden
@@ -31,7 +31,7 @@ function App() {
     location.pathname.includes('/signup') || 
     location.pathname.includes('/face-model') ||
     location.pathname.includes('/profile') ||
-    location.pathname.includes('/pricing'); // Add pricing to the hideNavbar condition
+    location.pathname.includes('/pricing');
   
   // Check if we should hide footer
   const hideFooter = 
@@ -42,7 +42,7 @@ function App() {
     location.pathname === '/ffr' ||
     location.pathname === '/study' ||
     location.pathname === '/profile' ||
-    location.pathname === '/pricing'; // Add pricing to the hideFooter condition
+    location.pathname === '/pricing';
   
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
@@ -50,91 +50,27 @@ function App() {
   // Determine if navbar should use scroll detection based on route
   const [enableScrollDetection, setEnableScrollDetection] = useState(false);
 
-  // Force UI update when auth state changes
-  const [forceUpdate, setForceUpdate] = useState(0);
-
-  // Initialize auth state on app load
-  useEffect(() => {
-    // Check if user should be logged in based on cookies
-    const hasToken = getCookie('access_token') !== null;
-    const savedUserName = getCookie('user_data');
-    
-    // If there's evidence of a logged in state but context doesn't show it,
-    // force a refresh of the app to ensure state is loaded
-    if (hasToken && !isLoggedIn && savedUserName) {
-      // Instead of hard refresh, trigger a state update to re-render
-      setForceUpdate(prev => prev + 1);
-    }
-  }, [isLoggedIn]);
-  
-  // Listen for auth state changes
-  useEffect(() => {
-    const handleAuthChange = () => {
-      // Force a re-render by updating the state
-      setForceUpdate(prev => prev + 1);
-    };
-    
-    window.addEventListener('authStateChanged', handleAuthChange);
-    
-    return () => {
-      window.removeEventListener('authStateChanged', handleAuthChange);
-    };
-  }, []);
-  
   // Fix for tab switching issues and page-specific styles
   useEffect(() => {
-    // Force re-render of components when location changes
-    const cleanupFunctions = [];
-    
-    // Clear any lingering timeouts or intervals
-    const clearTimeoutsAndIntervals = () => {
-      // Force GSAP to recalculate scroll positions
-      if (window.ScrollTrigger) {
-        setTimeout(() => {
-          window.ScrollTrigger.refresh();
-        }, 100);
-      }
-      
-      // Dispatch resize event to force recalculation of component dimensions
-      window.dispatchEvent(new Event('resize'));
-    };
-    
-    // Run cleanup when location changes
-    clearTimeoutsAndIntervals();
-    
-    // Save cleanup function
-    cleanupFunctions.push(clearTimeoutsAndIntervals);
-    
-    // Enable scroll detection only on FFR page
-    if (location.pathname === '/' || location.pathname === '/ffr') {
-      setEnableScrollDetection(true);
-    } else {
-      setEnableScrollDetection(false);
+    // Reset scroll position on page navigation (except for casting page)
+    if (!location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
+      window.scrollTo(0, 0);
     }
     
-    // Special handling for the casting page's footer
-    const handleCastingPage = () => {
-      const isCastingPage = location.pathname.includes('/casting');
-      const footer = document.querySelector('footer');
-      
-      // Hide footer on casting page
-      if (isCastingPage && footer) {
-        footer.style.display = 'none';
-      }
-      
-      // Clean up function
-      return () => {
-        if (isCastingPage && footer) {
-          footer.style.display = '';
-        }
-      };
-    };
+    // Force GSAP to recalculate scroll positions
+    if (window.ScrollTrigger) {
+      setTimeout(() => {
+        window.ScrollTrigger.refresh();
+      }, 100);
+    }
     
-    // Run the casting page handler and store its cleanup function
-    const castingCleanup = handleCastingPage();
-    cleanupFunctions.push(castingCleanup);
+    // Dispatch resize event
+    window.dispatchEvent(new Event('resize'));
     
-    // Clean up any existing body classes first
+    // Enable scroll detection only on FFR page
+    setEnableScrollDetection(location.pathname === '/' || location.pathname === '/ffr');
+    
+    // Clean up any existing body classes
     document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page', 'profile-page', 'pricing-page');
     
     // Apply specific body classes based on route
@@ -142,52 +78,35 @@ function App() {
       document.body.classList.add('signup-page');
     } else if (location.pathname.includes('/casting') && !location.pathname.includes('/apply')) {
       document.body.classList.add('casting-page');
-      // Special handling for casting page overflow
       document.body.style.overflow = 'hidden';
     } else if (location.pathname.includes('/apply')) {
-      // Special case for application form 
       document.body.classList.add('application-form-page');
-      // Allow scrolling for the application form
       document.body.style.overflow = 'auto';
       document.body.style.height = 'auto';
     } else if (location.pathname.includes('/study')) {
       document.body.classList.add('study-page');
-      // Override any overflow restrictions
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
     } else if (location.pathname.includes('/profile')) {
-      // Profile page specific class but no global.css changes
       document.body.classList.add('profile-page');
       document.body.style.overflow = 'auto';
     } else if (location.pathname.includes('/pricing')) {
-      // Add pricing page specific class
       document.body.classList.add('pricing-page');
       document.body.style.overflow = 'auto';
     } else {
       document.body.classList.add('ffr-page');
-      // Reset overflow for other pages
       document.body.style.overflow = '';
     }
     
-    // Reset scroll position on page navigation (except for casting page)
-    if (!location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
-      window.scrollTo(0, 0);
-    }
-    
     return () => {
-      // Run all cleanup functions
-      cleanupFunctions.forEach(fn => fn());
-      // Always reset overflow style on unmount
       document.body.style.overflow = '';
     };
   }, [location.pathname]);
 
   // Update navLinks active state based on current path
   useEffect(() => {
-    // Set the active navigation link based on the current path
-    const path = location.pathname.split('/')[1] || 'home'; // Get the first part of the path
+    const path = location.pathname.split('/')[1] || 'home';
     
-    // Create array of standardized link objects
     const linkObjects = navLinks.map(link => {
       const linkName = typeof link === 'object' ? link.name : link;
       return {
@@ -198,7 +117,6 @@ function App() {
       };
     });
     
-    // Only update if there's a change to prevent infinite loop
     const currentActiveIndex = linkObjects.findIndex(link => link.active);
     const previousActiveIndex = navLinks.findIndex(link => {
       if (typeof link === 'object') return link.active;
@@ -208,51 +126,44 @@ function App() {
     if (currentActiveIndex !== previousActiveIndex) {
       setNavLinks(linkObjects);
     }
-  }, [location.pathname]);
+  }, [location.pathname, navLinks]);
+
+  // Loading state while authentication is being determined
+  if (!isAuthReady) {
+    return (
+      <div className="auth-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <ReportGeneratorProvider>
-      {/* Only show navbar if not on special pages */}
       {!hideNavbar && (
         <Navbar 
           isLoggedIn={isLoggedIn}
           userName={userName}
-          setIsLoggedIn={logout}
+          setIsLoggedIn={logout} // This should be the Promise-returning logout function
           navLinks={navLinks}
           enableScrollDetection={enableScrollDetection}
-          key={`navbar-${isLoggedIn}-${forceUpdate}-${location.pathname}`} // Force re-render when auth state or location changes
         />
       )}
-      
       <div className="app-container">
         <Routes>
-          {/* Main routes - key prop forces re-render when changes occur */}
-          <Route path="/" element={<FfrPage key={`ffr-page-${isLoggedIn}-${forceUpdate}-${location.pathname}`} />} />
-          <Route path="/ffr" element={<FfrPage key={`ffr-page-${isLoggedIn}-${forceUpdate}-${location.pathname}`} />} />
-          <Route path="/signup" element={<SignupPage key={`signup-page-${location.pathname}`} />} />
-          <Route path="/face-model" element={<FaceModelPage key={`face-model-${location.pathname}`} />} />
-          
-          {/* Casting routes */}
-          <Route path="/casting" element={<CastingPage key={`casting-page-${location.pathname}`} />} />
-          <Route path="/apply" element={<CastingApplicationPage key={`apply-page-${location.pathname}`} />} />
-          
-          {/* Study route */}
-          <Route path="/study" element={<StudyPage key={`study-page-${location.pathname}`} />} />
-          
-          {/* Profile route */}
-          <Route path="/profile" element={<ProfilePage key={`profile-page-${location.pathname}`} />} />
-          
-          {/* Pricing route - new */}
-          <Route path="/pricing" element={<PricingPage key={`pricing-page-${location.pathname}`} />} />
-          
-          {/* Add additional routes for other pages here */}
-          
-          {/* Fallback route - redirect to home */}
-          <Route path="*" element={<FfrPage key={`ffr-page-fallback-${location.pathname}`} />} />
+          <Route path="/" element={<FfrPage />} />
+          <Route path="/ffr" element={<FfrPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/face-model" element={<FaceModelPage />} />
+          <Route path="/casting" element={<CastingPage />} />
+          <Route path="/apply" element={<CastingApplicationPage />} />
+          <Route path="/study" element={<StudyPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="*" element={<FfrPage />} />
         </Routes>
       </div>
 
-      {/* Only show footer on appropriate pages */}
       {!hideFooter && <Footer />}
     </ReportGeneratorProvider>
   );

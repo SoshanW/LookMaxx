@@ -114,8 +114,8 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
     setError('');
   
     try {
-      // In a real app, you would send an API request
-      // For now, let's simulate a successful login
+      // Check for return path from state
+      const returnPath = location.state?.returnPath || '/ffr';
       
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -127,15 +127,14 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
         name: loginUsername
       };
       
-      // Call auth login function - this now uses cookies
-      authLogin(loginUsername, mockToken, userData);
+      // Call auth login with redirect back to original page
+      await authLogin(loginUsername, mockToken, userData, { 
+        redirectPath: returnPath,
+        source: 'loginForm'
+      });
       
       console.log('User logged in:', loginUsername);
-      
-      // Add a slight delay before navigating to ensure state updates
-      setTimeout(() => {
-        navigate('/ffr');
-      }, 100);
+      // No need to navigate - the page will refresh and auth redirect will handle it
     } catch (error) {
       console.error('Login error:', error);
       
@@ -155,7 +154,6 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
       setIsLoading(false);
     }
   };
-  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -247,13 +245,16 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
         gender
       };
       
-      // Call auth login with user data - this now uses cookies
-      authLogin(fullName, mockToken, userData);
+      // Call auth login but skip refresh - we want to navigate to face model page first
+      await authLogin(fullName, mockToken, userData, { 
+        skipRefresh: true,
+        source: 'signup'
+      });
       
       // Set success state
       setSuccess(true);
       
-      // Navigate to face-model page with gender parameter after a short delay
+      // Navigate to face-model page with gender parameter
       setTimeout(() => {
         navigate(`/face-model?gender=${gender}`);
       }, 2000);
