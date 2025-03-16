@@ -42,14 +42,15 @@ const FaceModelPage = () => {
       sessionStorage.removeItem('auth_redirect');
       sessionStorage.removeItem('auth_query');
       
-      // Redirect to FFR page with refresh to complete login
-      window.location.href = '/ffr';
+      // MODIFIED: Redirect to profile page instead of FFR to avoid 404 errors
+      window.location.href = '/profile';
     } else {
-      // Regular navigation for non-signup flows
-      navigate('/ffr');
+      // MODIFIED: Regular navigation for non-signup flows - go to profile instead of FFR
+      navigate('/profile');
     }
   };
 
+  // Rest of the component remains unchanged
   if (loading) {
     return (
       <div className="loading-screen" style={{

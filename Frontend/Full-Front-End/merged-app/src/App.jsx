@@ -8,6 +8,7 @@ import { getCookie } from './utils/cookies';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import './styles/navbar-fix.css';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Pages
 import FfrPage from './pages/FfrPage';
@@ -150,18 +151,28 @@ function App() {
         />
       )}
       <div className="app-container">
-        <Routes>
-          <Route path="/" element={<FfrPage />} />
-          <Route path="/ffr" element={<FfrPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/face-model" element={<FaceModelPage />} />
-          <Route path="/casting" element={<CastingPage />} />
-          <Route path="/apply" element={<CastingApplicationPage />} />
-          <Route path="/study" element={<StudyPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="*" element={<FfrPage />} />
-        </Routes>
+      <Routes>
+        <Route path="/" element={<FfrPage />} />
+        <Route path="/ffr" element={<FfrPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/face-model" element={<FaceModelPage />} />
+        <Route path="/casting" element={<CastingPage />} />
+        <Route path="/apply" element={
+          <ProtectedRoute>
+            <CastingApplicationPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/study" element={<StudyPage />} />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/pricing" element={<PricingPage />} />
+        
+        {/* ADDED: Catch-all route to handle 404 issues */}
+        <Route path="*" element={<FfrPage />} />
+      </Routes>
       </div>
 
       {!hideFooter && <Footer />}

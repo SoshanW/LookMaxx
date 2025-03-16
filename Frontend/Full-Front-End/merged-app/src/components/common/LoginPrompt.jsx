@@ -1,3 +1,4 @@
+// src/components/common/LoginPrompt.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -25,6 +26,7 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
 
   if (!isOpen) return null;
 
+  // Define the handleSignupClick function
   const handleSignupClick = () => {
     setIsLoading(true);
     
@@ -51,6 +53,7 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
     }
   };
 
+  // Define the handleLoginClick function
   const handleLoginClick = () => {
     setIsLoading(true);
     
@@ -75,6 +78,24 @@ const LoginPrompt = ({ isOpen, onClose, onLogin }) => {
       console.error('Navigation error:', err);
       setIsLoading(false);
     }
+  };
+
+  // Alternative simplified guest login handler
+  const handleGuestLogin = () => {
+    setIsLoading(true);
+    
+    login('Guest', 'guest_token', { username: 'Guest', isGuest: true })
+      .then(() => {
+        if (onLogin) onLogin();
+        if (onClose) onClose();
+      })
+      .catch(err => {
+        setError('Failed to login as guest. Please try again.');
+        console.error('Guest login error:', err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (

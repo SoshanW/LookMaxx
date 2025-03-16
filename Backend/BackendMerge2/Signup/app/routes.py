@@ -9,8 +9,6 @@ import datetime
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required, get_jwt_identity, get_jwt
 import secrets
 import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from flask_cors import CORS
 
 signup_routes = Blueprint('signup', __name__)

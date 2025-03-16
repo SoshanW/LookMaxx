@@ -1,50 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import { useAuth } from '../../hooks/useAuth';
-
-// Create an axios instance for API calls
-const api = axios.create({
-  baseURL: 'http://your-api-url', // Replace with your actual API URL
-  timeout: 10000,
-  withCredentials: true // Important: allows cookies to be sent and received
-});
-
-// Configure request interceptor - we no longer need to manually add the token
-api.interceptors.request.use(
-  (config) => {
-    // The cookie with the token will be automatically sent
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Configure response interceptor to handle token expiration
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    // Check if error is due to expired token (401 status)
-    if (error.response?.status === 401) {
-      // Redirect to login page
-      if (window.location.pathname !== '/signup') {
-        window.location.href = '/signup';
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+import '../../styles/signup/signupstyles.css';
+import '../../styles/signup/signup-fixes.css';
 
 const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login: authLogin } = useAuth();
+  const { login, signup } = useAuth(); // Make sure to get signup function from useAuth
 
   // Use initialActiveTab to determine if the card is flipped
   const [isFlipped, setIsFlipped] = useState(initialActiveTab === 'login');
   
   const [formData, setFormData] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     username: '',
     email: '',
     gender: '',
@@ -74,7 +45,7 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   const checkTokenValidity = async () => {
     try {
       // Make an authenticated request to a protected endpoint
-      await api.get('/protected-route'); // Replace with an actual protected route
+      await fetch('/api/protected-route'); // Replace with an actual protected route
       
       // If the request succeeds, the token is valid
       navigate('/ffr'); // Redirect to protected page
@@ -85,8 +56,14 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   };
 
   const handleChange = (e) => {
-    const updatedFormData = { ...formData, [e.target.name]: e.target.value };
-    setFormData(updatedFormData);
+    const { name, value } = e.target;
+    
+    // Update formData state
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+    
     setError('');
   };
 
@@ -115,41 +92,20 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   
     try {
       // Check for return path from state
-      const returnPath = location.state?.returnPath || '/ffr';
+      const returnPath = location.state?.returnPath || 'http://localhost:5173/ffr';
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call the login function from useAuth
+      const result = await login(loginUsername, loginPassword);
       
-      // Simulate a successful login response with a token
-      const mockToken = 'mock_token_for_testing';
-      const userData = {
-        username: loginUsername,
-        name: loginUsername
-      };
-      
-      // Call auth login with redirect back to original page
-      await authLogin(loginUsername, mockToken, userData, { 
-        redirectPath: returnPath,
-        source: 'loginForm'
-      });
-      
-      console.log('User logged in:', loginUsername);
-      // No need to navigate - the page will refresh and auth redirect will handle it
+      if (result && result.success) {
+        console.log('User logged in:', loginUsername);
+        // No need to navigate - the login function will handle redirection
+      } else {
+        setError(result?.error || 'Invalid username or password.');
+      }
     } catch (error) {
       console.error('Login error:', error);
-      
-      // Handle different error cases
-      if (error.response) {
-        if (error.response.status === 401) {
-          setError('Invalid username or password.');
-        } else {
-          setError(error.response.data.error || 'Login failed. Please try again.');
-        }
-      } else if (error.request) {
-        setError('No response from server. Please check your connection.');
-      } else {
-        setError('Login failed. Please try again.');
-      }
+      setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -188,10 +144,10 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
 
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
-    const { fullName, username, email, gender, password, confirmPassword, profilePicture } = formData;
+    const { firstName, lastName, username, email, gender, password, confirmPassword, profilePicture } = formData;  
 
-    // Validation checks remain the same
-    if (!fullName || !username || !email || !gender || !password || !confirmPassword || !profilePicture) {
+    // Validation checks
+    if (!firstName || !lastName || !username || !email || !gender || !password || !confirmPassword || !profilePicture) {
       setError('All fields including profile picture are required.');
       return;
     }
@@ -212,74 +168,59 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
     }
   
     setIsLoading(true);
-    setError('');
+  setError('');
 
-    try {
-      // Split fullName into first and last name
-      const nameParts = fullName.split(' ');
-      const first_name = nameParts[0];
-      const last_name = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-
-      // Create form data for multipart/form-data request
-      const formDataToSend = new FormData();
-      formDataToSend.append('username', username);
-      formDataToSend.append('email', email);
-      formDataToSend.append('first_name', first_name);
-      formDataToSend.append('last_name', last_name);
-      formDataToSend.append('gender', gender);
-      formDataToSend.append('password', password);
-      formDataToSend.append('profile_picture', profilePicture);
-
-      // In a real app, send registration request
-      // For now, simulate a successful registration
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock successful registration with token
-      const mockToken = 'mock_token_for_testing';
-      const userData = {
-        username,
-        name: fullName,
-        email,
-        gender
-      };
-      
-      // Call auth login but skip refresh - we want to navigate to face model page first
-      await authLogin(fullName, mockToken, userData, { 
-        skipRefresh: true,
-        source: 'signup'
-      });
-      
+  try {
+    // Prepare user data
+    const userData = {
+      firstName,
+      lastName,
+      username,
+      email,
+      gender,
+      password
+    };
+    
+    // Call the signup function from useAuth hook
+    const result = await signup(userData, profilePicture);
+    
+    if (result && result.success) {
       // Set success state
       setSuccess(true);
       
-      // Navigate to face-model page with gender parameter
-      setTimeout(() => {
-        navigate(`/face-model?gender=${gender}`);
-      }, 2000);
+      // Log success message
+      console.log('Signup successful! User data:', result.data);
       
-    } catch (error) {
-      console.error('Registration error:', error);
-      
-      // Error handling remains the same
-      if (error.response) {
-        if (error.response.status === 409) {
-          setError('Username or email already exists.');
+      // Auto-login after successful signup
+      try {
+        const loginResult = await login(username, password, null, {
+          skipRefresh: true,
+          source: 'signup'
+        });
+        
+        if (loginResult && loginResult.success) {
+          // Navigate to face-model page with gender parameter
+          setTimeout(() => {
+            navigate(`/face-model?gender=${gender}`);
+          }, 2000);
         } else {
-          setError(error.response.data.error || 'Registration failed. Please try again.');
+          console.warn('Auto-login failed:', loginResult?.error);
+          setError('Signup successful but automatic login failed. Please login manually.');
         }
-      } else if (error.request) {
-        setError('No response from server. Please check your connection.');
-      } else {
-        setError('Registration failed. Please try again.');
+      } catch (loginError) {
+        console.error('Auto-login error:', loginError);
+        setError('Signup successful but automatic login failed. Please login manually.');
       }
-      
-      setSuccess(false);
-    } finally {
-      setIsLoading(false);
+    } else {
+      setError(result?.error || 'Registration failed. Please try again.');
     }
-  };
+  } catch (error) {
+    console.error('Registration error:', error);
+    setError(error.message || 'Registration failed. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="auth-container">
@@ -376,20 +317,38 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
             
             {!success && (
               <form onSubmit={handleSignUpSubmit} className="auth-form">
-                <div className="form-group">
-                  <label htmlFor="fullName" className="form-label">Full Name</label>
-                  <div className="input-container">
-                    <User className="input-icon" />
-                    <input
-                      id="fullName"
-                      name="fullName"
-                      type="text"
-                      className="form-input"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      placeholder="Your name"
-                      disabled={isLoading}
-                    />
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="firstName" className="form-label">First Name</label>
+                    <div className="input-container">
+                      <User className="input-icon" />
+                      <input
+                        id="firstName"
+                        name="firstName"
+                        type="text"
+                        className="form-input"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        placeholder="Your first name"
+                        disabled={isLoading}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="lastName" className="form-label">Last Name</label>
+                    <div className="input-container">
+                      <User className="input-icon" />
+                      <input
+                        id="lastName"
+                        name="lastName"
+                        type="text"
+                        className="form-input"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        placeholder="Your last name"
+                        disabled={isLoading}
+                      />
+                    </div>
                   </div>
                 </div>
 

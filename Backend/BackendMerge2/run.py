@@ -20,13 +20,19 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
 def create_unified_app():
     app = Flask(__name__)
     limiter = init_limiter(app)
     app.config.from_pyfile('configuration.py')
 
-    # Enable CORS
-    CORS(app, resources={r"/*": {"origins": "*"}})
+# Updated CORS configuration    
+    CORS(app, 
+        resources={r"/*": {"origins": "http://localhost:5173"}}, 
+        supports_credentials=True,  # This is crucial!
+        allow_headers=["Content-Type", "Authorization"],
+        expose_headers=["Content-Type", "Authorization"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
     
     # Configure from the root config file using absolute path
     current_dir = os.path.dirname(os.path.abspath(__file__))

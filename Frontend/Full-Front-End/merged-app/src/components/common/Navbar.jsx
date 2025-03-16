@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
+import { useAuth } from '../../hooks/useAuth'; // Import the auth hook to get logout
 import '../../styles/common/Navbar.css';
 
 /**
-* A reusable Navbar component that can be used across different parts of the app
-*/
+ * A reusable Navbar component that can be used across different parts of the app
+ */
 const Navbar = ({ 
   isLoggedIn, 
   userName = 'User', 
   setIsLoggedIn,
   navLinks = ['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community'],
   enableScrollDetection = false
-  }) => {
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth(); // Destructure logout from your auth hook
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navLinksRef = useRef([]);
@@ -78,7 +80,7 @@ const Navbar = ({
       
       // If scroll detection is enabled and user is not logged in
       if (enableScrollDetection && !isLoggedIn && scrollPosition > 100) {
-        // Instead of navigating, dispatch a custom event
+        // Dispatch a custom event for showing the login prompt
         const promptEvent = new CustomEvent('showLoginPrompt');
         window.dispatchEvent(promptEvent);
       }
@@ -112,8 +114,8 @@ const Navbar = ({
 
   const handleLogout = async () => {
     try {
-      // Call the logout function asynchronously
-      await setIsLoggedIn();
+      // Call the logout function from the auth hook
+      await logout();
       setDropdownOpen(false);
       
       // Scroll back to top when logging out
@@ -128,7 +130,7 @@ const Navbar = ({
       console.error('Error during logout:', error);
     }
   };
-
+  
   const handleLinkClick = (linkName, e) => {
     e.preventDefault(); // Prevent default navigation
     const lowercaseLink = linkName.toLowerCase();
@@ -143,7 +145,6 @@ const Navbar = ({
       } else if (lowercaseLink === 'ffr') {
         navigate('/ffr', { replace: true });
       } else if (lowercaseLink === 'study') {
-        // Explicitly handle study navigation
         navigate('/study', { replace: true });
       } else if (lowercaseLink === 'casting') {
         navigate('/casting', { replace: true });
@@ -157,7 +158,7 @@ const Navbar = ({
       // Force component re-render and recalculate dimensions
       window.dispatchEvent(new Event('resize'));
       
-      // Force GSAP to recalculate positions
+      // Force GSAP to recalculate positions if using ScrollTrigger
       if (window.ScrollTrigger) {
         setTimeout(() => {
           window.ScrollTrigger.refresh();
@@ -175,12 +176,12 @@ const Navbar = ({
       <div className="navbar-container">
         <div className="nav-links">
           {navLinks.map((link) => {
-            // Get the link text (could be object or string)
+            // Get the link text (could be an object or string)
             const linkText = typeof link === 'object' ? link.name : link;
             const linkValue = linkText.toLowerCase();
             
             return (
-              <a
+              <a 
                 key={linkValue}
                 ref={addToRefs}
                 href={`/${linkValue === 'home' ? '' : linkValue}`}
