@@ -32,13 +32,12 @@
 
 /* Ensure all cards have the same styling */
 .card-content {
-  background: rgba(9, 42, 62, 0.7);
-  border: 1px solid #84ffff;
-  border-radius: 10px;
+  background: #7f4df338;
+  border: none;
+  border-radius: 15px;
   padding: 30px;
   backdrop-filter: blur(5px);
-  box-shadow: 0 0 20px rgba(132, 255, 255, 0.4);
-  color: white;
+  box-shadow: 0 0 15px #8c54f5c1;
   text-align: center;
   transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
   min-height: 200px; /* Ensure consistent height */
@@ -49,8 +48,8 @@
 
 /* Simplify hover effect for better performance */
 .card-content:hover {
-  background: rgba(9, 42, 62, 0.85);
-  box-shadow: 0 0 30px rgba(132, 255, 255, 0.6);
+  background: #34088550;
+  box-shadow: 0 0 20px rgba(218, 210, 248, 0.4);
   transform: scale(1.03) translateZ(0); /* Keep hardware acceleration */
 }
 
@@ -58,16 +57,15 @@
   font-family: "Nasalization", sans-serif;
   font-size: 1.8rem;
   margin-bottom: 20px;
-  color: #e0ffff;
-  text-shadow: 0 0 10px rgba(132, 255, 255, 0.5);
+  color: #ffffff;
 }
 
 .card-button {
   font-family: "Dune_Rise", sans-serif;
-  background: linear-gradient(to right, #092a3e, #84ffff);
+  background: radial-gradient(circle, #ffffff, #d2cffc);
   color: #191C4C;
   border: none;
-  border-radius: 8px;
+  border-radius: 15px;
   padding: 12px 24px;
   font-size: 1rem;
   font-weight: bold;
@@ -83,7 +81,7 @@
 
 /* Simplify hover effect for better performance */
 .card-button:hover {
-  background: radial-gradient(circle, #8BD0D0, #566097);
+  background: radial-gradient(circle, #ffffff, #d2cffc);
   text-shadow: #140541 0 0 10px;
   transform: scale(1.05) translateZ(0); /* Keep hardware acceleration */
   /* Replace with simpler animation */
@@ -94,11 +92,11 @@
 @keyframes simpleCardPulse {
   0%, 100% {
     transform: scale(1.05) translateZ(0);
-    box-shadow: #84ffffdf 0 0 10px;
+    box-shadow: #ffffff 0 0 20px;
   }
   50% {
-    transform: scale(1.08) translateZ(0); /* Keep hardware acceleration */
-    box-shadow: #84ffff 0 0 15px;
+    transform: scale(1.1) translateZ(0); /* Keep hardware acceleration */
+    box-shadow: #d2cffc 0 0 25px;
   }
 }
 
@@ -154,5 +152,82 @@
     transform: scale(1.03) translateZ(0);
     /* Disable animations on mobile for better performance */
     animation: none;
+  }
+}
+
+/* Responsive adjustments for different screen sizes */
+/* Tablet (portrait) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .feature-card {
+    width: 320px;
+  }
+  
+  .feature-card-1 {
+    top: 18%;
+    left: 15%;
+  }
+  
+  .feature-card-2 {
+    top: 45%;
+    right: 15%;
+  }
+  
+  .feature-card-3 {
+    top: 72%;
+    left: 15%;
+  }
+}
+
+/* Large tablets and small desktops */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .feature-card-1 {
+    top: 22%;
+    left: 30%;
+  }
+  
+  .feature-card-2 {
+    top: 42%;
+    right: 15%;
+  }
+  
+  .feature-card-3 {
+    top: 68%;
+    left: 30%;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1600px) {
+  .feature-card {
+    width: 400px; /* Larger cards for bigger screens */
+  }
+  
+  .feature-card-1 {
+    top: 25%;
+    left: 40%;
+  }
+  
+  .feature-card-2 {
+    top: 45%;
+    right: 15%;
+  }
+  
+  .feature-card-3 {
+    top: 75%;
+    left: 45%;
+  }
+  
+  .card-content {
+    min-height: 220px; /* More spacious on large screens */
+    padding: 35px;
+  }
+  
+  .card-content h2 {
+    font-size: 2rem;
+  }
+  
+  .card-button {
+    padding: 14px 28px;
+    font-size: 1.1rem;
   }
 }

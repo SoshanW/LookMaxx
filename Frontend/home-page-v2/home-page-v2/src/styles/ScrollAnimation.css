@@ -7,6 +7,7 @@
   /* Performance optimizations */
   transform: translateZ(0); /* Hardware acceleration */
   contain: layout; /* Improve layout calculations */
+  overflow: hidden; /* Prevent any content from spilling out */
 }
 
 .scroll-animation-canvas {
@@ -20,6 +21,7 @@
   transform: translateZ(0); /* Hardware acceleration */
   will-change: transform; /* Hint for browser optimization */
   image-rendering: optimizeSpeed; /* Optimize rendering */
+  backface-visibility: hidden; /* Reduce flickering */
 }
 
 /* Loading indicator for animation frames */
@@ -33,7 +35,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to bottom, #1e1e36, #0f1233);
+  background: linear-gradient(to bottom, #201a40, #17132e);
   color: #e0ffff;
   font-family: "Nasalization", sans-serif;
   z-index: 10;
@@ -73,11 +75,10 @@
 
 .brand-name {
   font-family: "Nasalization", sans-serif;
-  font-size: 7.5rem;
+  font-size: 7rem;
   font-weight: bold;
-  color: #e0ffff;
-  text-shadow: 0 0 15px rgba(132, 255, 255, 0.725);
-  letter-spacing: 3px;
+  color: #ffffff;
+  letter-spacing: 4px;
   position: absolute;
   top: 35%;
   left: 2%;
@@ -94,7 +95,6 @@
   font-family: "Nasalization", sans-serif;
   font-size: 5rem;
   color: #ffffff;
-  text-shadow: 0 0 15px rgba(132, 255, 255, 0.725);
   line-height: 1.1;
   /* Performance optimization */
   transform: translateZ(0); /* Hardware acceleration */
@@ -104,20 +104,19 @@
 .get-started-btn {
   pointer-events: auto;
   position: absolute;
-  right: 70%; 
+  right: 75%; 
   top: 75%; 
   padding: 1.5rem 1.5rem;
-  background: linear-gradient(to right, #092a3e, #84ffff);
+  background: radial-gradient(circle, #ffffff, #d1d1fc);
   color: #191C4C;
   border: none;
-  border-radius: 10px;
+  border-radius: 15px;
   font-size: 1.5rem;
   cursor: pointer;
   transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
   font-family: "Dune_Rise", sans-serif;
   font-weight: bold;
-  box-shadow: #84ffff65 0 0 10px;
-  text-shadow: #ffffff 0 0 10px;
+  text-shadow: #d2cffc 0 0 10px;
   /* Performance optimization */
   transform: translateZ(0); /* Hardware acceleration */
   will-change: transform; /* Hint for browser optimization */
@@ -126,11 +125,10 @@
 
 /* Enhanced hover effect with scale and pulse animation */
 .get-started-btn:hover {
-  background: radial-gradient(circle, #8BD0D0, #566097);
+  background: radial-gradient(circle, #ffffff, #d2cffc);
   text-shadow: #140541 0 0 10px;
   font-weight: bold;
   transform: scale(1.05) translateZ(0); /* Keep hardware acceleration */
-  /* Replace complex animation with simpler version */
   animation: simplePulse 1.5s infinite;
 }
 
@@ -138,11 +136,11 @@
 @keyframes simplePulse {
   0%, 100% {
     transform: scale(1.05) translateZ(0);
-    box-shadow: #84ffffdf 0 0 20px;
+    box-shadow: #ffffff 0 0 20px;
   }
   50% {
     transform: scale(1.1) translateZ(0); /* Keep hardware acceleration */
-    box-shadow: #84ffff 0 0 25px;
+    box-shadow: #d2cffc 0 0 25px;
   }
 }
 
@@ -210,7 +208,7 @@
 .performance-warning {
   background: rgba(9, 42, 62, 0.8);
   border: 1px solid #84ffff;
-  border-radius: 10px;
+  border-radius: 15px;
   padding: 20px;
   margin: 20px;
   max-width: 600px;
@@ -257,4 +255,80 @@
 @keyframes simpleBounce {
   0%, 100% { transform: rotate(45deg) translateY(0); }
   50% { transform: rotate(45deg) translateY(10px); }
+}
+
+/* Responsive adjustments for different screen sizes */
+/* Tablet (portrait) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .brand-name {
+    font-size: 5.5rem;
+    top: 30%;
+    left: 2%;
+  }
+  
+  .brand-tagline {
+    font-size: 3.5rem;
+    right: 8%;
+    top: 43%;
+  }
+  
+  .get-started-btn {
+    right: 60%;
+    top: 70%;
+    padding: 1.2rem 1.2rem;
+    font-size: 1.3rem;
+  }
+}
+
+/* Large tablets and small desktops */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .brand-name {
+    font-size: 6rem;
+    top: 33%;
+  }
+  
+  .brand-tagline {
+    font-size: 4rem;
+    right: 7%;
+  }
+  
+  .get-started-btn {
+    right: 70%;
+    top: 72%;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1600px) {
+  .brand-name {
+    font-size: 8rem;
+    top: 35%;
+    left: 5%;
+  }
+  
+  .brand-tagline {
+    font-size: 6rem;
+    right: 8%;
+    top: 45%;
+  }
+  
+  .get-started-btn {
+    right: 70%;
+    top: 75%;
+    padding: 1.8rem 1.8rem;
+    font-size: 1.8rem;
+  }
+  
+  .scroll-end-indicator {
+    bottom: 40px;
+  }
+  
+  .scroll-end-indicator span {
+    font-size: 1.4rem;
+  }
+  
+  .arrow-down {
+    width: 25px;
+    height: 25px;
+  }
 }
