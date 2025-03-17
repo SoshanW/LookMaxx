@@ -550,3 +550,39 @@
     border-right: 5px solid #5a67d8;
   }
 }
+
+/* Error message styles */
+.error-message {
+  padding: 2rem;
+  background: rgba(255, 77, 77, 0.1);
+  border-radius: 10px;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.error-message h3 {
+  color: #ff4d4d;
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #e63939;
+}
+
+.pdf-not-ready {
+  color: #aaa;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}

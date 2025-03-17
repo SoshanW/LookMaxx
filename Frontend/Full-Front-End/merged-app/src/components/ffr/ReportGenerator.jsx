@@ -11,7 +11,8 @@ const ReportGenerator = ({
   duration = 60000, // Default duration in ms
   progress = null, // Accept external progress value
   status = null, // Accept external status value
-  onProgressUpdate = null // Callback for progress updates
+  pdfUrl = null, // PDF URL for download
+  error = null // Error message
 }) => {
   const [internalProgress, setInternalProgress] = useState(progress !== null ? progress : 0);
   const [internalStatus, setInternalStatus] = useState(status !== null ? status : 'Initializing...');
@@ -35,6 +36,14 @@ const ReportGenerator = ({
     "Generating personalized insights...",
     "Finalizing your report..."
   ];
+
+  // Set isComplete when progress reaches 100
+  useEffect(() => {
+    if (currentProgress >= 100) {
+      setIsComplete(true);
+      setCookie('reportComplete', 'true');
+    }
+  }, [currentProgress]);
 
   // Load progress from cookies on initial render
   useEffect(() => {
@@ -61,22 +70,12 @@ const ReportGenerator = ({
           setInternalStatus("Report complete!");
           setIsComplete(true);
           setCookie('reportComplete', 'true');
-          
-          // Notify parent component
-          if (onProgressUpdate) {
-            onProgressUpdate(100, "Report complete!");
-          }
           return;
         }
         
         // If the report was in progress
         setInternalProgress(parsedProgress);
         if (savedStatus) setInternalStatus(savedStatus);
-        
-        // Notify parent component
-        if (onProgressUpdate) {
-          onProgressUpdate(parsedProgress, savedStatus);
-        }
         
         // Calculate how much time has passed and adjust progress accordingly
         const now = Date.now();
@@ -93,14 +92,9 @@ const ReportGenerator = ({
           setInternalStatus("Report complete!");
           setIsComplete(true);
           setCookie('reportComplete', 'true');
-          
-          // Notify parent component
-          if (onProgressUpdate) {
-            onProgressUpdate(100, "Report complete!");
-          }
         }
-      } else {
-        // Start a new progress tracking if no saved state
+      } else if (progress === null) {
+        // Start a new progress tracking if no saved state and no external progress
         initializeNewProgress();
       }
     }
@@ -108,7 +102,7 @@ const ReportGenerator = ({
     return () => {
       clearInterval(progressInterval.current);
     };
-  }, [isActive, duration, onProgressUpdate]);
+  }, [isActive, duration, progress]);
 
   // Initialize new progress tracking
   const initializeNewProgress = () => {
@@ -129,11 +123,6 @@ const ReportGenerator = ({
     setCookie('reportMinimized', 'false');
     setCookie('reportComplete', 'false');
     
-    // Notify parent component
-    if (onProgressUpdate) {
-      onProgressUpdate(0, statusMessages[0]);
-    }
-    
     // Start progress tracking
     startProgressWithDuration(duration, 100);
   };
@@ -145,16 +134,16 @@ const ReportGenerator = ({
       clearInterval(progressInterval.current);
     }
     
-    // Calculate tick interval and increment per tick
-    const tickInterval = 400; // ms between ticks
-    const totalTicks = Math.floor(remainingDuration / tickInterval);
-    const incrementPerTick = remainingProgress / totalTicks;
+    // Fixed at 100 steps (1% each)
+    const totalSteps = 100;
+    // Calculate tick interval based on duration
+    const tickInterval = remainingDuration / totalSteps;
     
     // Start the interval
     progressInterval.current = setInterval(() => {
       setInternalProgress(prevProgress => {
-        // Calculate new progress
-        const newProgress = Math.min(prevProgress + incrementPerTick, 100);
+        // Increment by exactly 1%
+        const newProgress = Math.min(prevProgress + 1, 100);
         
         // Update status text based on progress percentage
         const statusIndex = Math.floor((newProgress / 100) * statusMessages.length);
@@ -165,11 +154,6 @@ const ReportGenerator = ({
         setCookie('reportProgress', newProgress.toString());
         setCookie('reportStatus', newStatus);
         
-        // Notify parent component
-        if (onProgressUpdate) {
-          onProgressUpdate(newProgress, newStatus);
-        }
-        
         // When completed
         if (newProgress >= 100) {
           clearInterval(progressInterval.current);
@@ -177,11 +161,6 @@ const ReportGenerator = ({
           setIsComplete(true);
           setCookie('reportStatus', "Report complete!");
           setCookie('reportComplete', 'true');
-          
-          // Notify parent component
-          if (onProgressUpdate) {
-            onProgressUpdate(100, "Report complete!");
-          }
         }
         
         return newProgress;
@@ -216,31 +195,26 @@ const ReportGenerator = ({
   };
   
   const handleDownloadPDF = () => {
-    // Generate a sample filename with date
-    const date = new Date();
-    const filename = `facial-analysis-report-${date.toISOString().split('T')[0]}.pdf`;
-    
-    // In a real implementation, you would generate or fetch the PDF here
-    console.log(`Downloading report as ${filename}`);
-    
-    // For demonstration, we'll create a simple blob to download
-    // In a real app, this would be replaced with the actual PDF data
-    const dummyPdfContent = "This is a placeholder for the facial analysis report PDF content.";
-    const blob = new Blob([dummyPdfContent], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    
-    // Create a temporary link and trigger the download
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    
-    // Clean up
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 100);
+    if (pdfUrl) {
+      // Create a hidden link element to trigger the download
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = `facial-analysis-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+      }, 100);
+    } else {
+      // For demonstration, create a sample filename with date
+      const date = new Date();
+      const filename = `facial-analysis-report-${date.toISOString().split('T')[0]}.pdf`;
+      
+      // In a real implementation, you would generate or fetch the PDF here
+      console.log(`No PDF URL available. Would download ${filename} if available`);
+    }
   };
 
   if (!isActive) return null;
@@ -252,13 +226,13 @@ const ReportGenerator = ({
           <div className="minimized-progress-bar">
             <div 
               className="minimized-progress-fill" 
-              style={{ width: `${progress}%` }}
+              style={{ width: `${currentProgress}%` }}
             ></div>
           </div>
           <div className="minimized-progress-text">
-            {isComplete ? 'Done' : `${Math.round(progress)}%`}
+            {isComplete ? 'Done' : `${Math.round(currentProgress)}%`}
           </div>
-          {isComplete && (
+          {isComplete && pdfUrl && (
             <button className="minimized-download-btn" onClick={handleDownloadPDF} title="Download Report">
               <Download size={16} />
             </button>
@@ -287,46 +261,57 @@ const ReportGenerator = ({
         </div>
         
         <div className="report-generator-content">
-          <div className="progress-visual">
-            {!isComplete ? (
-              <>
-                <div className="scanner-animation"></div>
-                <div className="face-outline">
-                  <div className="face-grid"></div>
-                  <div className="face-points"></div>
-                </div>
-              </>
-            ) : (
-              <div className="complete-animation">
-                <div className="checkmark"></div>
-              </div>
-            )}
-          </div>
-          
-          <div className="progress-info">
-            <p className="status-message">{status}</p>
-            <div className="progress-bar-container">
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-              <span className="progress-percentage">{Math.round(progress)}%</span>
+          {error ? (
+            <div className="error-message">
+              <h3>Error Processing Your Request</h3>
+              <p>{error}</p>
+              <button className="retry-button" onClick={onClose}>Try Again</button>
             </div>
-            
-            {isComplete ? (
-              <div className="download-section">
-                <p className="complete-message">Your facial analysis has been completed successfully.</p>
-                <button className="download-pdf-button" onClick={handleDownloadPDF}>
-                  <Download size={18} />
-                  Download Report PDF
-                </button>
+          ) : (
+            <>
+              <div className="progress-visual">
+                {!isComplete ? (
+                  <>
+                    <div className="scanner-animation"></div>
+                    <div className="face-outline">
+                      <div className="face-grid"></div>
+                      <div className="face-points"></div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="complete-animation">
+                    <div className="checkmark"></div>
+                  </div>
+                )}
               </div>
-            ) : (
-              <p className="wait-message">Please don't close this window. Your comprehensive analysis is being generated.</p>
-            )}
-          </div>
+              
+              <div className="progress-info">
+                <p className="status-message">{currentStatus}</p>
+                <div className="progress-bar-container">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ width: `${currentProgress}%` }}
+                    ></div>
+                  </div>
+                  <span className="progress-percentage">{Math.round(currentProgress)}%</span>
+                </div>
+                
+                {isComplete ? (
+                  <div className="download-section">
+                    <p className="complete-message">Your facial analysis has been completed successfully.</p>
+                    <button className="download-pdf-button" onClick={handleDownloadPDF} disabled={!pdfUrl}>
+                      <Download size={18} />
+                      Download Report PDF
+                    </button>
+                    {!pdfUrl && <p className="pdf-not-ready">PDF is still being prepared. Please wait...</p>}
+                  </div>
+                ) : (
+                  <p className="wait-message">Please don't close this window. Your comprehensive analysis is being generated.</p>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
