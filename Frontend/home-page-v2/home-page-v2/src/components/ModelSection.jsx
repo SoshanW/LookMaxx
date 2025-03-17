@@ -550,10 +550,7 @@ const ModelSection = () => {
     <div className="model-section">
       <div className="model-section-content">
         <h1>Discover Your Potential</h1>
-        <p>
-          At LookSci, we combine advanced technology with scientific research to
-          help you understand and enhance your unique features.
-        </p>
+        
 
         {/* Loading indicator */}
         {modelsLoaded < 2 && (
@@ -567,14 +564,13 @@ const ModelSection = () => {
         <div className="model-selection-container">
           <div className="model-container female-model" ref={femaleModelRef}>
             <div className="model-label">Female</div>
-            <button className="model-select-btn">Select</button>
           </div>
 
           <div className="model-container male-model" ref={maleModelRef}>
-            <div className="model-label">Male</div>
-            <button className="model-select-btn">Select</button>
+            <div className="model-label">Male</div>          
           </div>
         </div>
+        <button className="model-select-btn">Go to FFR</button>
       </div>
     </div>
   );
