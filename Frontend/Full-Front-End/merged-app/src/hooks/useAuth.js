@@ -13,13 +13,27 @@ export const useAuth = () => {
     if (userData) {
       try {
         const parsed = JSON.parse(userData);
-        return parsed.name || parsed.username || 'Guest';
+        // Use first_name from backend response if available
+        return parsed.first_name || parsed.name || parsed.username || 'Guest';
       } catch (e) {
         console.error('Error parsing user data:', e);
         return 'Guest';
       }
     }
     return 'Guest';
+  });
+  
+  const [userEmail, setUserEmail] = useState(() => {
+    const userData = getCookie('user_data');
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        return parsed.email || '';
+      } catch (e) {
+        return '';
+      }
+    }
+    return '';
   });
   
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -29,7 +43,7 @@ export const useAuth = () => {
     setIsAuthReady(true);
   }, []);
 
-  // Updated login function that connects to the backend
+  // Updated login function to properly store user data
   const login = useCallback(async (username, password, userData = null, options = {}) => {
     try {
       let token, userInfo;
@@ -37,7 +51,7 @@ export const useAuth = () => {
       // If username and password are provided, perform actual login
       if (password && !userData) {
         // Call the API function
-        const response = await axios.post('http://localhost:5000/auth/login', 
+        const response = await axios.post('/auth/login', 
           new URLSearchParams({
             username: username,
             password: password
@@ -50,6 +64,8 @@ export const useAuth = () => {
           }
         );
         
+        console.log('Login response:', response.data);
+        
         token = response.data.access_token;
         userInfo = response.data.user;
         
@@ -58,6 +74,9 @@ export const useAuth = () => {
         
         // Store user data
         setCookie('user_data', JSON.stringify(userInfo), { expires: 7 });
+        
+        // Update email state
+        setUserEmail(userInfo.email || '');
       } else {
         // This is a mock/test login or for signup flow
         if (token) {
@@ -67,6 +86,7 @@ export const useAuth = () => {
         // Store user data
         if (userData) {
           setCookie('user_data', JSON.stringify(userData), { expires: 7 });
+          if (userData.email) setUserEmail(userData.email);
         } else {
           setCookie('user_data', JSON.stringify({ name: username }), { expires: 7 });
         }
@@ -74,7 +94,7 @@ export const useAuth = () => {
       
       // Update state
       setIsLoggedIn(true);
-      setUserName(userInfo?.username || username);
+      setUserName(userInfo?.first_name || username);
       
       // Handle redirect options
       const redirectPath = options.redirectPath || '/profile';
@@ -121,7 +141,7 @@ export const useAuth = () => {
         formData.append('profile_picture', profilePicture);
       }
       
-      const response = await axios.post('http://localhost:5000/auth/signup', formData, {
+      const response = await axios.post('/auth/signup', formData, {
         withCredentials: true
       });
       
@@ -138,6 +158,16 @@ export const useAuth = () => {
   // Logout function
   const logout = useCallback(async () => {
     try {
+      // Try to call the backend logout endpoint if token exists
+      const token = getCookie('access_token');
+      if (token) {
+        await axios.post('/auth/logout', {}, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }).catch(e => console.warn('Error calling logout endpoint:', e));
+      }
+
       // Clear auth cookies
       deleteCookie('access_token');
       deleteCookie('user_data');
@@ -152,6 +182,7 @@ export const useAuth = () => {
       // Update local state
       setIsLoggedIn(false);
       setUserName('');
+      setUserEmail('');
       
       // Force redirect to home page
       window.location.href = '/';
@@ -167,6 +198,7 @@ export const useAuth = () => {
       
       setIsLoggedIn(false);
       setUserName('');
+      setUserEmail('');
       
       window.location.href = '/';
       
@@ -178,8 +210,9 @@ export const useAuth = () => {
   return {
     isLoggedIn,
     userName,
+    userEmail,
     login,
-    signup,  // Now properly defined
+    signup,
     logout,
     isAuthReady
   };

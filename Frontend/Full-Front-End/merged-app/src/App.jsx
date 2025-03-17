@@ -24,7 +24,7 @@ import PricingPage from './pages/PricingPage';
 import './styles/global.css';
 
 function App() {
-  const { isLoggedIn, userName, logout, isAuthReady } = useAuthContext();
+  const { isLoggedIn, userName, userEmail, userProfilePicture, logout, isAuthReady } = useAuthContext();
   const location = useLocation();
   
   // Check if we're on pages where navbar should be hidden
@@ -145,7 +145,9 @@ function App() {
         <Navbar 
           isLoggedIn={isLoggedIn}
           userName={userName}
-          setIsLoggedIn={logout} // This should be the Promise-returning logout function
+          userEmail={userEmail}
+          userProfilePicture={userProfilePicture}
+          setIsLoggedIn={logout}
           navLinks={navLinks}
           enableScrollDetection={enableScrollDetection}
         />
