@@ -11,7 +11,7 @@ function App() {
   return (
     <div className="app">
       <Navbar />
-      <ScrollAnimation frameCount={40} imageFormat="jpg" />
+      <ScrollAnimation frameCount={190} imageFormat="jpg" />
       <ModelSection />
       <TeamSlider /> 
       <Footer />

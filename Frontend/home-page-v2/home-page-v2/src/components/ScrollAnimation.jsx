@@ -1,4 +1,3 @@
-// ScrollAnimation.jsx
 import { useEffect, useRef, useState, useCallback } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
@@ -8,21 +7,23 @@ import '../styles/ScrollAnimation.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
+const ScrollAnimation = ({ frameCount = 190, imageFormat = 'jpg' }) => {
   const canvasRef = useRef(null)
   const containerRef = useRef(null)
   const imagesRef = useRef([])
   const faceRef = useRef({ frame: 0 })
+  const prevScrollProgressRef = useRef(0) // Track previous scroll position
   const [scrollProgress, setScrollProgress] = useState(0)
   const [imagesLoaded, setImagesLoaded] = useState(0)
   const [isReady, setIsReady] = useState(false)
   const animationTimelineRef = useRef(null)
   const scrollTriggerRef = useRef(null)
+  const rafIdRef = useRef(null) // For requestAnimationFrame
   
   // Preload images with proper error handling
   useEffect(() => {
     // Use a smaller number of frames for performance if needed
-    const effectiveFrameCount = Math.min(frameCount, 40);
+    const effectiveFrameCount = Math.min(frameCount, 190);
     let loadedCount = 0;
     
     // Function to create image path
@@ -134,8 +135,9 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
     if (!canvas) return;
     
     const context = canvas.getContext('2d', { alpha: false });
-    const currentFrame = Math.min(Math.floor(faceRef.current.frame), imagesRef.current.length - 1);
-    const currentImage = imagesRef.current[currentFrame];
+    // Ensure we have a valid frame index by clamping and rounding
+    const frameIndex = Math.max(0, Math.min(Math.floor(faceRef.current.frame), imagesRef.current.length - 1));
+    const currentImage = imagesRef.current[frameIndex];
     
     if (!currentImage || !currentImage.complete) return;
     
@@ -167,6 +169,51 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
       Math.floor(drawHeight)
     );
   }, []);
+
+  // Interpolate animation frames with requestAnimationFrame for smoother transitions
+  const animateFrames = useCallback((targetFrame) => {
+    // Cancel any existing animation
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
+    
+    // Current animation frame
+    const currentFrame = faceRef.current.frame;
+    
+    // No animation needed if we're already at the target
+    if (Math.abs(currentFrame - targetFrame) < 0.01) {
+      return;
+    }
+    
+    // Animation speed factor - adjust for smoothness
+    const speed = 0.08; // Lower = smoother but slower transitions
+    
+    // Animation function
+    const animate = () => {
+      // Calculate the current position using easing
+      const currentFrame = faceRef.current.frame;
+      const frameDistance = targetFrame - currentFrame;
+      
+      // If we're very close to the target, just snap to it
+      if (Math.abs(frameDistance) < 0.01) {
+        faceRef.current.frame = targetFrame;
+        render();
+        return;
+      }
+      
+      // Otherwise ease towards the target
+      faceRef.current.frame = currentFrame + frameDistance * speed;
+      
+      // Render the current frame
+      render();
+      
+      // Continue animation
+      rafIdRef.current = requestAnimationFrame(animate);
+    };
+    
+    // Start animation
+    rafIdRef.current = requestAnimationFrame(animate);
+  }, [render]);
   
   // Set up ScrollTrigger and animations once images are loaded
   useEffect(() => {
@@ -233,36 +280,35 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
     gsap.set(".feature-card", { autoAlpha: 0 });
     gsap.set(".scroll-end-indicator", { autoAlpha: 0 });
     
-    // Main scroll animation timeline
+    // Make the scroll area much longer to create a slower animation
     const animationTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
         pin: true,
         start: "top top",
-        end: "400%", 
-        scrub: 1.5,
+        end: "800%", // Much longer scroll area for very gradual animation
+        scrub: 1.5,  // Reduced for more responsive scrolling
         onUpdate: (self) => {
+          // Update scroll progress for features
           setScrollProgress(self.progress);
           
-          // Update frame with lower update frequency on mobile
-          const isMobile = window.innerWidth < 768;
-          const newFrame = Math.floor(self.progress * (frameCount - 1));
+          // Detect scroll direction
+          const scrollDirection = self.progress > prevScrollProgressRef.current ? 1 : -1;
+          prevScrollProgressRef.current = self.progress;
           
-          // Only update if frame has changed, or less frequently on mobile
-          if (faceRef.current.frame !== newFrame || 
-              (isMobile && Math.abs(faceRef.current.frame - newFrame) > 2)) {
-            faceRef.current.frame = newFrame;
-            render();
-          }
+          // Calculate target frame based on scroll progress
+          const targetFrame = self.progress * (frameCount - 1);
           
-          // Keep brand name visible longer by adjusting fadeout timing
-          const brandOpacity = 1 - Math.max(0, (self.progress - 0.1) * 2.5);
+          // Use our smooth animation function instead of direct updates
+          animateFrames(targetFrame);
+          
+          // Handle other UI elements based on scroll position
+          // Make brand name and tagline fade out earlier
+          const brandOpacity = 1 - Math.max(0, self.progress * 6.67);
           gsap.set(".landing-text-overlay", { opacity: brandOpacity });
           
-          // Feature card animations are now handled by the FeatureCards component
-          
           // Show end indicator near the end
-          if (self.progress > 0.95) {
+          if (self.progress > 0.85) {
             gsap.to(".scroll-end-indicator", { autoAlpha: 1, duration: 0.5 });
           } else {
             gsap.to(".scroll-end-indicator", { autoAlpha: 0, duration: 0.3 });
@@ -300,6 +346,11 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
     
     // Cleanup
     return () => {
+      // Cancel any ongoing animations
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+      
       window.removeEventListener('resize', handleResize);
       clearTimeout(resizeTimeout);
       
@@ -319,7 +370,7 @@ const ScrollAnimation = ({ frameCount = 40, imageFormat = 'jpg' }) => {
         context.clearRect(0, 0, canvas.width, canvas.height);
       }
     };
-  }, [isReady, render, frameCount]);
+  }, [isReady, render, frameCount, animateFrames]);
   
   return (
     <>
