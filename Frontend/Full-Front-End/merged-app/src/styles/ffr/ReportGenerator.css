@@ -586,3 +586,25 @@
   font-size: 0.9rem;
   margin-top: 0.5rem;
 }
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5a67d8, #4c51bf);
+  width: 0;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
