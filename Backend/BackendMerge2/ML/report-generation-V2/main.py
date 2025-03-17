@@ -89,7 +89,7 @@ def clean_text(list_of_documents):
     return list_of_documents
 
 def upload_to_s3(file_path, username):
-    """Upload a file to S3 bucket"""
+    """Upload a file to S3 bucket and return HTTPS URL"""
     try:
         # Create S3 client
         s3 = boto3.client(
@@ -111,7 +111,7 @@ def upload_to_s3(file_path, username):
         # Upload the file
         s3.upload_file(file_path, AWS.S3_BUCKET, s3_key)
         
-        # Generate the URL for the uploaded file
+        # Generate the HTTPS URL for the uploaded file
         s3_url = f"https://{AWS.S3_BUCKET}.s3.{AWS.AWS_REGION}.amazonaws.com/{s3_key}"
         
         print(f"Successfully uploaded file to S3: {s3_url}")

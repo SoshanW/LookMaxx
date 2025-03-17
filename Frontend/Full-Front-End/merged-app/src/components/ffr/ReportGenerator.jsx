@@ -8,243 +8,125 @@ const ReportGenerator = ({
   onClose, 
   onMinimize,
   isMinimized = false,
-  duration = 60000, // Default duration in ms
-  progress = null, // Accept external progress value
-  status = null, // Accept external status value
-  onProgressUpdate = null // Callback for progress updates
+  duration = 240000, // Default duration in ms (1 minute)
+  onReportComplete,
+  pdfUrl = null,
+  error = null
 }) => {
-  const [internalProgress, setInternalProgress] = useState(progress !== null ? progress : 0);
-  const [internalStatus, setInternalStatus] = useState(status !== null ? status : 'Initializing...');
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState('Initializing report generation...');
   const [isComplete, setIsComplete] = useState(false);
   const progressInterval = useRef(null);
-  const startTime = useRef(null);
-  const endTime = useRef(null);
-  
-  // Using the provided progress/status if available, otherwise use internal state
-  const currentProgress = progress !== null ? progress : internalProgress;
-  const currentStatus = status !== null ? status : internalStatus;
-  
-  // Status messages to show during generation
+  const startTime = useRef(Date.now());
+
+  // Status messages for the progress simulation
   const statusMessages = [
-    "Initializing facial recognition...",
-    "Analyzing facial structure...",
-    "Processing symmetry metrics...",
-    "Comparing with database...",
-    "Evaluating facial harmony...",
-    "Calculating aesthetic ratios...",
+    "Initializing report generation...",
+    "Analyzing facial structure data...",
+    "Processing advanced facial metrics...",
     "Generating personalized insights...",
-    "Finalizing your report..."
+    "Compiling comprehensive report...",
+    "Finalizing report details...",
+    "Report generation almost complete..."
   ];
 
-  // Load progress from cookies on initial render
+  // Stop the progress animation and mark as complete
+  const completeProgressAnimation = () => {
+    clearInterval(progressInterval.current);
+    setProgress(100);
+    setStatus("Report generation complete!");
+    setIsComplete(true);
+    
+    // Call the onReportComplete callback
+    if (onReportComplete) {
+      onReportComplete();
+    }
+  };
+
+  // Start progress animation
   useEffect(() => {
-    if (isActive) {
-      const savedProgress = getCookie('reportProgress');
-      const savedStatus = getCookie('reportStatus');
-      const savedStartTime = getCookie('reportStartTime');
-      const savedEndTime = getCookie('reportEndTime');
-      const savedComplete = getCookie('reportComplete');
-      
-      // Set complete state based on saved value
-      if (savedComplete !== null) {
-        setIsComplete(savedComplete === 'true');
+    if (isActive && !isComplete) {
+      // Clear any existing interval
+      if (progressInterval.current) {
+        clearInterval(progressInterval.current);
       }
-      
-      if (savedProgress && savedStartTime && savedEndTime) {
-        const parsedProgress = parseFloat(savedProgress);
-        startTime.current = parseInt(savedStartTime);
-        endTime.current = parseInt(savedEndTime);
-        
-        // If the report was completed in a previous session
-        if (parsedProgress >= 100 || savedComplete === 'true') {
-          setInternalProgress(100);
-          setInternalStatus("Report complete!");
-          setIsComplete(true);
-          setCookie('reportComplete', 'true');
-          
-          // Notify parent component
-          if (onProgressUpdate) {
-            onProgressUpdate(100, "Report complete!");
-          }
-          return;
-        }
-        
-        // If the report was in progress
-        setInternalProgress(parsedProgress);
-        if (savedStatus) setInternalStatus(savedStatus);
-        
-        // Notify parent component
-        if (onProgressUpdate) {
-          onProgressUpdate(parsedProgress, savedStatus);
-        }
-        
-        // Calculate how much time has passed and adjust progress accordingly
-        const now = Date.now();
-        const elapsedTime = now - startTime.current;
-        const totalDuration = endTime.current - startTime.current;
-        const remainingDuration = totalDuration - elapsedTime;
-        
-        // If there's still time remaining, continue the progress
-        if (remainingDuration > 0) {
-          startProgressWithDuration(remainingDuration, 100 - parsedProgress);
-        } else {
-          // If time should be up but progress wasn't completed, complete it now
-          setInternalProgress(100);
-          setInternalStatus("Report complete!");
-          setIsComplete(true);
-          setCookie('reportComplete', 'true');
-          
-          // Notify parent component
-          if (onProgressUpdate) {
-            onProgressUpdate(100, "Report complete!");
-          }
-        }
-      } else {
-        // Start a new progress tracking if no saved state
-        initializeNewProgress();
-      }
-    }
-    
-    return () => {
-      clearInterval(progressInterval.current);
-    };
-  }, [isActive, duration, onProgressUpdate]);
 
-  // Initialize new progress tracking
-  const initializeNewProgress = () => {
-    // Clear any previous progress
-    setInternalProgress(0);
-    setInternalStatus(statusMessages[0]);
-    setIsComplete(false);
-    
-    // Set start and end times
-    startTime.current = Date.now();
-    endTime.current = startTime.current + duration;
-    
-    // Save to cookies
-    setCookie('reportStartTime', startTime.current.toString());
-    setCookie('reportEndTime', endTime.current.toString());
-    setCookie('reportProgress', '0');
-    setCookie('reportStatus', statusMessages[0]);
-    setCookie('reportMinimized', 'false');
-    setCookie('reportComplete', 'false');
-    
-    // Notify parent component
-    if (onProgressUpdate) {
-      onProgressUpdate(0, statusMessages[0]);
-    }
-    
-    // Start progress tracking
-    startProgressWithDuration(duration, 100);
-  };
+      // Reset progress and start time
+      setProgress(0);
+      startTime.current = Date.now();
 
-  // Start progress with a specific duration and target progress
-  const startProgressWithDuration = (remainingDuration, remainingProgress) => {
-    // Clear any existing interval
-    if (progressInterval.current) {
-      clearInterval(progressInterval.current);
-    }
-    
-    // Calculate tick interval and increment per tick
-    const tickInterval = 400; // ms between ticks
-    const totalTicks = Math.floor(remainingDuration / tickInterval);
-    const incrementPerTick = remainingProgress / totalTicks;
-    
-    // Start the interval
-    progressInterval.current = setInterval(() => {
-      setInternalProgress(prevProgress => {
-        // Calculate new progress
-        const newProgress = Math.min(prevProgress + incrementPerTick, 100);
+      // Create new interval for progress animation
+      progressInterval.current = setInterval(() => {
+        const currentTime = Date.now();
+        const elapsedTime = currentTime - startTime.current;
         
-        // Update status text based on progress percentage
+        // Calculate progress percentage
+        const newProgress = Math.min((elapsedTime / duration) * 100, 100);
+        setProgress(newProgress);
+
+        // Update status message based on progress
         const statusIndex = Math.floor((newProgress / 100) * statusMessages.length);
-        const newStatus = statusMessages[Math.min(statusIndex, statusMessages.length - 1)];
-        setInternalStatus(newStatus);
-        
-        // Save to cookies
-        setCookie('reportProgress', newProgress.toString());
-        setCookie('reportStatus', newStatus);
-        
-        // Notify parent component
-        if (onProgressUpdate) {
-          onProgressUpdate(newProgress, newStatus);
-        }
-        
-        // When completed
-        if (newProgress >= 100) {
-          clearInterval(progressInterval.current);
-          setInternalStatus("Report complete!");
-          setIsComplete(true);
-          setCookie('reportStatus', "Report complete!");
-          setCookie('reportComplete', 'true');
-          
-          // Notify parent component
-          if (onProgressUpdate) {
-            onProgressUpdate(100, "Report complete!");
-          }
-        }
-        
-        return newProgress;
-      });
-    }, tickInterval);
-  };
+        setStatus(statusMessages[Math.min(statusIndex, statusMessages.length - 1)]);
 
+        // Complete progress if duration is reached
+        if (elapsedTime >= duration) {
+          completeProgressAnimation();
+        }
+      }, 100); // Update every 100ms for smooth animation
+
+      // Cleanup function
+      return () => {
+        clearInterval(progressInterval.current);
+      };
+    }
+  }, [isActive, duration, isComplete]);
+
+  // Handle minimizing the report generator
   const handleMinimize = () => {
     if (onMinimize) {
-      onMinimize(true); // Pass true to indicate minimized state
-      setCookie('reportMinimized', 'true');
+      onMinimize(true);
     }
   };
 
+  // Handle maximizing the report generator
   const handleMaximize = () => {
     if (onMinimize) {
-      onMinimize(false); // Pass false to indicate maximized state
-      setCookie('reportMinimized', 'false');
+      onMinimize(false);
     }
   };
-  
+
+  // Handle closing the report generator
   const handleClose = () => {
     clearInterval(progressInterval.current);
-    // Clear cookies when closing
-    deleteCookie('reportProgress');
-    deleteCookie('reportStatus');
-    deleteCookie('reportStartTime');
-    deleteCookie('reportEndTime');
-    deleteCookie('reportMinimized');
-    deleteCookie('reportComplete');
-    if (onClose) onClose();
-  };
-  
-  const handleDownloadPDF = () => {
-    // Generate a sample filename with date
-    const date = new Date();
-    const filename = `facial-analysis-report-${date.toISOString().split('T')[0]}.pdf`;
     
-    // In a real implementation, you would generate or fetch the PDF here
-    console.log(`Downloading report as ${filename}`);
-    
-    // For demonstration, we'll create a simple blob to download
-    // In a real app, this would be replaced with the actual PDF data
-    const dummyPdfContent = "This is a placeholder for the facial analysis report PDF content.";
-    const blob = new Blob([dummyPdfContent], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    
-    // Create a temporary link and trigger the download
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    
-    // Clean up
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 100);
+    if (onClose) {
+      onClose();
+    }
   };
 
+  // Handle PDF download
+  const handleDownloadPDF = () => {
+    if (pdfUrl) {
+      // Create a hidden link element to trigger the download
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = `facial-analysis-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+      }, 100);
+    } else {
+      console.log('No PDF URL available for download');
+    }
+  };
+
+  // If not active, return null
   if (!isActive) return null;
 
+  // Minimized view
   if (isMinimized) {
     return (
       <div className="minimized-progress-container">
@@ -258,12 +140,19 @@ const ReportGenerator = ({
           <div className="minimized-progress-text">
             {isComplete ? 'Done' : `${Math.round(progress)}%`}
           </div>
-          {isComplete && (
-            <button className="minimized-download-btn" onClick={handleDownloadPDF} title="Download Report">
+          {isComplete && pdfUrl && (
+            <button 
+              className="minimized-download-btn" 
+              onClick={handleDownloadPDF} 
+              title="Download Report"
+            >
               <Download size={16} />
             </button>
           )}
-          <button className="minimized-maximize-btn" onClick={handleMaximize}>
+          <button 
+            className="minimized-maximize-btn" 
+            onClick={handleMaximize}
+          >
             <Maximize2 size={16} />
           </button>
         </div>
@@ -271,6 +160,7 @@ const ReportGenerator = ({
     );
   }
 
+  // Full view
   return (
     <div className="report-generator-overlay">
       <div className="report-generator-container">
@@ -287,46 +177,61 @@ const ReportGenerator = ({
         </div>
         
         <div className="report-generator-content">
-          <div className="progress-visual">
-            {!isComplete ? (
-              <>
-                <div className="scanner-animation"></div>
-                <div className="face-outline">
-                  <div className="face-grid"></div>
-                  <div className="face-points"></div>
-                </div>
-              </>
-            ) : (
-              <div className="complete-animation">
-                <div className="checkmark"></div>
-              </div>
-            )}
-          </div>
-          
-          <div className="progress-info">
-            <p className="status-message">{status}</p>
-            <div className="progress-bar-container">
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-              <span className="progress-percentage">{Math.round(progress)}%</span>
+          {error ? (
+            <div className="error-message">
+              <h3>Error Processing Your Request</h3>
+              <p>{error}</p>
+              <button className="retry-button" onClick={onClose}>Try Again</button>
             </div>
-            
-            {isComplete ? (
-              <div className="download-section">
-                <p className="complete-message">Your facial analysis has been completed successfully.</p>
-                <button className="download-pdf-button" onClick={handleDownloadPDF}>
-                  <Download size={18} />
-                  Download Report PDF
-                </button>
+          ) : (
+            <>
+              <div className="progress-visual">
+                {!isComplete ? (
+                  <>
+                    <div className="scanner-animation"></div>
+                    <div className="face-outline">
+                      <div className="face-grid"></div>
+                      <div className="face-points"></div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="complete-animation">
+                    <div className="checkmark"></div>
+                  </div>
+                )}
               </div>
-            ) : (
-              <p className="wait-message">Please don't close this window. Your comprehensive analysis is being generated.</p>
-            )}
-          </div>
+              
+              <div className="progress-info">
+                <p className="status-message">{status}</p>
+                <div className="progress-bar-container">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                  <span className="progress-percentage">{Math.round(progress)}%</span>
+                </div>
+                
+                {isComplete ? (
+                  <div className="download-section">
+                    <p className="complete-message">Your facial analysis report has been generated successfully.</p>
+                    <button 
+                      className="download-pdf-button" 
+                      onClick={handleDownloadPDF} 
+                      disabled={!pdfUrl}
+                    >
+                      <Download size={18} />
+                      Download Report PDF
+                    </button>
+                    {!pdfUrl && <p className="pdf-not-ready">PDF is still being prepared. Please wait...</p>}
+                  </div>
+                ) : (
+                  <p className="wait-message">Please don't close this window. Your comprehensive analysis is being generated.</p>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

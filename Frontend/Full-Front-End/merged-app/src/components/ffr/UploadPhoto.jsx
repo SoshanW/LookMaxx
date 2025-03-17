@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { getCookie } from '../../utils/cookies';
+import { useReportGenerator } from '../../context/ReportGeneratorContext';
 import '../../styles/ffr/UploadPhoto.css';
 
 const UploadPhoto = ({ isVisible, onStartReportGeneration }) => {
   const [file, setFile] = useState(null);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [error, setError] = useState(null);
+  const { startReportGeneration, updateReportStatus } = useReportGenerator();
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -19,26 +23,75 @@ const UploadPhoto = ({ isVisible, onStartReportGeneration }) => {
     event.preventDefault();
   };
 
-  const handleDisclaimerAccept = () => {
+  const handleDisclaimerAccept = async () => {
     setDisclaimerAccepted(true);
     setShowDisclaimer(false);
-    document.body.style.overflow = 'auto'; // Restore scrolling
+    document.body.style.overflow = 'auto';
     
-    // Start the report generation process
-    if (onStartReportGeneration) {
-      onStartReportGeneration();
+    if (!file) {
+      setError("No file selected. Please upload a photo.");
+      return;
+    }
+    
+    // Start the report generation UI
+    startReportGeneration();
+    
+    // Create form data for the file upload
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    // Get JWT token from cookies
+    const token = getCookie('access_token');
+    
+    try {
+      // Send file to the backend
+      const response = await fetch('/ffr/analyze-face', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Update the report generator with initial results
+      updateReportStatus({
+        progress: 30,
+        status: 'Facial analysis completed. Generating detailed report...',
+        files: data.files
+      });
+      
+      // If onStartReportGeneration callback exists, call it
+      if (onStartReportGeneration) {
+        onStartReportGeneration();
+      }
+      
+    } catch (err) {
+      console.error('Error during file upload:', err);
+      setError(`Failed to process image: ${err.message}`);
+      // Update report generator with error
+      updateReportStatus({
+        progress: 0,
+        status: `Error: ${err.message}`,
+        error: true
+      });
     }
   };
 
   const handleDisclaimerDecline = () => {
     setShowDisclaimer(false);
-    document.body.style.overflow = 'auto'; // Restore scrolling
-    window.scrollTo(0, 0); // Redirect back to the top of the page
+    document.body.style.overflow = 'auto';
+    window.scrollTo(0, 0);
   };
 
   const handleUploadClick = () => {
     setShowDisclaimer(true);
-    document.body.style.overflow = 'hidden'; // Prevent scrolling
+    document.body.style.overflow = 'hidden';
   };
 
   // Clean up effect to ensure body scroll is restored if component unmounts
@@ -47,26 +100,6 @@ const UploadPhoto = ({ isVisible, onStartReportGeneration }) => {
       document.body.style.overflow = 'auto';
     };
   }, []);
-
-  // This ensures the disclaimer modal doesn't disappear when scrolling
-  useEffect(() => {
-    // When disclaimer is shown, completely prevent any scrolling in the main window
-    if (showDisclaimer) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
-      
-      // Function to forcefully reset scroll position if user tries to scroll
-      const lockScroll = () => window.scrollTo(0, scrollY);
-      
-      // Add events to lock scrolling
-      window.addEventListener('scroll', lockScroll);
-      
-      // Clean up
-      return () => {
-        window.removeEventListener('scroll', lockScroll);
-      };
-    }
-  }, [showDisclaimer]);
 
   return (
     <div className={`upload-photo-overlay ${isVisible ? 'visible' : 'hidden'}`}>
@@ -86,6 +119,7 @@ const UploadPhoto = ({ isVisible, onStartReportGeneration }) => {
           <label htmlFor="file-input" className="upload-label">
             {file ? file.name : 'Drag & drop your photo here or click to browse'}
           </label>
+          {error && <div className="error-alert">{error}</div>}
           <button 
             onClick={handleUploadClick} 
             className="upload-button" 
@@ -103,15 +137,8 @@ const UploadPhoto = ({ isVisible, onStartReportGeneration }) => {
 
       {showDisclaimer && (
         <div id="disclaimerContainer">
-          {/* Add an extra overlay to prevent interaction with background */}
-          <div 
-            className="disclaimer-modal-overlay" 
-            onClick={(e) => e.stopPropagation()} // Prevent clicks from passing through
-          ></div>
-          <div 
-            className="disclaimer-modal" 
-            onClick={(e) => e.stopPropagation()} // Prevent clicks from passing through
-          >
+          <div className="disclaimer-modal-overlay"></div>
+          <div className="disclaimer-modal">
             <h2>Important Notice About Your Wellbeing</h2>
             
             <p>

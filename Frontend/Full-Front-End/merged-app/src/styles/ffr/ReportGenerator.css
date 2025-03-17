@@ -550,3 +550,61 @@
     border-right: 5px solid #5a67d8;
   }
 }
+
+/* Error message styles */
+.error-message {
+  padding: 2rem;
+  background: rgba(255, 77, 77, 0.1);
+  border-radius: 10px;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.error-message h3 {
+  color: #ff4d4d;
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #e63939;
+}
+
+.pdf-not-ready {
+  color: #aaa;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5a67d8, #4c51bf);
+  width: 0;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
