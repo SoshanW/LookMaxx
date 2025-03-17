@@ -15,13 +15,43 @@ export const AuthProvider = ({ children }) => {
     if (userData) {
       try {
         const parsed = JSON.parse(userData);
-        return parsed.name || parsed.username || 'Guest';
+        return parsed.first_name || parsed.name || parsed.username || 'Guest';
       } catch (e) {
         console.error('Error parsing user data:', e);
         return 'Guest';
       }
     }
     return 'Guest';
+  });
+  
+  // Add userEmail state
+  const [userEmail, setUserEmail] = useState(() => {
+    const userData = getCookie('user_data');
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        return parsed.email || '';
+      } catch (e) {
+        console.error('Error parsing user email:', e);
+        return '';
+      }
+    }
+    return '';
+  });
+  
+  // Add userProfilePicture state
+  const [userProfilePicture, setUserProfilePicture] = useState(() => {
+    const userData = getCookie('user_data');
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        return parsed.profile_picture || '';
+      } catch (e) {
+        console.error('Error parsing user profile picture:', e);
+        return '';
+      }
+    }
+    return '';
   });
   
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -43,13 +73,21 @@ export const AuthProvider = ({ children }) => {
       // Store user data
       if (userData) {
         setCookie('user_data', JSON.stringify(userData), { expires: 7 });
+        // Set email if available
+        if (userData.email) {
+          setUserEmail(userData.email);
+        }
+        // Set profile picture if available
+        if (userData.profile_picture) {
+          setUserProfilePicture(userData.profile_picture);
+        }
       } else {
         setCookie('user_data', JSON.stringify({ name }), { expires: 7 });
       }
       
       // Update state after cookies are set
       setIsLoggedIn(true);
-      setUserName(name);
+      setUserName(userData?.first_name || name);
       
       // Small delay to ensure cookies are properly set
       setTimeout(resolve, 50);
@@ -67,6 +105,8 @@ export const AuthProvider = ({ children }) => {
       // Update state after cookies are deleted
       setIsLoggedIn(false);
       setUserName('');
+      setUserEmail('');
+      setUserProfilePicture('');
       
       // Small delay to ensure cookies are properly deleted
       setTimeout(resolve, 50);
@@ -77,6 +117,8 @@ export const AuthProvider = ({ children }) => {
   const contextValue = {
     isLoggedIn,
     userName,
+    userEmail,
+    userProfilePicture,
     login,
     logout,
     isAuthReady

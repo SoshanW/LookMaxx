@@ -26,13 +26,43 @@ def get_s3_client():
         region_name=current_app.config['AWS_REGION']
     )
 
+def s3_uri_to_url(s3_uri):
+    """
+    Convert S3 URI to public HTTPS URL
+    
+    :param s3_uri: S3 URI in format s3://bucket-name/path/to/object
+    :return: HTTPS URL
+    """
+    from flask import current_app
+    
+    # Check if input is valid
+    if not s3_uri or not s3_uri.startswith('s3://'):
+        return None
+    
+    # Parse the URI to extract bucket and key
+    parts = s3_uri[5:].split('/', 1)
+    if len(parts) != 2:
+        return None
+    
+    bucket, key = parts
+    region = current_app.config['AWS_REGION']
+    
+    # Construct the HTTPS URL
+    if region == 'us-east-1':
+        # US East 1 has a special URL format
+        url = f"https://{bucket}.s3.amazonaws.com/{key}"
+    else:
+        url = f"https://{bucket}.s3.{region}.amazonaws.com/{key}"
+    
+    return url
+
 def upload_file_to_s3(file, username):
     """
     Upload a file to the S3 bucket
     
     :param file: File to upload
     :param username: Username to create filename with
-    :return: S3 URL of the uploaded file
+    :return: HTTPS URL of the uploaded file (not S3 URI)
     """
     from flask import current_app
     # Create a filename based on username
@@ -51,9 +81,13 @@ def upload_file_to_s3(file, username):
             }
         )
         
-        # Generate the URL for the uploaded file
-        s3_url = f"s3://{current_app.config['S3_BUCKET']}/{s3_path}"
-        return s3_url
+        # Generate the S3 URI for the uploaded file
+        s3_uri = f"s3://{current_app.config['S3_BUCKET']}/{s3_path}"
+        
+        # Convert the S3 URI to a public HTTPS URL
+        https_url = s3_uri_to_url(s3_uri)
+        
+        return https_url
     
     except ClientError as e:
         print(f"Error uploading to S3: {e}")
@@ -76,21 +110,56 @@ def delete_user_images_from_s3(username):
     s3_client = get_s3_client()
     
     try:
-        # 1. Delete profile picture
+        # 1. First approach - Delete profile picture using the prefix and filename
         profile_filename = f"{username}_profile.jpg"
         profile_path = current_app.config['S3_PROFILE_PICTURES_PREFIX'] + profile_filename
         
         # Print debug info for profile path
         print(f"Attempting to delete profile picture at: {profile_path}")
         
-        s3_client.delete_object(
-            Bucket=current_app.config['S3_BUCKET'],
-            Key=profile_path
-        )
-        result["profile_deleted"] = True
-        print(f"Profile picture deletion request sent")
+        try:
+            # Attempt deletion
+            s3_client.delete_object(
+                Bucket=current_app.config['S3_BUCKET'],
+                Key=profile_path
+            )
+            result["profile_deleted"] = True
+            print(f"Profile picture deletion request sent for: {profile_path}")
+        except ClientError as e:
+            print(f"Error in first deletion attempt: {str(e)}")
+            
+            # 2. If first approach fails, try using ListObjectsV2 to find the actual key
+            if not result["profile_deleted"]:
+                print("Trying alternative approach - listing objects with profile picture prefix")
+                try:
+                    # List objects with profile picture prefix for this user
+                    prefix = f"{current_app.config['S3_PROFILE_PICTURES_PREFIX']}{username}"
+                    response = s3_client.list_objects_v2(
+                        Bucket=current_app.config['S3_BUCKET'],
+                        Prefix=prefix
+                    )
+                    
+                    if 'Contents' in response:
+                        profile_objects = [obj for obj in response['Contents'] if "profile" in obj['Key'].lower()]
+                        
+                        if profile_objects:
+                            # Delete all matching profile objects
+                            for obj in profile_objects:
+                                s3_client.delete_object(
+                                    Bucket=current_app.config['S3_BUCKET'],
+                                    Key=obj['Key']
+                                )
+                                print(f"Deleted profile picture with key: {obj['Key']}")
+                            
+                            result["profile_deleted"] = True
+                        else:
+                            print(f"No profile pictures found for prefix: {prefix}")
+                    else:
+                        print(f"No objects found for prefix: {prefix}")
+                except ClientError as e:
+                    print(f"Error in second deletion attempt: {str(e)}")
         
-        # 2. List all FFR pictures for this user
+        # 3. List all FFR pictures for this user
         ffr_prefix = f"{current_app.config['S3_FFR_PICTURES_GENERATED']}{username}/"
         
         # Print debug info for FFR path
@@ -127,6 +196,7 @@ def delete_user_images_from_s3(username):
         result["ffr_delete_errors"].append(str(e))
     
     return result
+
 
 @signup_routes.route('/')
 def home():
@@ -165,7 +235,7 @@ def signup():
             'email': email,
             'password': generate_password_hash(password),  
             'profile_picture' : profile_picture_url,
-            'subscription' : 'free'
+            'subscription' : 'regular'
         }
         
         mongo.db.users.insert_one(user)
@@ -196,7 +266,10 @@ def login():
                 "username": user['username'],
                 "email": user['email'],
                 "first_name": user['first_name'],
-                "last_name": user['last_name']
+                "last_name": user['last_name'],
+                "profile_picture": user.get('profile_picture'), 
+                "gender": user.get('gender', ''),  
+                "subscription": user.get('subscription', 'regular')  
             }
         }), 200
     
@@ -231,6 +304,12 @@ def delete_user(username):
     if not user:
         return jsonify({"error": "User not found"}), 404
     
+    # Get the profile picture URL from the user document
+    profile_picture = user.get('profile_picture')
+    
+    # Print user's profile picture URL for debugging
+    print(f"User profile picture to delete: {profile_picture}")
+    
     # Delete all images associated with the user from S3
     delete_results = delete_user_images_from_s3(username)
     
@@ -243,8 +322,11 @@ def delete_user(username):
     
     if result.deleted_count > 0:
         jti = get_jwt()["jti"]
-        jwt_blocklist.add(jti)        
-        return jsonify({"message": "User successfully deleted"}), 200
+        jwt_blocklist.add(jti)
+        return jsonify({
+            "message": "User successfully deleted",
+            "image_deletion_results": delete_results
+        }), 200
     else:
         return jsonify({"error": "Failed to delete user"}), 500
     

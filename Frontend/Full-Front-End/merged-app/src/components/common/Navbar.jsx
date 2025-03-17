@@ -1,32 +1,48 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
+import { useAuth } from '../../hooks/useAuth';
 import '../../styles/common/Navbar.css';
 
-/**
-* A reusable Navbar component that can be used across different parts of the app
-*/
 const Navbar = ({ 
   isLoggedIn, 
   userName = 'User', 
   setIsLoggedIn,
+  userEmail = '',
+  userProfilePicture = '',
   navLinks = ['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community'],
   enableScrollDetection = false
-  }) => {
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navLinksRef = useRef([]);
   const authRef = useRef(null);
   const dropdownRef = useRef(null);
+
+  // // Get user email from cookies on component mount
+  // useEffect(() => {
+  //   try {
+  //     const userData = getCookie('user_data');
+  //     if (userData) {
+  //       const parsedData = JSON.parse(userData);
+  //       setUserEmail(parsedData.email || 'user@example.com');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error parsing user data for email:', error);
+  //     setUserEmail('user@example.com'); // Fallback
+  //   }
+  // }, [isLoggedIn]);
   
   // Determine active link based on current path
+  
   const [activeLink, setActiveLink] = useState(() => {
-    const path = location.pathname.substring(1); // remove leading slash
+    const path = location.pathname.substring(1);
     if (path === '') return 'home';
     if (path.startsWith('signup') || path.startsWith('face-model')) return '';
-    if (path === 'apply') return 'casting'; // Consider apply page as part of casting
+    if (path === 'apply') return 'casting';
     return path.toLowerCase();
   });
 
@@ -78,7 +94,7 @@ const Navbar = ({
       
       // If scroll detection is enabled and user is not logged in
       if (enableScrollDetection && !isLoggedIn && scrollPosition > 100) {
-        // Instead of navigating, dispatch a custom event
+        // Dispatch a custom event for showing the login prompt
         const promptEvent = new CustomEvent('showLoginPrompt');
         window.dispatchEvent(promptEvent);
       }
@@ -112,8 +128,8 @@ const Navbar = ({
 
   const handleLogout = async () => {
     try {
-      // Call the logout function asynchronously
-      await setIsLoggedIn();
+      // Call the logout function from the auth hook
+      await logout();
       setDropdownOpen(false);
       
       // Scroll back to top when logging out
@@ -128,7 +144,7 @@ const Navbar = ({
       console.error('Error during logout:', error);
     }
   };
-
+  
   const handleLinkClick = (linkName, e) => {
     e.preventDefault(); // Prevent default navigation
     const lowercaseLink = linkName.toLowerCase();
@@ -143,7 +159,6 @@ const Navbar = ({
       } else if (lowercaseLink === 'ffr') {
         navigate('/ffr', { replace: true });
       } else if (lowercaseLink === 'study') {
-        // Explicitly handle study navigation
         navigate('/study', { replace: true });
       } else if (lowercaseLink === 'casting') {
         navigate('/casting', { replace: true });
@@ -157,7 +172,7 @@ const Navbar = ({
       // Force component re-render and recalculate dimensions
       window.dispatchEvent(new Event('resize'));
       
-      // Force GSAP to recalculate positions
+      // Force GSAP to recalculate positions if using ScrollTrigger
       if (window.ScrollTrigger) {
         setTimeout(() => {
           window.ScrollTrigger.refresh();
@@ -175,12 +190,12 @@ const Navbar = ({
       <div className="navbar-container">
         <div className="nav-links">
           {navLinks.map((link) => {
-            // Get the link text (could be object or string)
+            // Get the link text (could be an object or string)
             const linkText = typeof link === 'object' ? link.name : link;
             const linkValue = linkText.toLowerCase();
             
             return (
-              <a
+              <a 
                 key={linkValue}
                 ref={addToRefs}
                 href={`/${linkValue === 'home' ? '' : linkValue}`}
@@ -197,7 +212,15 @@ const Navbar = ({
           {isLoggedIn ? (
             <div className="profile-dropdown" ref={dropdownRef}>
               <div className="user-avatar" onClick={toggleDropdown}>
-                <span className="avatar-initials">{userName.charAt(0)}</span>
+                {userProfilePicture ? (
+                  <img 
+                    src={userProfilePicture} 
+                    alt={userName} 
+                    className="avatar-img" 
+                  />
+                ) : (
+                  <span className="avatar-initials">{userName.charAt(0)}</span>
+                )}
                 <div className="avatar-pulse"></div>
               </div>
               
@@ -205,7 +228,7 @@ const Navbar = ({
                 <div className="dropdown-menu">
                   <div className="dropdown-header">
                     <span className="user-name">{userName}</span>
-                    <span className="user-email">user@example.com</span>
+                    <span className="user-email">{userEmail}</span>
                   </div>
                   <div className="dropdown-divider"></div>
                   <a 

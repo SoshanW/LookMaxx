@@ -6,6 +6,7 @@ import '../../styles/profile/AvatarSection.css';
 import '../../styles/profile/SettingsSection.css';
 import AvatarModel from './AvatarModel';
 import { useAuthContext } from '../../context/AuthProvider';
+import { getCookie } from '../../utils/cookies';
 
 const ProfileSection = () => {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ const ProfileSection = () => {
   
   // Define the loading state
   const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState(null);
   const [isPublic, setIsPublic] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -25,60 +28,47 @@ const ProfileSection = () => {
       return;
     }
 
+    //debug lines to check whether the cookie is being stored
+    console.log('Access token in cookie:', getCookie('access_token'));
+    console.log('User data in cookie:', getCookie('user_data'));
+
     // Check if we should show settings tab by default
     const activeTab = location.state?.activeTab;
     if (activeTab === 'settings') {
       setShowSettings(true);
     }
 
-    // For demo purposes, creating mock user data
-    // In a real app, this would be fetched from an API
-    const mockUserData = {
-      fullName: userName || 'Demo User',
-      username: userName?.toLowerCase().replace(/\s/g, '_') || 'demo_user',
-      email: 'user@example.com',
-      gender: 'Male', // Default gender
-      accountType: 'regular', // Default account type
-      profileImage: 'https://i.pravatar.cc/300' // Default avatar
-    };
-
-    // Simulate API call delay
-    setTimeout(() => {
-      setUserData(mockUserData);
-      setLoading(false);
-    }, 1000);
-
-    // In a real application, here's where you'd fetch user data from backend
-    /*
-    const fetchUserData = async () => {
+    // Get user data from cookies and transform for our component
+    const fetchUserDataFromCookies = () => {
       try {
-        // Get JWT token from local storage
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          alert("Authentication token not found. Please log in again.");
-          navigate('/signup', { state: { activeTab: 'login' } });
-          return;
+        const userDataString = getCookie('user_data');
+        if (!userDataString) {
+          throw new Error("User data not found. Please log in again.");
         }
-  
-        // Send GET request to backend
-        const response = await axios.get('http://your-backend-url/users/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        
+        const cookieData = JSON.parse(userDataString);
+        console.log("User data from cookie:", cookieData);
+        
+        // Transform the data to match our component's expected structure
+        setUserData({
+          fullName: `${cookieData.first_name} ${cookieData.last_name}`,
+          username: cookieData.username,
+          email: cookieData.email,
+          gender: cookieData.gender || 'Male', // Default if not available
+          accountType: cookieData.subscription || 'regular',
+          profileImage: cookieData.profile_picture || 'https://i.pravatar.cc/300' // Use actual S3 URL or fallback
         });
-  
-        // Set user data to state
-        setUserData(response.data);
+        
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        alert("An error occurred while fetching the user data.");
+        console.error("Error parsing user data from cookies:", error);
+        setError("Failed to load user profile. Please log in again.");
+        setLoading(false);
       }
     };
 
-    fetchUserData();
-    */
-  }, [isLoggedIn, userName, navigate, location.state]);
+    fetchUserDataFromCookies();
+  }, [isLoggedIn, navigate, location.state]);
 
   // Handler for delete user button
   const handleDeleteUser = async (username) => {
@@ -88,22 +78,40 @@ const ProfileSection = () => {
       )
     ) {
       try {
+        setIsDeleting(true);
+        setError(null);
+        
         console.log("User deletion initiated for:", username);
         
-        // In a real app, send a delete request to your backend
-        // For now, just log out the user
+        // Get token from cookies for authorization
+        const token = getCookie('access_token');
+        if (!token) {
+          throw new Error("Authentication token not found. Please log in again.");
+        }
+        
+        // Call the backend API to delete the user
+        const response = await axios.delete(`/auth/users/${username}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        console.log("Delete user response:", response.data);
+        
+        // If successful, log out the user
         logout();
         navigate('/signup', { state: { activeTab: 'login' } });
       } catch (error) {
         console.error("Error deleting user:", error);
-        alert("An error occurred while deleting the account.");
+        setError(error.response?.data?.error || "An error occurred while deleting the account.");
+        setIsDeleting(false);
       }
     }
   };
   
   // Handler for upgrading the account
   const handleUpgradeAccount = () => {
-    navigate('/pricing'); // Navigate to pricing page
+    navigate('/pricing');
   };
 
   // Handler for toggling settings visibility
@@ -124,7 +132,7 @@ const ProfileSection = () => {
 
   // Handler for back button
   const handleBack = () => {
-    navigate('/ffr'); // Navigate back to the FFR page
+    navigate('/ffr');
   };
   
   if (loading) {
@@ -140,6 +148,12 @@ const ProfileSection = () => {
     <div className="profile-container">
       <button className="backbtn" onClick={handleBack}><span>Back</span></button>
 
+      {error && (
+        <div className="error-alert" style={{ marginBottom: '20px', padding: '10px', color: 'white', backgroundColor: '#ff4d4d', borderRadius: '4px', textAlign: 'center' }}>
+          {error}
+        </div>
+      )}
+
       <div className="profile-header-bg">
         <div id="container-stars">
           <div id="stars" />
@@ -150,11 +164,17 @@ const ProfileSection = () => {
           {/* Left Side - Profile Info */}
           <div className="profile-info-section">
             <div className="profile-image-container">
-              <img 
-                src={userData.profileImage} 
-                alt="Profile" 
-                className="profile-image" 
-              />
+              {userData && userData.profileImage ? (
+                <img 
+                  src={userData.profileImage} 
+                  alt="Profile" 
+                  className="profile-image" 
+                />
+              ) : (
+                <div className="profile-image-placeholder">
+                  <span>{userData?.fullName?.charAt(0) || 'U'}</span>
+                </div>
+              )}
               <div className="profile-status online"></div>
 
               {/* Premium Crown for premium users */}
@@ -204,8 +224,10 @@ const ProfileSection = () => {
                 </button>
                 <button 
                   className="btn-danger"
-                  onClick={() => handleDeleteUser(userData.username)}>
-                  Delete Account
+                  onClick={() => handleDeleteUser(userData.username)}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "Deleting..." : "Delete Account"}
                 </button>
               </div>
             </div>

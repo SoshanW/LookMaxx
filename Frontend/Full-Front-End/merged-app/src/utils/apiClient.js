@@ -1,36 +1,38 @@
-// src/utils/apiClient.js
 import axios from 'axios';
 import { getCookie } from './cookies';
 
 // Base URL for API requests
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = '';
 
 // Create a preconfigured axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
-  },
-  // Enable sending cookies with requests
-  withCredentials: true,
+  }
 });
 
-// Request interceptor - add auth header for non-cookie approaches if needed
+// Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // The auth cookie will be sent automatically with withCredentials:true
-    // This is only needed if the backend requires both cookie and header auth
+    // For FormData, don't set Content-Type header (browser sets it with boundary)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+    
+    // Still include the auth token if available
     const token = getCookie('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
+
 
 // Response interceptor - handle common errors
 apiClient.interceptors.response.use(
@@ -85,6 +87,63 @@ export const api = {
       },
     });
   },
+};
+
+export const loginUser = async (username, password) => {
+  try {
+    // Create form data (as your backend expects form data, not JSON)
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    
+    const response = await apiClient.post('/auth/login', formData);
+    return response.data;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+}; 
+
+// Signup function that sends user details and handles the response
+export const signupUser = async (userData, profilePicture) => {
+  try {
+    const formData = new FormData();
+    
+    // Add user data fields
+    formData.append('username', userData.username);
+    formData.append('firstName', userData.firstName);
+    formData.append('lastName', userData.lastName);
+    formData.append('email', userData.email);
+    formData.append('gender', userData.gender);
+    formData.append('password', userData.password);
+    
+    // Add profile picture if available
+    if (profilePicture) {
+      formData.append('profile_picture', profilePicture);
+    }
+    
+    // Use custom config that doesn't set Content-Type for FormData
+    const response = await axios.post(`${API_BASE_URL}/auth/signup`, formData, {
+      withCredentials: true,
+      // Don't set Content-Type here - browser will set it with boundary
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Signup error:', error);
+    throw error;
+  }
+};
+
+// Logout function that invalidates the token
+export const logoutUser = async () => {
+  try {
+    const response = await apiClient.post('/auth/logout');
+    return response.data;
+  } catch (error) {
+    console.error('Logout error:', error);
+    throw error;
+  }
 };
 
 export default apiClient;
