@@ -5,7 +5,7 @@ const AvatarModel = ({ gender }) => {
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const modelFile = gender === 'Male' ? '/models/male.fbx' : '/models/female.fbx';
+  const modelFile = gender === 'male' ? '/models/male.fbx' : '/models/female.fbx';
 
   useEffect(() => {
     let scene, camera, renderer, model;
