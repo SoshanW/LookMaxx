@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/HeroSection.css';
+import heroImage from '../assets/hero-image.jpeg'; // Adjust the path based on your folder structure
 
 const HeroSection = () => {
   return (
@@ -13,7 +14,7 @@ const HeroSection = () => {
         </div>
       </div>
       <div className="hero-visual">
-        <div className="hero-image-placeholder"></div>
+        <img src={heroImage} alt="Hero" className="hero-image" />
       </div>
     </section>
   );

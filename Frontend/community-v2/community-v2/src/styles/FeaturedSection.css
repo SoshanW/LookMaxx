@@ -1,24 +1,24 @@
 .featured-section {
   padding: 3rem 2rem;
-  background: linear-gradient(to top, #372958, #0f1233);
+  background: linear-gradient(to bottom, #362d5a, #18113a);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .section-header h2 {
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: #ffffff;
   font-weight: 600;
 }
 
 .view-all {
   background: transparent;
-  color: #84ffff;
+  color: #ffffff;
   border: none;
   font-size: 1rem;
   cursor: pointer;
@@ -27,34 +27,34 @@
 .featured-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: 6rem;
 }
 
 .featured-card {
-  background: rgba(9, 42, 62, 0.7);
-  border: 1px solid #84ffff;
-  border-radius: 10px;
-  padding: 30px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 0 20px rgba(132, 255, 255, 0.4);
-  color: white;
-  text-align: center;
-  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
-  min-height: 200px; /* Ensure consistent height */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+    background: linear-gradient(#0000008f, #0000002e);
+    border: none;
+    border-radius: 10px;
+    padding: 30px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 8px #d3d0fb7d;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .featured-card:hover {
-  background: rgba(9, 42, 62, 0.85);
-  box-shadow: 0 0 30px rgba(132, 255, 255, 0.6);
+  background: #ebddff24;
+  box-shadow: 0 0 15px rgba(192, 185, 255, 0.427);
   transform: scale(1.03) translateZ(0); /* Keep hardware acceleration */
 }
 
 .card-visual {
-  height: 150px;
-  background: radial-gradient(circle, #566097, #191C4C);
+  height: 200px;
+  background: #ded3ff;
 }
 
 .card-content {
@@ -64,25 +64,25 @@
 .card-content h3 {
   color: #ffffff;
   font-size: 1.3rem;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .card-stats {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1.2rem;
-  color: #8BD0D0;
+  color: #ffffff;
   font-size: 0.9rem;
 }
 
 .active-now {
-  color: #84ffff;
+  color: #c6eff8;
 }
 
 .join-button {
   width: 100%;
-  background-color: #092a3e;
-  color: #ffffff;
+  background-color: #bbaaffcc;
+  color: #000000;
   border: none;
   border-radius: 6px;
   padding: 0.6rem;
@@ -92,6 +92,6 @@
 }
 
 .join-button:hover {
-  background-color: #191C4C;
-  box-shadow: 0 0 10px rgba(132, 255, 255, 0.6);
+  background-color: #d0c4fccc;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.615);
 }
