@@ -20,8 +20,13 @@ import StudyPage from './pages/StudyPage';
 import ProfilePage from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
 
+// Payment related pages
+import PaymentNotifyPage from './pages/PaymentNotifyPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
+
 // Import global styles
 import './styles/global.css';
+import './styles/pricing/pricing-page.css';
 
 function App() {
   const { isLoggedIn, userName, userEmail, userProfilePicture, logout, isAuthReady } = useAuthContext();
@@ -171,6 +176,10 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/pricing" element={<PricingPage />} />
+        
+        {/* Payment related routes */}
+        <Route path="/payment-notify" element={<PaymentNotifyPage />} />
+        <Route path="/payment-success" element={<PaymentSuccessPage />} />
         
         {/* ADDED: Catch-all route to handle 404 issues */}
         <Route path="*" element={<FfrPage />} />

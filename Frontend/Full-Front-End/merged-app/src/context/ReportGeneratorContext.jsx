@@ -95,7 +95,7 @@ export const ReportGeneratorProvider = ({ children }) => {
         console.error('Error checking report status:', error);
         // Continue polling despite errors
       }
-    }, 3000);
+    }, 30000);
     
     setPollingTimer(timer);
     
