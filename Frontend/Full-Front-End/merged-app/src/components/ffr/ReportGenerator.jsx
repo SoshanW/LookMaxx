@@ -8,7 +8,7 @@ const ReportGenerator = ({
   onClose, 
   onMinimize,
   isMinimized = false,
-  duration = 240000, // Default duration in ms (1 minute)
+  duration = 240000, //  duration in ms (4 minute)
   onReportComplete,
   pdfUrl = null,
   error = null
@@ -224,7 +224,7 @@ const ReportGenerator = ({
                       <Download size={18} />
                       Download Report PDF
                     </button>
-                    {!pdfUrl && <p className="pdf-not-ready">PDF is still being prepared. Please wait...</p>}
+                    {!pdfUrl && <p className="pdf-not-ready">PDF is Generated...</p>}
                   </div>
                 ) : (
                   <p className="wait-message">Please don't close this window. Your comprehensive analysis is being generated.</p>
