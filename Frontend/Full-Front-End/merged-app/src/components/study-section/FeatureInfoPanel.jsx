@@ -4,11 +4,14 @@ import { gsap } from 'gsap';
 import FeatureHeader from './FeatureHeader';
 import FeatureContent from './FeatureContent';
 import FeatureFooter from './FeatureFooter';
+import PixelCanvas from './PixelCanvas';
 import '../../styles/study-section/FeatureInfo.css';
+import '../../styles/study-section/PixelCanvas.css';
 
 const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting = false, onExitComplete }) => {
   const panelRef = useRef(null);
   const [isMouseInside, setIsMouseInside] = useState(false);
+  const [pixelColors] = useState("#a94dff, #4d9bff, #7038aa");
 
   // 🛠 Prevents Auto-Closing on Hover
   const handleMouseEnter = () => setIsMouseInside(true);
@@ -32,7 +35,7 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
     };
   }, [onClose]);
 
-  // 🛠 GSAP Animations (Fixed for Stability)
+  // 🛠 GSAP Animations
   useEffect(() => {
     if (!panelRef.current) return;
 
@@ -87,11 +90,19 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
   return (
     <div 
       className="feature-info-container" 
-      style={style} 
+      style={{...style}} 
       ref={panelRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      <div className="pixel-canvas-wrapper">
+        <PixelCanvas 
+          colors={pixelColors}
+          gap={6}
+          speed={50}
+        />
+      </div>
+      
       <FeatureCloseButton onClose={onClose} />
       <FeatureHeader title={feature} />
       <FeatureContent key={feature} description={description} isExiting={isExiting} />
@@ -100,7 +111,7 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
   );
 };
 
-// 🛠 Custom Close Button with Hover Glow - Changed the name to FeatureCloseButton
+// Custom Close Button
 const FeatureCloseButton = ({ onClose }) => (
   <button className="feature-close-button" onClick={onClose}>×</button>
 );
@@ -109,7 +120,7 @@ FeatureCloseButton.propTypes = {
   onClose: PropTypes.func.isRequired
 };
 
-// 🛠 Prop Validations
+// Prop Validations
 FeatureInfoPanel.propTypes = {
   feature: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,

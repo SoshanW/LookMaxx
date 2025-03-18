@@ -7,6 +7,7 @@ import WelcomePanel from './WelcomePanel'
 import SceneLighting from './SceneLighting'
 import { featureData } from '../../data/FeatureData'
 import '../../styles/study-section/AnatomyExplorer.css'
+import '../../styles/study-section/PixelCanvas.css';
 
 const AnatomyExplorer = () => {
   const [selectedFeature, setSelectedFeature] = useState(null)
