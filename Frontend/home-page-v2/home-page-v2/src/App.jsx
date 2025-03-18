@@ -1,15 +1,20 @@
 import React from 'react'
 import ScrollAnimation from './components/ScrollAnimation'
-import Navbar from './components/Navbar';
+import Navbar from './components/Navbar'
+import TeamSlider from './components/TeamSlider' // Import the new TeamSlider component
 import './App.css'
-import './styles/ScrollAnimation.css';
-
+import './styles/ScrollAnimation.css'
+import ModelSection from './components/ModelSection'
+import Footer from './components/Footer'
 
 function App() {
   return (
     <div className="app">
-      <ScrollAnimation frameCount={40} imageFormat="jpg" />
       <Navbar />
+      <ScrollAnimation frameCount={190} imageFormat="jpg" />
+      <ModelSection />
+      <TeamSlider /> 
+      <Footer />
     </div>
   )
 }
