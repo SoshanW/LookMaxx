@@ -55,7 +55,7 @@
 .model-selection-container {
   display: flex;
   justify-content: center;
-  gap: 50px;
+  gap: 90px;
   margin: 0 0 40px 0; /* Increased gap between models and button */
   width: 100%;
   height: 100%;
@@ -117,10 +117,10 @@
   height: 100%;
   background: radial-gradient(
     ellipse at center, 
-    rgba(255, 255, 255, 0.25) 0%, 
-    rgba(1, 0, 2, 0.1) 30%, 
-    rgba(18, 2, 45, 0.1) 60%, 
-    rgba(255, 255, 255, 0.25) 100%
+    rgba(255, 255, 255, 0.473) 0%, 
+    rgba(1, 0, 2, 0.178) 30%, 
+    rgba(18, 2, 45, 0.137) 60%, 
+    rgba(255, 255, 255, 0.267) 100%
   );
   opacity: 0;
   z-index: 1;

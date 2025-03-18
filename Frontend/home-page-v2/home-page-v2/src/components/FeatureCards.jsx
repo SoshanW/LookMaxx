@@ -62,6 +62,7 @@ const FeatureCards = ({ scrollProgress }) => {
       <div className="feature-card feature-card-1">
         <div className="card-content">
           <h2>Interested about facial aesthetics?</h2>
+          <p>Let's dive into the actual science behind your looks!</p>
           <button className="card-button">GET STARTED</button>
         </div>
       </div>
@@ -69,6 +70,7 @@ const FeatureCards = ({ scrollProgress }) => {
       <div className="feature-card feature-card-2">
         <div className="card-content">
           <h2>Looking for Modelling opportunities?</h2>
+          <p>Feel like you have the potential? This is the right place!</p>
           <button className="card-button">GET STARTED</button>
         </div>
       </div>
@@ -76,6 +78,7 @@ const FeatureCards = ({ scrollProgress }) => {
       <div className="feature-card feature-card-3">
         <div className="card-content">
           <h2>Find your Style</h2>
+          <p>Discover the latest fashion trends tailored for you </p>
           <button className="card-button">Learn More</button>
         </div>
       </div>
@@ -83,6 +86,7 @@ const FeatureCards = ({ scrollProgress }) => {
       <div className="feature-card feature-card-4">
         <div className="card-content">
           <h2>Join our community</h2>
+          <p>Connect with like-minded individuals and share your experiences</p>
           <button className="card-button">Join</button>
         </div>
       </div>
