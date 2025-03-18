@@ -1,0 +1,377 @@
+@import url("https://api.fontshare.com/v2/css?f[]=archivo@100,200,300,400,500,600,700,800,900&f[]=clash-display@200,300,400,500,600,700&display=swap");
+
+:root {
+  --slide-width: min(25vw, 300px);
+  --slide-aspect: 2 / 3;
+  --slide-transition-duration: 800ms;
+  --slide-transition-easing: ease;
+  --font-archivo: "Archivo", sans-serif;
+  --font-clash-display: "Clash Display", sans-serif;
+}
+
+.slider-section {
+  padding: 2rem;
+  background: linear-gradient(135deg, #000000, #2e005c);
+  text-align: center;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.titlecontainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem; 
+  margin-top: -18rem;
+  margin-bottom: 18.5rem;
+  width: 100%;
+}
+
+.line {
+  flex-grow: 1;
+  height: 2px;
+  background-color: #8A4FFF;
+  max-width: 15%; /* Limits line length */
+}
+
+.slider-section h2 { 
+  position: relative;
+  font-family: var(--font-clash-display);
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.slider {
+  width: calc(3 * var(--slide-width));
+  height: calc(2 * var(--slide-height));
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 0 auto;
+}
+
+.slider--btn {
+  background: rgba(156, 153, 236, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 250ms cubic-bezier(0.215, 0.61, 0.355, 1);
+  z-index: 999;
+}
+
+.slider--btn svg {
+  width: 30px;
+  height: 30px;
+  stroke: white;
+}
+
+.slider--btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.slides__wrapper {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.slides,
+.slides--infos {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.slide {
+  width: var(--slide-width);
+  aspect-ratio: var(--slide-aspect);
+  user-select: none;
+  perspective: 800px;
+  transition: transform 800ms var(--slide-transition-easing);
+  position: absolute;
+  box-shadow: 0 10px 20px rgba(201, 183, 183, 0.2);
+}
+
+.slide[data-current] {
+  transform: scale(1.2);
+  z-index: 10;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.slide[data-next] {
+  transform: translateX(107%) rotateY(-45deg);
+  z-index: 5;
+}
+
+.slide[data-previous] {
+  transform: translateX(-107%) rotateY(45deg);
+  z-index: 5;
+}
+
+.slide--image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.8);
+  transition: filter var(--slide-transition-duration) var(--slide-transition-easing);
+}
+
+.slide[data-current] .slide--image {
+  filter: brightness(1);
+}
+
+.slide__bg {
+  position: absolute;
+  inset: -20%;
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 800ms ease, transform 800ms ease;
+}
+
+.slide__bg[data-current] {
+  opacity: 1;
+}
+
+.slide-info {
+  position: absolute;
+  bottom: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  color:#ffffffd7;
+  z-index: 20;
+  font-family: var(--font-clash-display);
+  width: 100%;
+  text-align: center;
+}
+
+.slide-info[data-current] .slide-info--text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-info--text {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: 800ms ease;
+  transition-delay: calc(var(--slide-transition-duration) / 3);
+}
+
+.slide-info--text[data-title] {
+  font-size: 3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.slide-info--text[data-subtitle] {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.slide-info--text[data-description] {
+  font-size: 1.2rem;
+  font-family: var(--font-archivo);
+  font-weight: 300;
+}
+
+.in-app-browser-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.in-app-browser-container {
+  width: 90%;
+  height: 90%;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn 0.3s ease;
+}
+
+.browser-controls {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.url-bar {
+  flex: 1;
+  background-color: white;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #333;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 16px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #e0e0e0;
+}
+
+.browser-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+}
+
+.browser-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 16px 24px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 4px;
+}
+
+/* Image overlay for "Visit Store" hover effect */
+.slide--image__wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-overlay span {
+  color: white;
+  font-weight: bold;
+  padding: 8px 16px;
+  border: 2px solid white;
+  border-radius: 4px;
+}
+
+.slide--image__wrapper:hover .image-overlay {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .titlecontainer {
+    margin-top: -5rem;
+    margin-bottom: 10rem;
+    gap: 1rem;
+  }
+
+  .line {
+    max-width: 10%;
+  }
+
+  .slider-section h2 {
+    font-size: 2rem;
+  }
+}
+
+
+.visit-store-btn {
+  margin-top: 16px;
+  padding: 8px 16px;
+  background-color: #8A4FFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-family: var(--font-clash-display);
+  font-weight: 500;
+  display: inline-block; 
+  position: relative; 
+  z-index: 30; 
+}
+
+.visit-store-btn:hover {
+  background-color: #6a3cc5;
+}
+
+
+.slide-info--text__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.slide-info[data-current] .slide-info--text {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--slide-transition-duration) / 3);
+}
+
+/* Animation for button appearance */
+.slide-info[data-current] .visit-store-btn {
+  animation: buttonFadeIn 0.5s ease forwards;
+  animation-delay: 0.6s;
+}
+
+@keyframes buttonFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
