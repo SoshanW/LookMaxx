@@ -87,10 +87,17 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
     }
   }, [style, isExiting, onExitComplete]);
 
+  // Combine the style prop with any additional styles
+  const combinedStyle = {
+    ...style,
+    position: "absolute", // Force absolute positioning
+    zIndex: 100,          // Ensure high z-index
+  };
+
   return (
     <div 
       className="feature-info-container" 
-      style={{...style}} 
+      style={combinedStyle} 
       ref={panelRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -103,10 +110,12 @@ const FeatureInfoPanel = ({ feature, description, onClose, style = {}, isExiting
         />
       </div>
       
-      <FeatureCloseButton onClose={onClose} />
-      <FeatureHeader title={feature} />
-      <FeatureContent key={feature} description={description} isExiting={isExiting} />
-      <FeatureFooter />
+      <div className="feature-content-wrapper">
+        <FeatureCloseButton onClose={onClose} />
+        <FeatureHeader title={feature} />
+        <FeatureContent key={feature} description={description} isExiting={isExiting} />
+        <FeatureFooter />
+      </div>
     </div>
   );
 };

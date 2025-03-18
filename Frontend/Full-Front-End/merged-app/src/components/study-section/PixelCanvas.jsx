@@ -12,7 +12,7 @@ class Pixel {
     this.size = 0;
     this.sizeStep = Math.random() * 0.4;
     this.minSize = 0.5;
-    this.maxSizeInteger = 2.5; // Increased size for better visibility
+    this.maxSizeInteger = 3; // Increased for better visibility
     this.maxSize = this.getRandomValue(this.minSize, this.maxSizeInteger);
     this.delay = delay;
     this.counter = 0;
@@ -88,7 +88,7 @@ class Pixel {
   }
 }
 
-const PixelCanvas = ({ colors = "#a94dff, #4d9bff, #ffffff", gap = 6, speed = 35 }) => {
+const PixelCanvas = ({ colors = "#a94dff, #4d9bff, #ffffff", gap = 8, speed = 50 }) => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const pixelsRef = useRef([]);
@@ -104,6 +104,8 @@ const PixelCanvas = ({ colors = "#a94dff, #4d9bff, #ffffff", gap = 6, speed = 35
   };
   
   const createPixels = (canvas, ctx) => {
+    if (!canvas || !ctx) return;
+    
     pixelsRef.current = [];
     
     // Use smaller gap for more pixels
@@ -126,7 +128,7 @@ const PixelCanvas = ({ colors = "#a94dff, #4d9bff, #ffffff", gap = 6, speed = 35
     
     animationRef.current = requestAnimationFrame(() => animate(fnName));
     
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext('2d', { willReadFrequently: true });
     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     
     let allIdle = true;
@@ -149,15 +151,17 @@ const PixelCanvas = ({ colors = "#a94dff, #4d9bff, #ffffff", gap = 6, speed = 35
     const width = Math.floor(rect.width);
     const height = Math.floor(rect.height);
     
+    if (width <= 0 || height <= 0) return;
+    
     canvasRef.current.width = width;
     canvasRef.current.height = height;
     canvasRef.current.style.width = `${width}px`;
     canvasRef.current.style.height = `${height}px`;
     
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext('2d', { willReadFrequently: true });
     createPixels(canvasRef.current, ctx);
     
-    // Force initial appearance for testing
+    // Force appearance for active state
     if (isActive) {
       cancelAnimationFrame(animationRef.current);
       animate('appear');
@@ -165,19 +169,24 @@ const PixelCanvas = ({ colors = "#a94dff, #4d9bff, #ffffff", gap = 6, speed = 35
   };
   
   useEffect(() => {
+    // Safety check
     if (!canvasRef.current || !containerRef.current) return;
     
-    // Create a ResizeObserver
-    const resizeObserver = new ResizeObserver(handleResize);
+    const resizeObserver = new ResizeObserver(() => {
+      window.requestAnimationFrame(handleResize);
+    });
+    
     resizeObserver.observe(containerRef.current);
     
     // Initial setup
     handleResize();
     
-    // Find the parent element (feature-info-container or welcome-container)
+    // Find the parent element
     const parent = containerRef.current.closest('.feature-info-container') || 
                   containerRef.current.closest('.welcome-container');
     
+    if (!parent) return;
+                  
     // Event handlers for mouse interaction
     const handleMouseEnter = () => {
       setIsActive(true);
@@ -191,10 +200,8 @@ const PixelCanvas = ({ colors = "#a94dff, #4d9bff, #ffffff", gap = 6, speed = 35
       animate('disappear');
     };
     
-    if (parent) {
-      parent.addEventListener('mouseenter', handleMouseEnter);
-      parent.addEventListener('mouseleave', handleMouseLeave);
-    }
+    parent.addEventListener('mouseenter', handleMouseEnter);
+    parent.addEventListener('mouseleave', handleMouseLeave);
     
     // Clean up
     return () => {

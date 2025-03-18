@@ -101,9 +101,11 @@ const WelcomePanel = ({ isExiting = false, onExitComplete = null }) => {
         />
       </div>
       
-      <WelcomeHeader />
-      <p className="welcome-text" ref={textRef}></p>
-      <WelcomeFooter />
+      <div className="welcome-content-wrapper">
+        <WelcomeHeader />
+        <p className="welcome-text" ref={textRef}></p>
+        <WelcomeFooter />
+      </div>
     </div>
   );
 };
