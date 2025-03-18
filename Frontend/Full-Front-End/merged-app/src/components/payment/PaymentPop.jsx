@@ -106,6 +106,8 @@ const generateOrderId = () => {
       hash: hash
     };
     
+    console.log('Payment data being sent to PayHere:', paymentData);
+    
     // Add form fields
     Object.entries(paymentData).forEach(([key, value]) => {
       const input = document.createElement('input');
@@ -121,7 +123,6 @@ const generateOrderId = () => {
     
     // Clean up
     document.body.removeChild(form);
-
   };
 
   return (

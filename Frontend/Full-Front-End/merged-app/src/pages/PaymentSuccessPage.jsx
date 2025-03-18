@@ -1,27 +1,86 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { updateUserAfterPayment } from '../utils/paymentUtils';
+import { getCookie, setCookie } from '../utils/cookies';
+import axios from 'axios';
 
 const PaymentSuccessPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [verificationStatus, setVerificationStatus] = useState('verifying');
 
   useEffect(() => {
-    // Update user data in cookies for immediate UI update
-    updateUserAfterPayment();
+    const verifyPaymentWithBackend = async () => {
+      try {
+        // Get the status code from cookie
+        const statusCode = getCookie('payhere_status_code') || '2';
+        
+        // Get JWT token from cookies
+        const token = getCookie('access_token');
+        console.log('Token being sent:', token ? token.substring(0, 10) + '...' : 'No token');
+        
+        if (!token) {
+          console.error('No authentication token found');
+          setVerificationStatus('failed');
+          return false;
+        }
+        
+        const formData = new FormData();
+        formData.append('status_code', statusCode);
+        
+        // Make sure Authorization header is properly set
+        const response = await axios.post('/payments/verify-payment', 
+          formData,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            withCredentials: true // Add this line to include cookies
+          }
+        );
+        
+        console.log('Backend verification response from success page:', response.data);
+        
+        if (response.data.status === 'success') {
+          setVerificationStatus('success');
+          return true;
+        } else {
+          setVerificationStatus('failed');
+          return false;
+        }
+      } catch (error) {
+        console.error('Error verifying payment with backend from success page:', error);
+        setVerificationStatus('failed');
+        return false;
+      }
+    };
     
-    // Redirect to profile page after 3 seconds
-    const timer = setTimeout(() => {
-      navigate('/profile', { 
-        state: { 
-          paymentSuccess: true,
-          message: 'Payment successful! You are now a premium user.' 
-        } 
-      });
-    }, 3000);
-
-    return () => clearTimeout(timer);
+    const processPayment = async () => {
+      // First try to verify with backend
+      const backendVerified = await verifyPaymentWithBackend();
+      
+      // Update user data in cookies regardless of backend verification (fallback)
+      updateUserAfterPayment();
+      
+      // Redirect to profile page after verification attempt
+      setTimeout(() => {
+        navigate('/profile', { 
+          state: { 
+            paymentSuccess: backendVerified !== false,
+            message: backendVerified !== false 
+              ? 'Payment successful! You are now a premium user.' 
+              : 'Payment processed but verification with server failed. Please contact support.'
+          } 
+        });
+      }, 3000);
+    };
+    
+    processPayment();
+    
+    return () => {
+      // Clean up any timers if needed
+    };
   }, [navigate]);
 
   return (

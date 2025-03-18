@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { handlePaymentNotification, updateUserAfterPayment } from '../utils/paymentUtils';
-import { setCookie } from '../utils/cookies';
+import { setCookie, getCookie } from '../utils/cookies';
+import axios from 'axios';
 
 const PaymentNotifyPage = () => {
   const [processing, setProcessing] = useState(true);
@@ -23,13 +24,56 @@ const PaymentNotifyPage = () => {
     const handleFormData = async () => {
       try {
         // If there's form data in the request
-        const formData = await new FormData(document.querySelector('form'));
-        for (const [key, value] of formData.entries()) {
-          paymentData[key] = value;
+        const form = document.querySelector('form');
+        if (form) {
+          const formData = new FormData(form);
+          for (const [key, value] of formData.entries()) {
+            paymentData[key] = value;
+          }
         }
       } catch (error) {
         // If no form data, continue with URL params only
         console.log('No form data found, using URL params only');
+      }
+    };
+
+    const verifyPaymentWithBackend = async (statusCode) => {
+      try {
+        // Get JWT token from cookies
+        const token = getCookie('access_token');
+        
+        if (!token) {
+          throw new Error('Authentication token not found');
+        }
+        
+        console.log('Calling backend verification endpoint with status_code:', statusCode);
+        
+        // Create form data for the API call
+        const formData = new FormData();
+        formData.append('status_code', statusCode);
+        
+        // Call the backend verification endpoint
+        const response = await axios.post('/payments/verify-payment', 
+          formData,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+        
+        console.log('Backend verification response:', response.data);
+        
+        return {
+          success: response.data.status === 'success',
+          message: response.data.message
+        };
+      } catch (error) {
+        console.error('Error verifying payment with backend:', error);
+        return {
+          success: false,
+          error: error.response?.data?.message || 'Payment verification failed'
+        };
       }
     };
 
@@ -40,13 +84,20 @@ const PaymentNotifyPage = () => {
       try {
         await handleFormData();
         
+        // Get status code from the PayHere response
+        const statusCode = paymentData.status_code || '0';
+        
         // Log status_code specifically as requested
-        console.log('PayHere Status Code:', paymentData.status_code);
+        console.log('PayHere Status Code:', statusCode);
         
-        // Process the payment notification
-        const result = await handlePaymentNotification(paymentData);
+        // Store status code in a cookie for verification
+        setCookie('payhere_status_code', statusCode, { expires: 1 });
+        console.log('Status code stored in cookie:', getCookie('payhere_status_code'));
         
-        if (result.success) {
+        // Call backend to verify payment
+        const verificationResult = await verifyPaymentWithBackend(statusCode);
+        
+        if (verificationResult.success) {
           // Update the user data in cookies for immediate UI update
           updateUserAfterPayment();
           
@@ -60,13 +111,13 @@ const PaymentNotifyPage = () => {
             });
           }, 1500);
         } else {
-          setError(result.error || 'Payment verification failed');
+          setError(verificationResult.error || 'Payment verification failed');
           // Redirect to profile with error
           setTimeout(() => {
             navigate('/profile', { 
               state: { 
                 paymentError: true,
-                message: result.error || 'Payment verification failed' 
+                message: verificationResult.error || 'Payment verification failed' 
               } 
             });
           }, 3000);

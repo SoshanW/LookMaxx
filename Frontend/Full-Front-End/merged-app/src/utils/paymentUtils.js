@@ -19,8 +19,8 @@ export const handlePaymentNotification = async (paymentData) => {
   // Store status code in a cookie for verification
   setCookie('payhere_status_code', paymentData.status_code, { expires: 1 }); // 1 day expiry
   
-  // Log the status code for verification as requested
-  console.log('PayHere Status Code stored in cookie:', paymentData.status_code);
+  // Log the status code for verification as requested - Add more detailed logging
+  console.log(`PayHere Status Code "${paymentData.status_code}" stored in cookie:`, getCookie('payhere_status_code'));
   
   try {
     // Get JWT token from cookies
@@ -31,9 +31,14 @@ export const handlePaymentNotification = async (paymentData) => {
       return { success: false, error: 'Authentication required' };
     }
     
+    console.log('Preparing to call backend verification API with status_code:', paymentData.status_code);
+    
     // Call backend verification API (using FormData as the backend expects it)
     const formData = new FormData();
     formData.append('status_code', paymentData.status_code);
+    
+    // Log the form data that will be sent
+    console.log('FormData created with status_code:', paymentData.status_code);
     
     const response = await axios.post('/payments/verify-payment', 
       formData,
@@ -45,16 +50,21 @@ export const handlePaymentNotification = async (paymentData) => {
       }
     );
     
+    console.log('Backend verification API response:', response.data);
+    
     // Check response
     if (response.data.status === 'success') {
-      // Clear the payment status cookie after successful verification
+      // Set the user subscription cookie after successful verification
       setCookie('user_subscription', 'premium', { expires: 30 }); // Store subscription status
+      console.log('User subscription updated to premium in cookie');
       return { success: true };
     } else {
+      console.error('Backend verification failed:', response.data.message);
       return { success: false, error: response.data.message };
     }
   } catch (error) {
     console.error('Payment verification error:', error);
+    console.error('Error details:', error.response?.data || error.message);
     return { 
       success: false, 
       error: error.response?.data?.message || 'Payment verification failed'
