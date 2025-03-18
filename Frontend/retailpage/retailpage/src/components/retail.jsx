@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../styles/Hero.css';
 import '../styles/Slider.css';
-import { motion } from "framer-motion";
+import { motion, useAnimation, useInView } from "framer-motion";
 import FitOnSection from './FitOnSection';
 
-const RetailpageWithSlider = () => {
+const Retailpage = () => {
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
-  // Animations for hero section
+
   const slideLeft = {
     hidden: { x: 0, opacity: 0 },
     visible: {
@@ -28,21 +28,18 @@ const RetailpageWithSlider = () => {
 
   // Slider data
   const slides = [
-
     {
       image: 'carnage.jpg',
       title: 'Sewed',
       subtitle: 'Fashion',
       description: 'Trendy collections for you'
     },
-    
     {
       image: 'kellyfelder.jpg',
       title: 'Threads',
       subtitle: 'Clothing',
       description: 'Find your perfect style'
     },
-    
     {
       image: 'kellyfelder.jpg',
       title: 'Drift & Stitch',
@@ -61,6 +58,76 @@ const RetailpageWithSlider = () => {
     if (index === (currentIndex + 1) % slides.length) return 'slide next';
     if (index === (currentIndex - 1 + slides.length) % slides.length) return 'slide previous';
     return 'slide';
+  };
+
+ 
+  const sliderControls = useAnimation();
+  const sliderRef = React.useRef(null);
+  const sliderInView = useInView(sliderRef, { once: true, amount: 0.3 });
+
+
+  const featureSectionRef = React.useRef(null);
+  const featureSectionInView = useInView(featureSectionRef, { once: true, amount: 0.2 });
+  const featureSectionControls = useAnimation();
+
+  // Trigger animations when elements come into view
+  useEffect(() => {
+    if (sliderInView) {
+      sliderControls.start('visible');
+    }
+  }, [sliderInView, sliderControls]);
+
+  useEffect(() => {
+    if (featureSectionInView) {
+      featureSectionControls.start('visible');
+    }
+  }, [featureSectionInView, featureSectionControls]);
+
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" }
+    }
+  };
+
+  const slideInContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const slideInFromRight = {
+    hidden: { x: 100, opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: { 
+        type: "tween", 
+        duration: 0.7,
+        ease: [0.25, 0.1, 0.25, 1.0] // cubic bezier easing
+      }
+    }
+  };
+
+  const slideInFromLeft = {
+    hidden: { x: -100, opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: { 
+        type: "tween", 
+        duration: 0.7,
+        ease: [0.25, 0.1, 0.25, 1.0] // cubic bezier easing
+      }
+    }
   };
 
   return (
@@ -97,12 +164,21 @@ const RetailpageWithSlider = () => {
       </div>
 
       {/* Slider Section */}
-      <div className="slider-section">
-        <div className='titlecontainer'>
+      <motion.div 
+        className="slider-section"
+        ref={sliderRef}
+        variants={fadeInUp}
+        initial="hidden"
+        animate={sliderControls}
+      >
+        <motion.div 
+          className='titlecontainer'
+          variants={fadeInUp}
+        >
           <div className='line'></div>
           <h2>Featured Stores</h2>
           <div className='line'></div>
-        </div>
+        </motion.div>
         
         <div className="slider">
           <button 
@@ -182,10 +258,27 @@ const RetailpageWithSlider = () => {
             </svg>
           </button>
         </div>
-      </div>
-      <FitOnSection />
+      </motion.div>
+
+      <motion.div
+        ref={featureSectionRef}
+        variants={slideInContainer}
+        initial="hidden"
+        animate={featureSectionControls}
+        className="feature-section-wrapper"
+      >
+        <FitOnSection 
+          childWrapperProps={{
+            alternatingAnimation: true,
+            animationVariants: {
+              even: slideInFromLeft,
+              odd: slideInFromRight
+            }
+          }}
+        />
+      </motion.div>
     </>
   );
 };
 
-export default RetailpageWithSlider;
+export default Retailpage;

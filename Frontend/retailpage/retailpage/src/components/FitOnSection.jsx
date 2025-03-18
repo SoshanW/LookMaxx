@@ -68,7 +68,7 @@ const FitOnSection = () => {
       <div className="fiton-description">
         <h3>Virtual 3D Experience</h3>
         <p>
-          Explore our collection in 3D. Rotate, zoom, and see every detail before you buy. 
+          Explore the collection in 3D. Rotate, zoom, and see every detail before you buy. 
           Our virtual 3D technology lets you see how items will look 360.
         </p>
       </div>
