@@ -37,6 +37,42 @@ const ProfileSection = () => {
     if (activeTab === 'settings') {
       setShowSettings(true);
     }
+    
+    // Check for payment success/error messages from location state
+    if (location.state?.paymentSuccess) {
+      setError(null); // Clear any existing errors
+      // Display success message temporarily
+      const successMsg = document.createElement('div');
+      successMsg.className = 'payment-success-message';
+      successMsg.innerHTML = `
+        <div style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); 
+                    background-color: rgba(76, 175, 80, 0.9); color: white; padding: 15px 25px; 
+                    border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000;
+                    display: flex; align-items: center; gap: 10px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-.997-6l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414L11.003 16z" 
+                  fill="currentColor"/>
+          </svg>
+          ${location.state.message || 'Payment successful! Your account has been upgraded to Premium!'}
+        </div>
+      `;
+      document.body.appendChild(successMsg);
+      
+      // Remove the message after 5 seconds
+      setTimeout(() => {
+        if (successMsg.parentNode) {
+          document.body.removeChild(successMsg);
+        }
+      }, 5000);
+      
+      // Clear the location state to prevent showing the message again on refresh
+      window.history.replaceState({}, document.title);
+    } else if (location.state?.paymentError) {
+      setError(location.state.message || 'Payment verification failed. Please try again.');
+      
+      // Clear the location state to prevent showing the error again on refresh
+      window.history.replaceState({}, document.title);
+    }
 
     // Get user data from cookies and transform for our component
     const fetchUserDataFromCookies = () => {
@@ -49,13 +85,16 @@ const ProfileSection = () => {
         const cookieData = JSON.parse(userDataString);
         console.log("User data from cookie:", cookieData);
         
+        // Check for premium subscription from the backend data
+        const isPremium = cookieData.subscription === 'paid';
+        
         // Transform the data to match our component's expected structure
         setUserData({
           fullName: `${cookieData.first_name} ${cookieData.last_name}`,
           username: cookieData.username,
           email: cookieData.email,
           gender: cookieData.gender || 'Male', // Default if not available
-          accountType: cookieData.subscription || 'regular',
+          accountType: isPremium ? 'premium' : 'regular',
           profileImage: cookieData.profile_picture || 'https://i.pravatar.cc/300' // Use actual S3 URL or fallback
         });
         
@@ -68,6 +107,22 @@ const ProfileSection = () => {
     };
 
     fetchUserDataFromCookies();
+    
+    // Listen for subscription updates from payment events
+    const handleSubscriptionUpdate = (event) => {
+      if (event.detail && event.detail.subscription === 'paid') {
+        setUserData(prevData => ({
+          ...prevData,
+          accountType: 'premium'
+        }));
+      }
+    };
+    
+    window.addEventListener('subscriptionUpdated', handleSubscriptionUpdate);
+    
+    return () => {
+      window.removeEventListener('subscriptionUpdated', handleSubscriptionUpdate);
+    };
   }, [isLoggedIn, navigate, location.state]);
 
   // Handler for delete user button

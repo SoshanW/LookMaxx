@@ -8,9 +8,9 @@ const PAYHERE_CONFIG = {
   MERCHANT_ID: "1229752",
   MERCHANT_SECRET: "MTk3MzMwOTU3NjI2MjU0ODIxMTMzMTE2MjQzMDgyMzA4MzQxNDg4NA==",
   SANDBOX_URL: "https://sandbox.payhere.lk/pay/checkout",
-  RETURN_URL: `${window.location.protocol}//${window.location.host}/`, // Dynamic return URL
-  CANCEL_URL: `${window.location.protocol}//${window.location.host}/`, // Dynamic cancel URL
-  NOTIFY_URL: "http://localhost:5000/api/payment/notify"
+  RETURN_URL: `${window.location.protocol}//${window.location.host}/payment-success`, 
+  CANCEL_URL: `${window.location.protocol}//${window.location.host}/profile`,
+  NOTIFY_URL: `${window.location.protocol}//${window.location.host}/payment-notify` 
 };
 
 const PaymentPop = ({ onClose, planId, planName, planPrice }) => {
