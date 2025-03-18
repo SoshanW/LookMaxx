@@ -30,13 +30,13 @@ const Retailpage = () => {
   const slides = [
     {
       image: 'carnage.jpg',
-      title: 'Sewed',
+      title: 'Threads',
       subtitle: 'Fashion',
       description: 'Trendy collections for you'
     },
     {
       image: 'kellyfelder.jpg',
-      title: 'Threads',
+      title: 'Sewed',
       subtitle: 'Clothing',
       description: 'Find your perfect style'
     },
