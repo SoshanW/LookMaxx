@@ -104,6 +104,7 @@ def delete_user_images_from_s3(username):
     result = {
         "profile_deleted": False,
         "comparison_deleted": False,
+        "ffr_upload_deleted":False,
         "ffr_deleted": False,
         "ffr_delete_errors": []
     }
@@ -111,7 +112,7 @@ def delete_user_images_from_s3(username):
     s3_client = get_s3_client()
     
     try:
-        # 1. First approach - Delete profile picture using the prefix and filename
+        # DELETING PROFILE PIC
         profile_filename = f"{username}_profile.jpg"
         profile_path = current_app.config['S3_PROFILE_PICTURES_PREFIX'] + profile_filename
         
@@ -159,7 +160,24 @@ def delete_user_images_from_s3(username):
                 except ClientError as e:
                     print(f"Error in second deletion attempt: {str(e)}")
 
-        # 1. First approach - Delete profile picture using the prefix and filename
+        # 1. DELETING FFR UPLOAD PIC
+        ffr_upload_filename = f"{username}_ffr.jpg"
+        ffr_upload_path = current_app.config['S3_FFR_PICTURES_UPLOAD'] + ffr_upload_filename
+        
+        # Print debug info for profile path
+        print(f"Attempting to delete profile picture at: {ffr_upload_path}")
+        
+        try:
+            s3_client.delete_object(
+                Bucket=current_app.config['S3_BUCKET'],
+                Key=ffr_upload_path
+            )
+            result["ffr_upload_deleted"] = True
+            print(f"Profile picture deletion request sent for: {ffr_upload_path}")
+        except ClientError as e:
+            print(f"Error in first deletion attempt: {str(e)}")
+
+        #DELETING COMPARISON REPORT PIC
         comparison_filename = f"{username}_comparison_report.png"  
         comparison_path = current_app.config['S3_FFR_PICTURES_GENERATED'] + comparison_filename
         
@@ -176,7 +194,7 @@ def delete_user_images_from_s3(username):
         except ClientError as e:
             print(f"Error in first deletion attempt: {str(e)}")
         
-        # 3. List all FFR pictures for this user
+        # DELETING FFR PIC GENERATED PIC
         ffr_prefix = f"{current_app.config['S3_FFR_PICTURES_GENERATED']}{username}/"
         
         # Print debug info for FFR path
