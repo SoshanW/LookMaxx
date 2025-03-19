@@ -7,6 +7,12 @@ const CommunityPostsSection = () => {
   const [newPostContent, setNewPostContent] = useState('');
   const [newCommentContents, setNewCommentContents] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState({
+    isOpen: false,
+    itemId: null,
+    itemType: null,
+    postId: null
+  });
 
   // Sample user data from auth
   const currentUser = {
@@ -17,7 +23,7 @@ const CommunityPostsSection = () => {
 
   // Load initial posts fetch from an API
   useEffect(() => {
-    // Mock data
+    // Mock data - we'd fetch this from the backend in production
     const initialPosts = [
       {
         id: 'post-1',
@@ -72,7 +78,7 @@ const CommunityPostsSection = () => {
     
     setIsSubmitting(true);
     
-    // Create new post
+    // Create new post with user info
     const newPost = {
       id: `post-${Date.now()}`,
       userId: currentUser.id,
@@ -84,18 +90,46 @@ const CommunityPostsSection = () => {
       comments: []
     };
     
-    // Add post to state
+    // Add post to state at the beginning of the array
     setPosts([newPost, ...posts]);
     setNewPostContent('');
     setIsSubmitting(false);
   };
 
-  // Handle post deletion
-  const handleDeletePost = (postId) => {
-    setPosts(posts.filter(post => post.id !== postId));
+  // Open deletion confirmation dialog
+  const openDeleteConfirmation = (itemId, itemType, postId = null) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      itemId,
+      itemType,
+      postId
+    });
   };
 
-  // Handle like/unlike
+  // Close deletion confirmation dialog
+  const closeDeleteConfirmation = () => {
+    setDeleteConfirmation({
+      isOpen: false,
+      itemId: null,
+      itemType: null,
+      postId: null
+    });
+  };
+
+  // Handle post deletion
+  const handleDeletePost = () => {
+    // Only proceed if we have a valid post ID to delete
+    if (deleteConfirmation.itemType === 'post' && deleteConfirmation.itemId) {
+      // Simple filtering to remove the post
+      setPosts(posts.filter(post => post.id !== deleteConfirmation.itemId));
+      // In a real app, we'd call an API to delete from the database
+      
+      // Close the confirmation dialog
+      closeDeleteConfirmation();
+    }
+  };
+
+  // Handle like/unlike toggle
   const handleToggleLike = (postId) => {
     setPosts(posts.map(post => {
       if (post.id === postId) {
@@ -117,17 +151,18 @@ const CommunityPostsSection = () => {
     
     if (!commentContent) return;
     
-    // Create new comment
+    // Create new comment with isNew flag for highlighting
     const newComment = {
       id: `comment-${Date.now()}`,
       userId: currentUser.id,
       username: currentUser.name,
       userAvatar: currentUser.avatar,
       content: commentContent,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      isNew: true // Flag to identify new comments for styling
     };
     
-    // Add comment to post
+    // Add comment to the right post
     setPosts(posts.map(post => {
       if (post.id === postId) {
         return {
@@ -138,24 +173,52 @@ const CommunityPostsSection = () => {
       return post;
     }));
     
-    // Clear comment input
+    // Clear comment input for this post
     setNewCommentContents({
       ...newCommentContents,
       [postId]: ''
     });
+    
+    // Remove the isNew flag after a few seconds
+    setTimeout(() => {
+      setPosts(prevPosts => prevPosts.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: post.comments.map(comment => {
+              if (comment.id === newComment.id) {
+                const { isNew, ...commentWithoutIsNew } = comment;
+                return commentWithoutIsNew;
+              }
+              return comment;
+            })
+          };
+        }
+        return post;
+      }));
+    }, 5000); // Keep the highlight for 5 seconds
   };
 
   // Handle comment deletion
-  const handleDeleteComment = (postId, commentId) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: post.comments.filter(comment => comment.id !== commentId)
-        };
-      }
-      return post;
-    }));
+  const handleDeleteComment = () => {
+    // Only proceed if we have valid post and comment IDs
+    if (deleteConfirmation.itemType === 'comment' && 
+        deleteConfirmation.itemId && 
+        deleteConfirmation.postId) {
+          
+      setPosts(posts.map(post => {
+        if (post.id === deleteConfirmation.postId) {
+          return {
+            ...post,
+            comments: post.comments.filter(comment => comment.id !== deleteConfirmation.itemId)
+          };
+        }
+        return post;
+      }));
+      
+      // Close the confirmation dialog
+      closeDeleteConfirmation();
+    }
   };
 
   return (
@@ -208,7 +271,7 @@ const CommunityPostsSection = () => {
                 {post.userId === currentUser.id && (
                   <button 
                     className="delete-button" 
-                    onClick={() => handleDeletePost(post.id)}
+                    onClick={() => openDeleteConfirmation(post.id, 'post')}
                     aria-label="Delete post"
                   >
                     <span className="delete-icon">×</span>
@@ -236,7 +299,10 @@ const CommunityPostsSection = () => {
               {/* Comments Section */}
               <div className="comments-section">
                 {post.comments.map(comment => (
-                  <div className="comment" key={comment.id}>
+                  <div 
+                    className={`comment ${comment.isNew ? 'new-comment' : ''}`} 
+                    key={comment.id}
+                  >
                     <div className="comment-header">
                       <div className="comment-user">
                         <img src={comment.userAvatar} alt={comment.username} className="user-avatar-xsmall" />
@@ -248,7 +314,7 @@ const CommunityPostsSection = () => {
                       {comment.userId === currentUser.id && (
                         <button 
                           className="delete-button small" 
-                          onClick={() => handleDeleteComment(post.id, comment.id)}
+                          onClick={() => openDeleteConfirmation(comment.id, 'comment', post.id)}
                           aria-label="Delete comment"
                         >
                           <span className="delete-icon">×</span>
@@ -289,6 +355,30 @@ const CommunityPostsSection = () => {
           ))
         )}
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmation.isOpen && (
+        <div className="delete-confirmation-modal">
+          <div className="modal-content">
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this {deleteConfirmation.itemType}? </p>
+            <div className="modal-actions">
+              <button 
+                className="cancel-button" 
+                onClick={closeDeleteConfirmation}
+              >
+                Cancel
+              </button>
+              <button 
+                className="delete-confirm-button" 
+                onClick={deleteConfirmation.itemType === 'post' ? handleDeletePost : handleDeleteComment}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

@@ -95,11 +95,11 @@
 }
 
 .post-card {
-  background: linear-gradient(#ffffff38, #0000007b);
+  background: linear-gradient(#e0fffd49, #0000007b);
   border-radius: 12px;
   padding: 1.5rem;
   backdrop-filter: blur(5px);
-  box-shadow: 0 3px 3px #7167ff2f;
+  box-shadow: 0 2px 2px #e0fffd49;
   color: #ffffff;
 }
 
@@ -136,8 +136,8 @@
 
 .post-content {
   margin-bottom: 1rem;
-  font-size: rem;
-  line-height: 1.5;
+  font-size: 1.1rem;
+  line-height: 1.4rem;
 }
 
 .post-actions {
@@ -169,13 +169,13 @@
 }
 
 .like-button.liked {
-  color: #ff5e8a;
+  color: #f8a5bb;
 }
 
 .delete-button {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 120, 120, 0.6);
   cursor: pointer;
   font-size: 1.2rem;
   padding: 0;
@@ -233,9 +233,9 @@
 }
 
 .comment-content {
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.4;
-  color: #fff;
+  color: #ffffff;
   margin-left: 2rem;
 }
 
@@ -289,7 +289,7 @@
 
 .comment-submit {
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #6b5aad, #483d74);
+  background: #5b49ac;
   color: white;
   border: none;
   border-radius: 6px;
@@ -301,9 +301,10 @@
 }
 
 .comment-submit:hover {
-  background: linear-gradient(135deg, #7d6bbf, #5a4c8c);
+  background: #6b5caf;
   transform: translateY(-2px);
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+  text-shadow: #ffffff 0 0 5px;
 }
 
 .comment-submit:disabled {
@@ -312,18 +313,334 @@
   transform: none;
   box-shadow: none;
   opacity: 0.7;
+  text-shadow: none;
 }
 
-/* Animation for new comments */
-@keyframes highlight {
-  0% {
-    background-color: rgba(181, 162, 255, 0.3);
+/* New Comment Styling */
+.comment.new-comment {
+  border-left: 3px solid #b5a2ff;
+  background: rgba(224, 255, 253, 0.1);
+}
+
+/* Enhance the submit button without animation */
+.comment-submit:focus {
+  box-shadow: 0 0 3px 2px rgba(91, 73, 172, 0.5);
+  outline: none;
+}
+
+/* Delete Confirmation Styles */
+.delete-confirmation {
+  background: linear-gradient(to right, rgba(64, 20, 91, 0.9), rgba(92, 45, 145, 0.9));
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0.5rem 0 1rem;
+  border-left: 3px solid #ff5e8a;
+}
+
+.delete-confirmation p {
+  color: #ffffff;
+  font-size: 0.95rem;
+  margin: 0 0 0.8rem;
+}
+
+.delete-confirmation-actions {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: flex-end;
+}
+
+.delete-confirm-button,
+.delete-cancel-button {
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-button {
+  background-color: #ff5e8a;
+  color: white;
+  border: none;
+}
+
+.delete-confirm-button:hover {
+  background-color: #ff3972;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.delete-cancel-button {
+  background-color: transparent;
+  color: #e6dcf6;
+  border: 1px solid #e6dcf6;
+}
+
+.delete-cancel-button:hover {
+  background-color: rgba(230, 220, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+/* New Comment Styling */
+.comment.new-comment {
+  border-left: 3px solid #b5a2ff;
+  background: rgba(224, 255, 253, 0.1);
+}
+
+/* Delete button styling */
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-button:hover {
+  background-color: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+}
+
+.delete-button.small {
+  font-size: 16px;
+  padding: 2px 6px;
+}
+
+.delete-icon {
+  display: inline-block;
+  font-weight: bold;
+}
+
+/* Delete confirmation modal */
+.delete-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: modal-appear 0.3s ease-out;
+}
+
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
   }
-  100% {
-    background-color: rgba(24, 17, 58, 0.3);
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-.comment.new {
-  animation: highlight 2s ease;
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.modal-content p {
+  color: #555;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-button {
+  background-color: #dddbdb;
+  color: #333;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+  background-color: #c5c5c5;
+  transform: scale(1.01);
+}
+
+.delete-confirm-button {
+  background-color: #fd789b;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-confirm-button:hover {
+  background-color: #fb648c;
+  transform: scale(1.01);
+}
+
+.delete-confirm-button:active {
+  background-color: #fd4274;
+}
+
+/* Responsive adjustments */
+/* Mobile devices (phones) */
+@media (max-width: 480px) {
+  .community-posts-section {
+    padding: 2rem 1rem;
+  }
+  
+  .post-form-container {
+    padding: 1rem;
+    flex-direction: column;
+  }
+  
+  .user-avatar {
+    margin-bottom: 0.8rem;
+    margin-right: 0;
+  }
+  
+  .post-form textarea {
+    min-height: 80px;
+  }
+  
+  .post-card {
+    padding: 1rem;
+  }
+  
+  .post-actions {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .comment-form {
+    flex-direction: column;
+  }
+  
+  .comment-submit {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  .post-content {
+    font-size: 1rem;
+    line-height: 1.3rem;
+  }
+  
+  .modal-content {
+    width: 95%;
+    padding: 16px;
+  }
+  
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+  .community-posts-section {
+    padding: 2.5rem 1.5rem;
+  }
+  
+  .post-card {
+    padding: 1.2rem;
+  }
+  
+  .post-content {
+    font-size: 1rem;
+  }
+  
+  .comment-form {
+    flex-wrap: wrap;
+  }
+  
+  .comment-form textarea {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .comment-submit {
+    margin-left: auto;
+  }
+  
+  .modal-content {
+    width: 90%;
+    padding: 20px;
+  }
+}
+
+
+/* Medium-sized desktops */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .community-posts-section {
+    padding: 3rem;
+  }
+  
+  .posts-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1600px) {
+  .community-posts-section {
+    padding: 4rem 6rem;
+  }
+  
+  .posts-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .post-form-container {
+    max-width: 1000px;
+    margin: 0 auto 2.5rem auto;
+  }
+  
+  .post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(224, 255, 253, 0.15);
+  }
+  
+  .post-content {
+    font-size: 1.15rem;
+    line-height: 1.5rem;
+  }
+  
+  .section-header h2 {
+    font-size: 2.2rem;
+  }
 }
