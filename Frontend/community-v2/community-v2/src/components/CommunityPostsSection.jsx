@@ -14,22 +14,22 @@ const CommunityPostsSection = () => {
     postId: null
   });
 
-  // Sample user data from auth
+  // Sample user data from auth with local profile picture
   const currentUser = {
     id: 'user-1',
     name: 'Current User',
-    avatar: '/assets/user-avatar.jpeg'
+    avatar: '/profile-pics/current-user.jpg' // Local image from public folder
   };
 
   // Load initial posts fetch from an API
   useEffect(() => {
-    // Mock data - we'd fetch this from the backend in production
+    // Mock data with local profile pictures
     const initialPosts = [
       {
         id: 'post-1',
         userId: 'user-2',
         username: 'Beauty Expert',
-        userAvatar: 'https://via.placeholder.com/40',
+        userAvatar: '/profile-pics/user2.jpg', 
         content: 'What are your thoughts on the Study section?',
         timestamp: new Date('2025-03-16T14:30:00').toISOString(),
         likes: ['user-3', 'user-4'],
@@ -38,7 +38,7 @@ const CommunityPostsSection = () => {
             id: 'comment-1',
             userId: 'user-3',
             username: 'Aesthetic Pro',
-            userAvatar: 'https://via.placeholder.com/40',
+            userAvatar: '/profile-pics/user3.jpg', 
             content: 'I think the Study section is really helpful!',
             timestamp: new Date('2025-03-16T15:15:00').toISOString()
           }
@@ -48,7 +48,7 @@ const CommunityPostsSection = () => {
         id: 'post-2',
         userId: 'user-3',
         username: 'Aesthetic Pro',
-        userAvatar: 'https://via.placeholder.com/40',
+        userAvatar: '/profile-pics/user3.jpg', 
         content: 'I just dived into my FFR report. Im impressed!',
         timestamp: new Date('2025-03-16T10:45:00').toISOString(),
         likes: ['user-2'],
@@ -58,6 +58,7 @@ const CommunityPostsSection = () => {
     
     setPosts(initialPosts);
   }, []);
+
 
   // Format timestamp to readable time
   const formatTimestamp = (timestamp) => {
