@@ -103,6 +103,7 @@ def delete_user_images_from_s3(username):
     from flask import current_app
     result = {
         "profile_deleted": False,
+        "comparison_deleted": False,
         "ffr_deleted": False,
         "ffr_delete_errors": []
     }
@@ -118,7 +119,6 @@ def delete_user_images_from_s3(username):
         print(f"Attempting to delete profile picture at: {profile_path}")
         
         try:
-            # Attempt deletion
             s3_client.delete_object(
                 Bucket=current_app.config['S3_BUCKET'],
                 Key=profile_path
@@ -153,11 +153,28 @@ def delete_user_images_from_s3(username):
                             
                             result["profile_deleted"] = True
                         else:
-                            print(f"No profile pictures found for prefix: {prefix}")
+                            print(f"No comparison graph found for prefix: {prefix}")
                     else:
                         print(f"No objects found for prefix: {prefix}")
                 except ClientError as e:
                     print(f"Error in second deletion attempt: {str(e)}")
+
+        # 1. First approach - Delete profile picture using the prefix and filename
+        comparison_filename = f"{username}_comparison_report.png"  # Change jpg to png
+        comparison_path = current_app.config['S3_FFR_PICTURES_GENERATED'] + comparison_filename
+        
+        # Print debug info for profile path
+        print(f"Attempting to delete profile picture at: {comparison_path}")
+        
+        try:
+            s3_client.delete_object(
+                Bucket=current_app.config['S3_BUCKET'],
+                Key=comparison_path
+            )
+            result["comparison_deleted"] = True
+            print(f"Comparison report picture deletion request sent for: {comparison_path}")
+        except ClientError as e:
+            print(f"Error in first deletion attempt: {str(e)}")
         
         # 3. List all FFR pictures for this user
         ffr_prefix = f"{current_app.config['S3_FFR_PICTURES_GENERATED']}{username}/"
