@@ -1,6 +1,7 @@
 .featured-section {
   padding: 3rem 2rem;
-  background: linear-gradient(to bottom, #362d5a, #18113a);
+  background: linear-gradient(to top, #362d5a, #18113a);
+  font-family: 'Nasalization', sans-serif;
 }
 
 .section-header {

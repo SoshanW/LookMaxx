@@ -5,6 +5,7 @@
   padding: 4rem 2rem;
   background: linear-gradient(to top, #362d5a, #18113a);
   min-height: 50vh;
+  font-family: 'Nasalization', sans-serif;
 }
 
 .hero-content {
@@ -52,6 +53,7 @@
 .primary-button:hover {
   background: radial-gradient(circle, #ffffff, #d2cffc);
   box-shadow: #ffffff 0 0 10px;
+  transform: scale(1.05);
 }
 
 .secondary-button {
@@ -71,6 +73,12 @@
   /* Performance optimization */
   transform: translateZ(0); /* Hardware acceleration */
   will-change: transform; 
+}
+
+.secondary-button:hover {
+  background: radial-gradient(circle, #ffffff, #d2cffc);
+  box-shadow: #ffffff 0 0 10px;
+  transform: scale(1.05);
 }
 
 .hero-visual {

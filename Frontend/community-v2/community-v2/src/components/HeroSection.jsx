@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/HeroSection.css';
-import heroImage from '../assets/hero-image.jpeg'; // Adjust the path based on your folder structure
+import heroImage from '../assets/banner.jpg'; 
 
 const HeroSection = () => {
   return (
