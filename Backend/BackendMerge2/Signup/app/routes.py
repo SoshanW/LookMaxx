@@ -103,6 +103,8 @@ def delete_user_images_from_s3(username):
     from flask import current_app
     result = {
         "profile_deleted": False,
+        "comparison_deleted": False,
+        "ffr_upload_deleted":False,
         "ffr_deleted": False,
         "ffr_delete_errors": []
     }
@@ -110,7 +112,7 @@ def delete_user_images_from_s3(username):
     s3_client = get_s3_client()
     
     try:
-        # 1. First approach - Delete profile picture using the prefix and filename
+        # DELETING PROFILE PIC
         profile_filename = f"{username}_profile.jpg"
         profile_path = current_app.config['S3_PROFILE_PICTURES_PREFIX'] + profile_filename
         
@@ -118,7 +120,6 @@ def delete_user_images_from_s3(username):
         print(f"Attempting to delete profile picture at: {profile_path}")
         
         try:
-            # Attempt deletion
             s3_client.delete_object(
                 Bucket=current_app.config['S3_BUCKET'],
                 Key=profile_path
@@ -153,13 +154,47 @@ def delete_user_images_from_s3(username):
                             
                             result["profile_deleted"] = True
                         else:
-                            print(f"No profile pictures found for prefix: {prefix}")
+                            print(f"No comparison graph found for prefix: {prefix}")
                     else:
                         print(f"No objects found for prefix: {prefix}")
                 except ClientError as e:
                     print(f"Error in second deletion attempt: {str(e)}")
+
+        # 1. DELETING FFR UPLOAD PIC
+        ffr_upload_filename = f"{username}_ffr.jpg"
+        ffr_upload_path = current_app.config['S3_FFR_PICTURES_UPLOAD'] + ffr_upload_filename
         
-        # 3. List all FFR pictures for this user
+        # Print debug info for profile path
+        print(f"Attempting to delete profile picture at: {ffr_upload_path}")
+        
+        try:
+            s3_client.delete_object(
+                Bucket=current_app.config['S3_BUCKET'],
+                Key=ffr_upload_path
+            )
+            result["ffr_upload_deleted"] = True
+            print(f"Profile picture deletion request sent for: {ffr_upload_path}")
+        except ClientError as e:
+            print(f"Error in first deletion attempt: {str(e)}")
+
+        #DELETING COMPARISON REPORT PIC
+        comparison_filename = f"{username}_comparison_report.png"  
+        comparison_path = current_app.config['S3_FFR_PICTURES_GENERATED'] + comparison_filename
+        
+        # Print debug info for profile path
+        print(f"Attempting to delete profile picture at: {comparison_path}")
+        
+        try:
+            s3_client.delete_object(
+                Bucket=current_app.config['S3_BUCKET'],
+                Key=comparison_path
+            )
+            result["comparison_deleted"] = True
+            print(f"Comparison report picture deletion request sent for: {comparison_path}")
+        except ClientError as e:
+            print(f"Error in first deletion attempt: {str(e)}")
+        
+        # DELETING FFR PIC GENERATED PIC
         ffr_prefix = f"{current_app.config['S3_FFR_PICTURES_GENERATED']}{username}/"
         
         # Print debug info for FFR path
@@ -197,6 +232,82 @@ def delete_user_images_from_s3(username):
     
     return result
 
+def delete_user_pdf_from_s3(username):
+    """
+    Delete PDF reports associated with a username from S3, accounting for potential nested folder structure
+    
+    :param username: Username whose PDF reports should be deleted
+    :return: Dictionary with success/failure status
+    """
+    from flask import current_app
+    result = {
+        "pdf_deleted": False,
+    }
+    
+    s3_client = get_s3_client()
+    
+    print(f"Attempting to delete PDF reports for user: {username}")
+    
+    try:
+        # First, try the direct prefix path
+        base_prefix = current_app.config['S3_FFR_PDF_UPLOAD']
+        
+        # Try multiple possible prefixes to account for different folder structures
+        prefixes_to_try = [
+            base_prefix + f"{username}_report_",           # ffr-pdf-upload/username_report_
+            base_prefix + "/" + f"{username}_report_",     # ffr-pdf-upload//username_report_
+            base_prefix + f"/{username}_report_"           # ffr-pdf-upload//username_report_
+        ]
+        
+        files_deleted = 0
+        
+        for prefix in prefixes_to_try:
+            print(f"Searching with prefix: {prefix}")
+            
+            # List objects with this prefix
+            response = s3_client.list_objects_v2(
+                Bucket=current_app.config['S3_BUCKET'],
+                Prefix=prefix
+            )
+            
+            if 'Contents' in response:
+                # Delete each matching file
+                for obj in response['Contents']:
+                    s3_client.delete_object(
+                        Bucket=current_app.config['S3_BUCKET'],
+                        Key=obj['Key']
+                    )
+                    print(f"Deleted PDF: {obj['Key']}")
+                    files_deleted += 1
+        
+        # Also try listing all objects in the folder and filter by username
+        # This handles cases where file naming patterns might vary
+        full_folder_response = s3_client.list_objects_v2(
+            Bucket=current_app.config['S3_BUCKET'],
+            Prefix=base_prefix
+        )
+        
+        if 'Contents' in full_folder_response:
+            for obj in full_folder_response['Contents']:
+                # Check if the key contains the username and is a PDF
+                if username.lower() in obj['Key'].lower() and obj['Key'].lower().endswith('.pdf'):
+                    s3_client.delete_object(
+                        Bucket=current_app.config['S3_BUCKET'],
+                        Key=obj['Key']
+                    )
+                    print(f"Deleted PDF using pattern matching: {obj['Key']}")
+                    files_deleted += 1
+        
+        if files_deleted > 0:
+            result["pdf_deleted"] = True
+            print(f"Successfully deleted {files_deleted} PDF file(s) for user: {username}")
+        else:
+            print(f"No PDF files found for user: {username}")
+            
+    except ClientError as e:
+        print(f"Error deleting PDF: {str(e)}")
+    
+    return result
 
 @signup_routes.route('/')
 def home():
@@ -319,6 +430,12 @@ def delete_user(username):
     
     # Delete user from database
     result = mongo.db.users.delete_one({'username': username})
+
+    # Delete PDF reports associated with the user from S3
+    pdf_delete_results = delete_user_pdf_from_s3(username)
+    
+    # Add PDF deletion results to the overall results
+    delete_results.update(pdf_delete_results)
     
     if result.deleted_count > 0:
         jti = get_jwt()["jti"]

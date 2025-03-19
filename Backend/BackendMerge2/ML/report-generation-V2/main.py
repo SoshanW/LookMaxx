@@ -99,9 +99,7 @@ def upload_to_s3(file_path, username):
             region_name=AWS.AWS_REGION
         )
         
-        # Generate a filename with timestamp to ensure uniqueness
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{username}_report_{timestamp}.pdf"
+        filename = f"{username}_report.pdf"
         
         # Define the S3 object key
         s3_key = f"{AWS.S3_FFR_PDF_UPLOAD}/{filename}"
