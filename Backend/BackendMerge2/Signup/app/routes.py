@@ -160,7 +160,7 @@ def delete_user_images_from_s3(username):
                     print(f"Error in second deletion attempt: {str(e)}")
 
         # 1. First approach - Delete profile picture using the prefix and filename
-        comparison_filename = f"{username}_comparison_report.png"  # Change jpg to png
+        comparison_filename = f"{username}_comparison_report.png"  
         comparison_path = current_app.config['S3_FFR_PICTURES_GENERATED'] + comparison_filename
         
         # Print debug info for profile path
@@ -214,6 +214,82 @@ def delete_user_images_from_s3(username):
     
     return result
 
+def delete_user_pdf_from_s3(username):
+    """
+    Delete PDF reports associated with a username from S3, accounting for potential nested folder structure
+    
+    :param username: Username whose PDF reports should be deleted
+    :return: Dictionary with success/failure status
+    """
+    from flask import current_app
+    result = {
+        "pdf_deleted": False,
+    }
+    
+    s3_client = get_s3_client()
+    
+    print(f"Attempting to delete PDF reports for user: {username}")
+    
+    try:
+        # First, try the direct prefix path
+        base_prefix = current_app.config['S3_FFR_PDF_UPLOAD']
+        
+        # Try multiple possible prefixes to account for different folder structures
+        prefixes_to_try = [
+            base_prefix + f"{username}_report_",           # ffr-pdf-upload/username_report_
+            base_prefix + "/" + f"{username}_report_",     # ffr-pdf-upload//username_report_
+            base_prefix + f"/{username}_report_"           # ffr-pdf-upload//username_report_
+        ]
+        
+        files_deleted = 0
+        
+        for prefix in prefixes_to_try:
+            print(f"Searching with prefix: {prefix}")
+            
+            # List objects with this prefix
+            response = s3_client.list_objects_v2(
+                Bucket=current_app.config['S3_BUCKET'],
+                Prefix=prefix
+            )
+            
+            if 'Contents' in response:
+                # Delete each matching file
+                for obj in response['Contents']:
+                    s3_client.delete_object(
+                        Bucket=current_app.config['S3_BUCKET'],
+                        Key=obj['Key']
+                    )
+                    print(f"Deleted PDF: {obj['Key']}")
+                    files_deleted += 1
+        
+        # Also try listing all objects in the folder and filter by username
+        # This handles cases where file naming patterns might vary
+        full_folder_response = s3_client.list_objects_v2(
+            Bucket=current_app.config['S3_BUCKET'],
+            Prefix=base_prefix
+        )
+        
+        if 'Contents' in full_folder_response:
+            for obj in full_folder_response['Contents']:
+                # Check if the key contains the username and is a PDF
+                if username.lower() in obj['Key'].lower() and obj['Key'].lower().endswith('.pdf'):
+                    s3_client.delete_object(
+                        Bucket=current_app.config['S3_BUCKET'],
+                        Key=obj['Key']
+                    )
+                    print(f"Deleted PDF using pattern matching: {obj['Key']}")
+                    files_deleted += 1
+        
+        if files_deleted > 0:
+            result["pdf_deleted"] = True
+            print(f"Successfully deleted {files_deleted} PDF file(s) for user: {username}")
+        else:
+            print(f"No PDF files found for user: {username}")
+            
+    except ClientError as e:
+        print(f"Error deleting PDF: {str(e)}")
+    
+    return result
 
 @signup_routes.route('/')
 def home():
@@ -336,6 +412,12 @@ def delete_user(username):
     
     # Delete user from database
     result = mongo.db.users.delete_one({'username': username})
+
+    # Delete PDF reports associated with the user from S3
+    pdf_delete_results = delete_user_pdf_from_s3(username)
+    
+    # Add PDF deletion results to the overall results
+    delete_results.update(pdf_delete_results)
     
     if result.deleted_count > 0:
         jti = get_jwt()["jti"]
