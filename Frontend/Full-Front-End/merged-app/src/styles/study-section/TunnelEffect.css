@@ -1,0 +1,38 @@
+/* src/styles/study-section/TunnelEffect.css */
+.tunnel-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  
+  /* Ensure the canvas-container has the right setup for the tunnel effect */
+  .canvas-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #141414;
+    /* Enhanced background gradient that complements the tunnel */
+    background: radial-gradient(circle at center, #1a1150 0%, #0f1025 70%, #141414 100%);
+  }
+  
+  /* Make sure tunnel effect doesn't interfere with interactions */
+  .canvas-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Ensure tunnel is behind other elements */
+  .tunnel-effect {
+    z-index: -10;
+    pointer-events: none;
+  }
+  
+  /* Enhance rendering quality */
+  .canvas-container canvas {
+    image-rendering: high-quality;
+  }

@@ -1,12 +1,15 @@
+// src/components/study-section/AnatomyExplorer.jsx
 import React, { useState, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { Environment, Stars } from '@react-three/drei'
+import { Environment } from '@react-three/drei'
 import HumanHeadModel from './HumanHeadModel'
 import FeatureInfoPanel from './FeatureInfoPanel'
 import WelcomePanel from './WelcomePanel'
 import SceneLighting from './SceneLighting'
+import TunnelEffect from './TunnelEffect'
 import { featureData } from '../../data/FeatureData'
 import '../../styles/study-section/AnatomyExplorer.css'
+import '../../styles/study-section/PixelCanvas.css';
 
 const AnatomyExplorer = () => {
   const [selectedFeature, setSelectedFeature] = useState(null)
@@ -100,9 +103,12 @@ const AnatomyExplorer = () => {
   return (
     <div className="canvas-container">
       <Canvas camera={{ position: [0, 0, 5] }}>
+        {/* Replace Stars with the TunnelEffect */}
+        <TunnelEffect color="#a94dff" bgColor="#141414" />
+        
         <SceneLighting />
         <Environment preset="city" />
-        <Stars radius={50} depth={50} count={5000} factor={4} saturation={0} fade />
+        
         <HumanHeadModel 
           initialPosition={initialHeadPosition}
           selectedFeature={selectedFeature}
