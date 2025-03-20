@@ -1,0 +1,355 @@
+/* ScrollAnimation.css - Optimized (with feature cards removed) */
+
+.animation-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: transparent; /* Let parent's background show through */
+  /* Performance optimizations */
+  transform: translateZ(0); /* Hardware acceleration */
+  contain: layout; /* Improve layout calculations */
+  overflow: hidden; /* Prevent any content from spilling out */
+  
+}
+
+.scroll-animation-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  /* Performance optimizations */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; /* Hint for browser optimization */
+  image-rendering: optimizeSpeed; /* Optimize rendering */
+  backface-visibility: hidden; /* Reduce flickering */
+
+}
+
+/* Loading indicator for animation frames */
+.scroll-animation-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #201a40, #17132e);
+  color: #e0ffff;
+  font-family: "Nasalization", sans-serif;
+  z-index: 10;
+  text-align: center;
+}
+
+.scroll-animation-loading .loading-spinner {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+  border: 5px solid rgba(224, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #e0ffff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Landing text overlay styling */
+.landing-text-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  position: relative;
+  padding: 5%;
+  pointer-events: none;
+  transition: opacity 0.5s ease-out;
+  /* Performance optimization */
+  will-change: opacity; /* Hint for browser optimization */
+  contain: layout; /* Improve layout calculations */
+}
+
+.brand-name {
+  font-family: "Nasalization", sans-serif;
+  font-size: 7rem;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 4px;
+  position: absolute;
+  top: 35%;
+  left: 2%;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform, opacity; /* Hint for browser optimization */
+}
+
+.brand-tagline {
+  position: absolute;
+  right: 5%;
+  top: 45%;
+  text-align: left;
+  font-family: "Nasalization", sans-serif;
+  font-size: 5rem;
+  color: #ffffff;
+  line-height: 1.1;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform, opacity; /* Hint for browser optimization */
+}
+
+.get-started-btn {
+  pointer-events: auto;
+  position: absolute;
+  right: 75%; 
+  top: 60%; /* Pushed down with more margin-top (changed from 75%) */
+  padding: 1.5rem 1.5rem;
+  background: radial-gradient(circle, #ffffff, #d1d1fc);
+  color: #191C4C;
+  border: none;
+  border-radius: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  font-family: "Dune_Rise", sans-serif;
+  font-weight: bold;
+  text-shadow: #d2cffc 0 0 10px;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; /* Hint for browser optimization */
+}
+
+.model-section {
+  position: relative;
+  height: 100vh; 
+  width: 100%;
+  background: linear-gradient(to top, #362d5a, #18113a);
+  z-index: 2;
+  display: flex;
+  align-items: flex-start; 
+  justify-content: center;
+  overflow: hidden;
+  /* Add transition for smooth appearance */
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
+  /* Performance optimizations */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: opacity, transform; /* Hint for browser optimization */
+  contain: layout; /* Improve layout calculations */
+}
+
+/* Enhanced hover effect with scale and pulse animation */
+.get-started-btn:hover {
+  background: radial-gradient(circle, #ffffff, #d2cffc);
+  text-shadow: #140541 0 0 10px;
+  font-weight: bold;
+  transform: scale(1.05) translateZ(0); /* Keep hardware acceleration */
+  animation: simplePulse 1.5s infinite;
+}
+
+/* Simplify pulse animation for better performance */
+@keyframes simplePulse {
+  0%, 100% {
+    transform: scale(1.05) translateZ(0);
+    box-shadow: #ffffff 0 0 20px;
+  }
+  50% {
+    transform: scale(1.1) translateZ(0); /* Keep hardware acceleration */
+    box-shadow: #d2cffc 0 0 25px;
+  }
+}
+
+/* Load fonts more efficiently */
+@font-face {
+  font-family: "Dune_Rise";
+  src: url("../fonts/Dune_Rise.ttf") format('truetype');
+  font-display: swap; /* Improve font loading performance */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .brand-name {
+    font-size: 4rem;
+    top: 25%;
+  }
+
+  .brand-tagline {
+    font-size: 2rem;
+    right: 10%;
+    bottom: 35%;
+  }
+
+  .get-started-btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    right: 15%;
+    bottom: 20%;
+  }
+
+  /* animation for mobile to be more subtle and efficient */
+  .get-started-btn:hover {
+    transform: scale(1.03) translateZ(0);
+    /* Disable animations on mobile for better performance */
+    animation: none;
+  }
+}
+
+/* Scroll animation section wrapper */
+.scroll-animation-section {
+  position: relative;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+  /* Performance optimization */
+  will-change: opacity; /* Hint for browser optimization */
+}
+
+/* Add specific class for when scroll animation is disabled for performance */
+.scroll-animation-disabled {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(to bottom, #1e1e36, #0f1233);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #e0ffff;
+}
+
+/* Low-performance device warning */
+.performance-warning {
+  background: rgba(9, 42, 62, 0.8);
+  border: 1px solid #84ffff;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px;
+  max-width: 600px;
+  text-align: center;
+  font-family: "Nasalization", sans-serif;
+}
+
+/* Transition indicator styling */
+.scroll-end-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #e0ffff;
+  font-family: "Nasalization", sans-serif;
+  text-shadow: 0 0 10px rgba(132, 255, 255, 0.5);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.8s ease; /* Increased duration for smoother appearance */
+  /* Performance optimization */
+  will-change: opacity; /* Hint for browser optimization */
+}
+
+.scroll-end-indicator span {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.arrow-down {
+  width: 20px;
+  height: 20px;
+  border-right: 3px solid #e0ffff;
+  border-bottom: 3px solid #e0ffff;
+  transform: rotate(45deg);
+  animation: simpleBounce 1.5s infinite;
+  /* Performance optimization */
+  will-change: transform; /* Hint for browser optimization */
+}
+
+/* Simplify bounce animation for better performance */
+@keyframes simpleBounce {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50% { transform: rotate(45deg) translateY(10px); }
+}
+
+/* Responsive adjustments for different screen sizes */
+/* Tablet (portrait) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .brand-name {
+    font-size: 5.5rem;
+    top: 30%;
+    left: 2%;
+  }
+  
+  .brand-tagline {
+    font-size: 3.5rem;
+    right: 8%;
+    top: 43%;
+  }
+  
+  .get-started-btn {
+    right: 60%;
+    top: 70%;
+    padding: 1.2rem 1.2rem;
+    font-size: 1.3rem;
+  }
+}
+
+/* Large tablets and small desktops */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .brand-name {
+    font-size: 6rem;
+    top: 33%;
+  }
+  
+  .brand-tagline {
+    font-size: 4rem;
+    right: 7%;
+  }
+  
+  .get-started-btn {
+    right: 70%;
+    top: 72%;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1600px) {
+  .brand-name {
+    font-size: 8rem;
+    top: 35%;
+    left: 5%;
+  }
+  
+  .brand-tagline {
+    font-size: 6rem;
+    right: 8%;
+    top: 45%;
+  }
+  
+  .get-started-btn {
+    right: 70%;
+    top: 75%;
+    padding: 1.8rem 1.8rem;
+    font-size: 1.8rem;
+  }
+  
+  .scroll-end-indicator {
+    bottom: 40px;
+  }
+  
+  .scroll-end-indicator span {
+    font-size: 1.4rem;
+  }
+  
+  .arrow-down {
+    width: 25px;
+    height: 25px;
+  }
+}

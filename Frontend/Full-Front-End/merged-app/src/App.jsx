@@ -11,6 +11,7 @@ import './styles/navbar-fix.css';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Pages
+import HomePage from './pages/HomePage';
 import FfrPage from './pages/FfrPage';
 import SignupPage from './pages/SignupPage';
 import FaceModelPage from './pages/FaceModelPage';
@@ -55,7 +56,8 @@ function App() {
     location.pathname === '/study' ||
     location.pathname === '/profile' ||
     location.pathname === '/retail' ||
-    location.pathname === '/pricing';
+    location.pathname === '/pricing' ||
+    location.pathname === '/home';
   
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
@@ -63,7 +65,6 @@ function App() {
   // Determine if navbar should use scroll detection based on route
   const [enableScrollDetection, setEnableScrollDetection] = useState(false);
 
-  // Fix for tab switching issues and page-specific styles
   useEffect(() => {
     // Reset scroll position on page navigation (except for casting page)
     if (!location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
@@ -75,6 +76,26 @@ function App() {
       setTimeout(() => {
         window.ScrollTrigger.refresh();
       }, 100);
+    }
+    
+    // ADDED: Manually invalidate and recalculate ScrollTrigger on route change
+    // This helps with the home page scrolling issue
+    if (location.pathname === '/' || location.pathname === '/ffr') {
+      // First clear any existing scroll triggers
+      if (window.ScrollTrigger) {
+        const allTriggers = window.ScrollTrigger.getAll();
+        allTriggers.forEach(trigger => trigger.kill());
+      }
+      
+      // Then force GSAP to recalculate after a short delay
+      setTimeout(() => {
+        if (window.ScrollTrigger) {
+          window.ScrollTrigger.refresh(true); // true forces a complete refresh
+          
+          // Additionally, dispatch a resize event which often helps with layout issues
+          window.dispatchEvent(new Event('resize'));
+        }
+      }, 300);
     }
     
     // Dispatch resize event
@@ -120,7 +141,12 @@ function App() {
       document.body.style.overflow = 'auto';
     } else {
       document.body.classList.add('ffr-page');
-      document.body.style.overflow = '';
+      
+      // ADDED: For home page, make sure scrolling is properly enabled
+      document.body.style.overflow = 'auto';
+      document.body.style.overflowX = 'hidden';
+      document.documentElement.style.overflowY = 'auto';
+      document.documentElement.style.overflowX = 'hidden';
     }
     
     return () => {
@@ -138,7 +164,7 @@ function App() {
         name: linkName,
         active: linkName.toLowerCase() === path || 
               (linkName.toLowerCase() === 'casting' && path === 'apply') ||
-              (linkName.toLowerCase() === 'home' && path === '')
+              (linkName.toLowerCase() === 'home' && (path === '' || path === 'home'))
       };
     });
     
@@ -178,7 +204,8 @@ function App() {
       )}
       <div className="app-container">
       <Routes>
-        <Route path="/" element={<FfrPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/ffr" element={<FfrPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/face-model" element={<FaceModelPage />} />
@@ -202,7 +229,7 @@ function App() {
         <Route path="/payment-success" element={<PaymentSuccessPage />} />
         
         {/* ADDED: Catch-all route to handle 404 issues */}
-        <Route path="*" element={<FfrPage />} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
       </div>
 
