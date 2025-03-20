@@ -1,0 +1,27 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #372958;
+  color: #ffffff;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+@font-face {
+  font-family: 'Nasalization';
+  src: url('../fonts/Nasalization Rg.otf');
+}
+
+@font-face {
+  font-family: 'Dune_Rise';
+  src: url('../fonts/Dune_Rise.otf');
+}

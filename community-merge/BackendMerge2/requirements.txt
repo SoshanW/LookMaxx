@@ -1,0 +1,9 @@
+flask-jwt-extended    
+flask_cors
+flask_pymongo 
+flask_limiter
+pymongo
+flask
+botocore
+boto3
+mediapipe
