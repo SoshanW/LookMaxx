@@ -283,7 +283,8 @@ body.ffr-page {
   height: 100%;
   z-index: 1;
   pointer-events: none; /* Let scroll events pass through */
-  
+  background: linear-gradient(to bottom, #201a40, #17132e);
+
 }
 
 /* Fix for GSAP scroll container */
