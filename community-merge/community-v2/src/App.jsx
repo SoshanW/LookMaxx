@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import React from 'react';
 import './App.css';
 import { getCommunityData } from './api/community_api';
@@ -14,7 +15,7 @@ function App() {
       .then(data => console.log("Backend connected:", data))
       .catch(err => console.error("Connection error:", err));
   }, []);
-  
+
   return (
     <div className="app">
       <main>
