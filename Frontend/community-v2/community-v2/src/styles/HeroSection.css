@@ -1,0 +1,102 @@
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 2rem;
+  background: linear-gradient(to top, #362d5a, #18113a);
+  min-height: 50vh;
+  font-family: 'Nasalization', sans-serif;
+}
+
+.hero-content {
+  max-width: 50%;
+}
+
+.hero-content h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 2rem;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 2rem;
+  
+}
+
+.primary-button {
+  font-family: "Dune_Rise", sans-serif;
+  background: radial-gradient(circle, #ffffff, #e6e5fd);
+  color: #191C4C;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
+  box-shadow: 0 0 10px rgba(210, 181, 237, 0.5);
+  text-shadow: #ffffff 0 0 5px;
+  align-self: center;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; /* Hint for browser optimization */
+}
+
+.primary-button:hover {
+  background: radial-gradient(circle, #ffffff, #d2cffc);
+  box-shadow: #ffffff 0 0 10px;
+  transform: scale(1.05);
+}
+
+.secondary-button {
+  font-family: "Dune_Rise", sans-serif;
+  background: radial-gradient(circle, #ffffff, #e6e5fd);
+  color: #191C4C;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
+  box-shadow: 0 0 10px rgba(210, 181, 237, 0.5);
+  text-shadow: #ffffff 0 0 5px;
+  align-self: center;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; 
+}
+
+.secondary-button:hover {
+  background: radial-gradient(circle, #ffffff, #d2cffc);
+  box-shadow: #ffffff 0 0 10px;
+  transform: scale(1.05);
+}
+
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+}
+
+.hero-image{
+  width: 100%;
+  height: 550px;
+  background: #e0cffc;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+@font-face {
+  font-family: 'Dune_Rise';
+  src: url('../fonts/Dune_Rise.ttf');
+}
