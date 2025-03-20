@@ -135,7 +135,7 @@ def generate_comparison_report(facial_metrics, username, gender):
     aws_config = AWS()
     s3_file_path = f"{aws_config.S3_FFR_PICTURES_GENERATED}{username}_comparison_report.png"
     
-    # Upload the graph to S3
+    #Upload the graph to S3
     upload_success = upload_to_s3(viz_path, s3_file_path, aws_config)
     
     if upload_success:
@@ -153,3 +153,4 @@ def generate_comparison_report(facial_metrics, username, gender):
         'visualization_path': viz_path,
         's3_visualization_path': s3_url
     }
+    
