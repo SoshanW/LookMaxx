@@ -19,6 +19,7 @@ import CastingApplicationPage from './pages/CastingApplicationPage';
 import StudyPage from './pages/StudyPage';
 import ProfilePage from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
+import RetailPage from './pages/RetailPage';
 
 // Payment related pages
 import PaymentNotifyPage from './pages/PaymentNotifyPage';
@@ -27,6 +28,11 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 // Import global styles
 import './styles/global.css';
 import './styles/pricing/pricing-page.css';
+
+// Import retail styles
+import './styles/retail/Hero.css';
+import './styles/retail/Slider.css';
+import './styles/retail/fiton.css';
 
 function App() {
   const { isLoggedIn, userName, userEmail, userProfilePicture, logout, isAuthReady } = useAuthContext();
@@ -48,6 +54,7 @@ function App() {
     location.pathname === '/ffr' ||
     location.pathname === '/study' ||
     location.pathname === '/profile' ||
+    location.pathname === '/retail' ||
     location.pathname === '/pricing';
   
   // Define navigation links based on current route
@@ -77,7 +84,16 @@ function App() {
     setEnableScrollDetection(location.pathname === '/' || location.pathname === '/ffr');
     
     // Clean up any existing body classes
-    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page', 'profile-page', 'pricing-page');
+    document.body.classList.remove(
+      'ffr-page', 
+      'signup-page', 
+      'casting-page', 
+      'application-form-page', 
+      'study-page', 
+      'profile-page', 
+      'pricing-page',
+      'retail-page'
+    );
     
     // Apply specific body classes based on route
     if (location.pathname.includes('/signup') || location.pathname.includes('/face-model')) {
@@ -93,6 +109,9 @@ function App() {
       document.body.classList.add('study-page');
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
+    } else if (location.pathname.includes('/retail')) {
+      document.body.classList.add('retail-page');
+      document.body.style.overflow = 'auto';
     } else if (location.pathname.includes('/profile')) {
       document.body.classList.add('profile-page');
       document.body.style.overflow = 'auto';
@@ -170,6 +189,7 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/study" element={<StudyPage />} />
+        <Route path="/retail" element={<RetailPage />} />
         <Route path="/profile" element={
           <ProtectedRoute>
             <ProfilePage />
