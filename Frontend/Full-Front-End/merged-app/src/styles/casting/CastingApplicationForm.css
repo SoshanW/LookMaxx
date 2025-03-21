@@ -252,6 +252,11 @@ label {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .ffr-sample-image {
@@ -267,6 +272,62 @@ label {
   color: #cccccc;
   text-align: center;
   max-width: 90%;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+/* PDF Viewer */
+.pdf-viewer {
+  width: 100%;
+  height: 500px;
+  border: none;
+  display: block;
+}
+
+/* PDF Loading State */
+.pdf-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  text-align: center;
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.pdf-loading::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin-right: 15px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #007bff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* PDF Error State */
+.pdf-error {
+  padding: 40px 20px;
+  text-align: center;
+  background-color: #fff5f5;
+  color: #d32f2f;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.pdf-error::before {
+  content: "⚠️";
+  font-size: 24px;
+  margin-bottom: 10px;
 }
 
 /* Responsive design adjustments */

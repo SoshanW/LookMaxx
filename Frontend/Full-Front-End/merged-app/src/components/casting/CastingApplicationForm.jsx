@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { getCookie } from '../utils/cookies';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from "../../context/AuthProvider";
 import "../../styles/casting/CastingApplicationForm.css";
 
 function CastingApplicationForm() {
   const navigate = useNavigate();
-  const { isLoggedIn, token:authToken } = useAuthContext();
+  const { isLoggedIn} = useAuthContext();
   const scrollContainerRef = useRef(null);
   
   // Form state with all required fields including measurements
@@ -54,6 +55,18 @@ function CastingApplicationForm() {
       document.documentElement.style.overflowY = '';
     };
   }, []);
+
+  const getAuthToken = () => {
+    // Get token from cookie
+    const token = getCookie('access_token');
+    if (token) {
+      console.log('Token found in cookies');
+      return token;
+    }
+    
+    console.error('No authentication token found in cookies');
+    return null;
+  };
 
   // Handle changes in any form field
   const handleChange = (e) => {
@@ -124,51 +137,74 @@ function CastingApplicationForm() {
     // Only proceed if all validation passes
     if (validateForm()) {
       try {
+        setIsSubmitting(true);
+        
+        const token = getCookie('access_token');
+        
+        if (!token) {
+          throw new Error("Authentication required. Please log in to submit your application.");
+        }
+
         // Create FormData to handle file upload
-        const formData = new FormData();
+        const formDataToSubmit = new FormData();
         
         // Add form fields
         Object.entries(formData).forEach(([key, value]) => {
-          formData.append(key, value);
+          formDataToSubmit.append(key, value);
         });
         
         // Add the PDF if available
         if (pdfBlob) {
-          formData.append('ffr_results_pdf', pdfBlob, 'FFR_Results.pdf');
+          formDataToSubmit.append('ffr_results_pdf', pdfBlob, 'FFR_Results.pdf');
+          console.log("Attaching PDF to form submission");
+        } else {
+          console.warn("No FFR results PDF available for submission");
         }
-        
+
         // Submit to backend
         const response = await fetch('http://127.0.0.1:5000/casting/application/submit', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
-          body: formData
+          body: formDataToSubmit,
+          credentials: 'include'
         });
-        
-      console.log('Form submitted:', formData);
-      
-      // Show success message to user
-      setIsSubmitted(true);
-      
-      // Reset form fields after a small delay (for UX purposes)
-      setTimeout(() => {
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          age: '',
-          gender: '',
-          country: '',
-          height: '',
-          bustChest: '',
-          waistHips: '',
-          message: '',
-        });
-      }, 1500);
 
-    } catch (error) {
-      console.error('Error submitting application:', error);
-    }
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Failed to submit application: ${response.status}`);
+        }
+        
+        console.log('Form submitted:', formData);
+      
+        // Show success message to user
+        setIsSubmitted(true);
+        
+        // Reset form fields after a small delay (for UX purposes)
+        setTimeout(() => {
+          setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            age: '',
+            gender: '',
+            country: '',
+            height: '',
+            bustChest: '',
+            waistHips: '',
+            message: '',
+          });
+          setPdfBlob(null);
+          setPdfUrl(null);
+          setShowFfrResults(false);
+        }, 1500);
+
+      } catch (error) {
+        console.error('Error submitting application:', error);
+        alert(`Failed to submit application: ${error.message}`);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -194,7 +230,7 @@ function CastingApplicationForm() {
     setPdfError(null);
 
     try{
-      const token = authToken || localStorage.getItem("token") || "";
+      const token = getAuthToken();
       if (!token) {
         console.error("No authentication token available");
         setPdfError("Authentication required. Please log in to view your results.");
@@ -208,8 +244,26 @@ function CastingApplicationForm() {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
-        }
+        },
+        credentials: "include"
       });
+      console.log("PDF response status:", response.status);
+
+      // Handle unauthorized response
+      if (response.status === 401) {
+        console.error("Authentication failed (401) - token may be expired");
+        setPdfError("Your session has expired. Please log in again.");
+        setPdfLoading(false);
+        
+        // Redirect to login after a short delay
+        setTimeout(() => {
+          if (window.confirm("Your session has expired. Would you like to log in again?")) {
+            navigate('/login', { state: { returnPath: '/apply' } });
+          }
+        }, 100);
+        
+        return;
+      }
 
       if (!response.ok) {
         console.error("Error response:", response.status);

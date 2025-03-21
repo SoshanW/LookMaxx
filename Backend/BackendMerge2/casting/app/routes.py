@@ -15,7 +15,7 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from werkzeug.utils import secure_filename
 from datetime import datetime
-import app
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -32,6 +32,11 @@ CORS(casting_route,
      allow_headers=["Content-Type", "Authorization"],
      expose_headers=["Content-Type"])
 
+EMAIL_SENDER = os.environ.get('EMAIL_SENDER', "lookmaxxofficial@gmail.com")
+EMAIL_RECIPIENTS = os.environ.get('EMAIL_RECIPIENTS', "fred23official.com").split(',')
+EMAIL_SERVER = os.environ.get('EMAIL_SERVER', "smtp.gmail.com")
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', "587"))
+EMAIL_PASS = os.environ.get('EMAIL_PASS')
 
 def serial_user(user):
     return{
@@ -60,12 +65,6 @@ def serial_ffr_result(result):
         'comparison_data': result.get('comparison_data', []),
         'Graphs_and_Images': result.get('Graphs_and_Images', [])
     }
-
-def get_user():
-    """ Fetch user from MongoDB """
-    username = get_jwt_identity()
-    user = mongo.db.users.find_one({'username': username})
-    return user
 
 @casting_route.route('/users/ffr-results/pdf', methods=['GET'])
 @jwt_required()
@@ -203,9 +202,9 @@ def send_application_email(form_data, pdf_file, user):
     """
     try:
         # Email configuration - get these from your app config
-        sender_email = app.config.get('EMAIL_SENDER', "lookmaxxofficial@gmail.com")
-        receiver_email = app.config.get('EMAIL_RECIPIENTS', ["fred23official.com"])[0]
-        password = os.environ.get('EMAIL_PASS')  # Get from environment variable
+        sender_email = EMAIL_SENDER
+        receiver_email = EMAIL_RECIPIENTS[0]
+        password = EMAIL_PASS  
         
         if not password:
             logger.error("Email password not found in environment variables")
@@ -265,8 +264,8 @@ def send_application_email(form_data, pdf_file, user):
                 logger.error(f"Error attaching PDF: {str(e)}")
         
         # Get email server settings from config
-        email_server = app.config.get('EMAIL_SERVER', 'smtp.gmail.com')
-        email_port = app.config.get('EMAIL_PORT', 587)
+        email_server = EMAIL_SERVER
+        email_port = EMAIL_PORT
         
         # Send email
         with smtplib.SMTP(email_server, email_port) as server:
