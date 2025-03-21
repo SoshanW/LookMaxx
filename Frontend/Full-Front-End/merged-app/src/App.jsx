@@ -19,6 +19,7 @@ import CastingApplicationPage from './pages/CastingApplicationPage';
 import StudyPage from './pages/StudyPage';
 import ProfilePage from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
+import CommunityPage from './pages/CommunityPage'; // Added Community Page import
 
 // Payment related pages
 import PaymentNotifyPage from './pages/PaymentNotifyPage';
@@ -48,7 +49,8 @@ function App() {
     location.pathname === '/ffr' ||
     location.pathname === '/study' ||
     location.pathname === '/profile' ||
-    location.pathname === '/pricing';
+    location.pathname === '/pricing' ||
+    location.pathname === '/community'; // Added community page to hide footer list
   
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
@@ -77,7 +79,7 @@ function App() {
     setEnableScrollDetection(location.pathname === '/' || location.pathname === '/ffr');
     
     // Clean up any existing body classes
-    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page', 'profile-page', 'pricing-page');
+    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page', 'profile-page', 'pricing-page', 'community-page');
     
     // Apply specific body classes based on route
     if (location.pathname.includes('/signup') || location.pathname.includes('/face-model')) {
@@ -98,6 +100,9 @@ function App() {
       document.body.style.overflow = 'auto';
     } else if (location.pathname.includes('/pricing')) {
       document.body.classList.add('pricing-page');
+      document.body.style.overflow = 'auto';
+    } else if (location.pathname.includes('/community')) {
+      document.body.classList.add('community-page');
       document.body.style.overflow = 'auto';
     } else {
       document.body.classList.add('ffr-page');
@@ -176,12 +181,13 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/community" element={<CommunityPage />} /> {/* Added Community Page route */}
         
         {/* Payment related routes */}
         <Route path="/payment-notify" element={<PaymentNotifyPage />} />
         <Route path="/payment-success" element={<PaymentSuccessPage />} />
         
-        {/* ADDED: Catch-all route to handle 404 issues */}
+        {/* Catch-all route to handle 404 issues */}
         <Route path="*" element={<FfrPage />} />
       </Routes>
       </div>

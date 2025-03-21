@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/ActivitySection.css';
+import '../../styles/community/ActivitySection.css';
 
 const ActivitySection = () => {
   const activities = [

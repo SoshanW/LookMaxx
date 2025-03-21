@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/FeaturedSection.css';
+import '../../styles/community/FeaturedSection.css';
 
 const FeaturedSection = () => {
   const featuredItems = [

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/CommunityPostsSection.css';
+import '../../styles/community/CommunityPostsSection.css';
 
 const CommunityPostsSection = () => {
   // State for managing posts, new post input, and temporary storage
