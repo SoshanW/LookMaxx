@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useAuthContext } from './path-to-auth-context';  
-import { useSmoothScroll } from './path-to-smooth-scroll'; 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthProvider";
@@ -633,7 +631,7 @@ const Casting = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
-  
+
   return (
     <main className="page-container">
       {/* Navigation dots on the side */}

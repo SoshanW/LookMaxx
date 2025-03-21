@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_cors import CORS
 from extensions import mongo
 from bson import ObjectId
 from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_token
@@ -14,6 +15,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 casting_route = Blueprint('casting', __name__)
+CORS(casting_route, resources={r"/*": {"origins": "*"}})
 
 def serial_user(user):
     return{
