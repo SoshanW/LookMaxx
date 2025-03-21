@@ -1,10 +1,13 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_file
 from flask_cors import CORS
 from extensions import mongo
 from bson import ObjectId
 from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_token
 import logging
 from functools import wraps
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -45,13 +48,17 @@ def serial_ffr_result(result):
         'Graphs_and_Images': result.get('Graphs_and_Images', [])
     }
 
-@casting_route.route('/users/profile', methods=['GET'])
+def get_user():
+    """ Fetch user from MongoDB """
+    username = get_jwt_identity()
+    user = mongo.db.users.find_one({'username': username})
+    return user
+
+@casting_route.route('/users/ffr-resukts/pdf', methods=['GET'])
 @jwt_required()
-def get_profile():
+def get_ffr_result_pdf():
     try:
         user = get_user()
-        
-        logger.info(f"User data retrieved: {user}")
 
         if not user:
             return jsonify({'error': 'User not found'}), 404
@@ -59,35 +66,50 @@ def get_profile():
         # Get FFR results from the user document
         ffr_results = user.get('ffr_results', [])
         
-        # Serialize FFR results
-        serialized_ffr_results = [serial_ffr_result(result) for result in ffr_results]
-        
-        # If no FFR results found
-        if not serialized_ffr_results:
-            return jsonify({
-                'user': {
-                    'first_name': user.get('first_name', 'N/A'),
-                    'last_name': user.get('last_name', 'N/A'),
-                    'email': user.get('email', 'N/A'),
-                    'profile_picture': user.get('profile_picture', 'N/A')
-                },
-                'ffr_results': [],
-                'message': 'No FFR results found for this user'
-            }), 200
+        if not ffr_results:
+            return jsonify({'message': 'No FFR results found for this user'}), 200
         
         latest_result = serial_ffr_result(ffr_results[-1])
         
-        # Return user profile with FFR results
-        return jsonify({
-            'user': {
-                'first_name': user.get('first_name', 'N/A'),
-                'last_name': user.get('last_name', 'N/A'),
-                'email': user.get('email', 'N/A'),
-                'profile_picture': user.get('profile_picture', 'N/A')
-            },
-            'ffr_results': latest_result
-        }), 200
+        # Generate PDF
+        pdf_buffer = BytesIO()
+        pdf = canvas.Canvas(pdf_buffer, pagesize=letter)
+        pdf.setTitle("FFR Analysis Results")
+
+        # Title
+        pdf.setFont("Helvetica-Bold", 16)
+        pdf.drawString(200, 750, "FFR Analysis Report")
+
+        # User Details
+        pdf.setFont("Helvetica", 12)
+        pdf.drawString(50, 720, f"Name: {user.get('first_name', 'N/A')} {user.get('last_name', 'N/A')}")
+        pdf.drawString(50, 700, f"Email: {user.get('email', 'N/A')}")
+
+        # FFR Metrics
+        pdf.setFont("Helvetica-Bold", 14)
+        pdf.drawString(50, 670, "Facial Metrics:")
+        pdf.setFont("Helvetica", 12)
+
+        y_position = 650
+        for key, value in latest_result["facial_metrics"].items():
+            pdf.drawString(50, y_position, f"{key}: {value}")
+            y_position -= 20
+
+        # Comparison Data
+        pdf.setFont("Helvetica-Bold", 14)
+        pdf.drawString(50, y_position - 20, "Comparison Data:")
+        pdf.setFont("Helvetica", 12)
+        y_position -= 40
+        for data in latest_result["comparison_data"]:
+            pdf.drawString(50, y_position, f"- {data}")
+            y_position -= 20
+
+        pdf.save()
+        pdf_buffer.seek(0)
+
+        # Send PDF as response
+        return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name="FFR_Results.pdf")
 
     except Exception as e:
-        logger.error(f'Error fetching user profile and FFR results: {str(e)}')
+        logging.error(f"Error generating PDF: {str(e)}")
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500

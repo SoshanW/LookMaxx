@@ -5,7 +5,7 @@ import "../../styles/casting/CastingApplicationForm.css";
 
 function CastingApplicationForm() {
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuthContext();
+  const { isLoggedIn, token:authToken } = useAuthContext();
   const scrollContainerRef = useRef(null);
   
   // Form state with all required fields including measurements
@@ -151,8 +151,29 @@ function CastingApplicationForm() {
   /**
    * Show/hide the FFR analysis results preview
    */
-  const toggleFfrResults = () => {
+  const toggleFfrResults = async () => {
     setShowFfrResults(!showFfrResults);
+    try{
+      const token = authToken || localStorage.getItem("token") || "";
+      const response = await fetch("http://127.0.0.1:5000/users/ffr-results/pdf", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch PDF");
+      }
+
+      const blob = await response.blob();
+      const pdfUrl = URL.createObjectURL(blob);
+
+      // Open in a new tab or trigger download
+      window.open(pdfUrl, "_blank");
+  } catch (error) {
+    console.error("Error fetching FFR results:", error);
+  }
   };
 
   // Show success message if form was submitted successfully
