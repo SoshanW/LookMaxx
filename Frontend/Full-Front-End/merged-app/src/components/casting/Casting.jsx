@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { useAuthContext } from './path-to-auth-context';  
+import { useSmoothScroll } from './path-to-smooth-scroll'; 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthProvider";
 import "../../styles/casting/Casting.css";
+
 
 // Keeping NeonMist as part of the CastingPage file
 const NeonMist = ({ isActive }) => {
@@ -536,12 +540,42 @@ const Casting = () => {
   // Use our custom smooth scroll hook
   const { sectionRefs, activeSection, scrollToSection } = useSmoothScroll();
   
+  const [userProfile, setUserProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   // Define section data for navigation
   const sections = [
     { id: 'hero', label: 'Hero Section' },
     { id: 'discovery', label: 'Discovery Section' },
     { id: 'ffr', label: 'FFR Section' }
   ];
+
+  
+  // Use effect to fetch user profile data when the component mounts
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get('/api/casting/users/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass JWT token in the header
+          },
+        });
+
+        setUserProfile(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+        setError('Failed to load user profile');
+        setLoading(false);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchUserProfile();
+    }
+  }, [isLoggedIn, token]);
+
 
   // Function to handle "APPLY NOW" button click - navigates to application form
   const handleApplyNow = () => {
@@ -597,6 +631,9 @@ const Casting = () => {
     preloadImages();
   }, []);
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+  
   return (
     <main className="page-container">
       {/* Navigation dots on the side */}

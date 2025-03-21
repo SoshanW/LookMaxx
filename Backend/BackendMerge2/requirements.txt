@@ -1,5 +1,7 @@
 flask-jwt-extended    
 flask_cors
+flask-pymongo
+flask-limiter
 flask
 botocore
 boto3
