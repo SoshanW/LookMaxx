@@ -533,7 +533,7 @@ const FFRSection = ({ sectionRef, isActive }) => {
 const Casting = () => {
   // Use react-router-dom's navigate hook for programmatic navigation
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuthContext();
+  const { isLoggedIn, token:authToken } = useAuthContext();
   
   // Use our custom smooth scroll hook
   const { sectionRefs, activeSection, scrollToSection } = useSmoothScroll();
@@ -549,11 +549,18 @@ const Casting = () => {
     { id: 'ffr', label: 'FFR Section' }
   ];
 
-  
+  const token = authToken || localStorage.getItem("token") || "";
+
   // Use effect to fetch user profile data when the component mounts
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
+        if (!token) {
+          console.error("Token is missing, cannot fetch user profile.");
+          setLoading(false);
+          return;
+        }
+
         const response = await axios.get('/api/casting/users/profile', {
           headers: {
             Authorization: `Bearer ${token}`, // Pass JWT token in the header
@@ -571,6 +578,8 @@ const Casting = () => {
 
     if (isLoggedIn) {
       fetchUserProfile();
+    } else {
+      setLoading(false)
     }
   }, [isLoggedIn, token]);
 
