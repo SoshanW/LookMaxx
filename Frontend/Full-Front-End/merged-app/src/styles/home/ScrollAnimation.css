@@ -204,10 +204,21 @@
 .scroll-animation-section {
   position: relative;
   z-index: 1;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.8s ease-out; /* Increased duration for smoother fade */
   /* Performance optimization */
   will-change: opacity; /* Hint for browser optimization */
 }
+
+.scroll-animation-section.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Add a class for when the section is completely hidden */
+.scroll-animation-section.hidden {
+  display: none;
+}
+
 
 /* Add specific class for when scroll animation is disabled for performance */
 .scroll-animation-disabled {

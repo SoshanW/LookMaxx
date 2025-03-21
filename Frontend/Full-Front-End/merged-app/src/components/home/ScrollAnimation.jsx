@@ -15,7 +15,7 @@ const globalLoadingCache = {
 
 gsap.registerPlugin(ScrollTrigger)
 
-const ScrollAnimation = ({ frameCount = 190, imageFormat = 'jpg' }) => {
+const ScrollAnimation = ({ frameCount = 200, imageFormat = 'jpg' }) => {
   const canvasRef = useRef(null)
   const containerRef = useRef(null)
   const faceRef = useRef({ frame: 0 })
