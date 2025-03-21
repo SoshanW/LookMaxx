@@ -6,6 +6,10 @@ from flask_jwt_extended import get_jwt_identity, jwt_required, create_access_tok
 import logging
 from functools import wraps
 from io import BytesIO
+import boto3
+from PIL import Image
+import requests
+from reportlab.lib.utils import ImageReader
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import smtplib
@@ -66,6 +70,9 @@ def serial_ffr_result(result):
         'Graphs_and_Images': result.get('Graphs_and_Images', [])
     }
 
+S3_BUCKET_NAME = "looksci-user-data"
+s3_client = boto3.client('s3')
+
 @casting_route.route('/users/ffr-results/pdf', methods=['GET'])
 @jwt_required()
 def get_ffr_result_pdf():
@@ -121,22 +128,49 @@ def get_ffr_result_pdf():
             pdf.drawString(50, y_position, f"- {data}")
             y_position -= 20
 
+        y_position -= 30  # Space before adding images
+        pdf.setFont("Helvetica-Bold", 14)
+        pdf.drawString(50, y_position, "Graphs and Images:")
+        y_position -= 20
+
+        for key, s3_url in latest_result["Graphs_and_Images"].items():
+            pdf.setFont("Helvetica", 12)
+            pdf.drawString(50, y_position, key)  # Image label
+            y_position -= 20
+
+            # Extract object key from S3 URL
+            s3_path = s3_url.replace(f"s3://{S3_BUCKET_NAME}/", "")
+            try:
+                # Download image from S3
+                img_data = s3_client.get_object(Bucket=S3_BUCKET_NAME, Key=s3_path)["Body"].read()
+                
+                # Convert to a format compatible with reportlab
+                image = Image.open(BytesIO(img_data))
+                img_reader = ImageReader(image)
+                
+                # Draw image on PDF
+                pdf.drawImage(img_reader, 50, y_position - 150, width=200, height=150)
+                y_position -= 170  # Adjust y position for next image
+            except Exception as e:
+                logger.error(f"Error retrieving image {s3_url}: {str(e)}")
+                pdf.drawString(50, y_position, "Error loading image")
+                y_position -= 20
+
         pdf.save()
         pdf_buffer.seek(0)
 
         # Send PDF as response
-        return send_file(
+        response = send_file(
             pdf_buffer, 
             mimetype='application/pdf',
             as_attachment=True, 
-            download_name="FFR_Results.pdf",
-            # Cache-Control header to prevent caching issues
-            headers={
-                "Cache-Control": "no-cache, no-store, must-revalidate",
-                "Pragma": "no-cache",
-                "Expires": "0"
-            }
+            download_name="FFR_Results.pdf"
         )
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+
+        return response
 
     except Exception as e:
         logging.error(f"Error generating PDF for JWT identity {get_jwt_identity()}: {str(e)}")
