@@ -155,18 +155,33 @@ function CastingApplicationForm() {
     setShowFfrResults(!showFfrResults);
     try{
       const token = authToken || localStorage.getItem("token") || "";
-      const response = await fetch("http://127.0.0.1:5000/users/ffr-results/pdf", {
+      if (!token) {
+        console.error("No authentication token available");
+        alert("You must be logged in to view FFR results");
+        return;
+      }
+      
+      console.log("Fetching FFR results with token:", token.substring(0, 10) + "...");
+
+      const response = await fetch("http://127.0.0.1:5000/casting/users/ffr-results/pdf", {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
       });
+
+      console.log("Response status:", response.status);
 
       if (!response.ok) {
         throw new Error("Failed to fetch PDF");
       }
 
       const blob = await response.blob();
+      if (blob.size === 0) {
+        throw new Error("Received empty PDF document");
+      }
+      
       const pdfUrl = URL.createObjectURL(blob);
 
       // Open in a new tab or trigger download

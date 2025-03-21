@@ -18,7 +18,12 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 casting_route = Blueprint('casting', __name__)
-CORS(casting_route, resources={r"/*": {"origins": "*"}})
+CORS(casting_route, 
+     resources={r"/*": {"origins": "http://localhost:5173"}},
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization"],
+     expose_headers=["Content-Type"])
+
 
 def serial_user(user):
     return{
@@ -54,19 +59,24 @@ def get_user():
     user = mongo.db.users.find_one({'username': username})
     return user
 
-@casting_route.route('/users/ffr-resukts/pdf', methods=['GET'])
+@casting_route.route('/users/ffr-results/pdf', methods=['GET'])
 @jwt_required()
 def get_ffr_result_pdf():
     try:
+        username = get_jwt_identity()
+        logger.info(f"FFR PDF requested for user: {username}")
+
         user = get_user()
 
         if not user:
+            logger.error(f"User not found: {username}")
             return jsonify({'error': 'User not found'}), 404
         
         # Get FFR results from the user document
         ffr_results = user.get('ffr_results', [])
         
         if not ffr_results:
+            logger.warning(f"No FFR results found for user: {username}")
             return jsonify({'message': 'No FFR results found for this user'}), 200
         
         latest_result = serial_ffr_result(ffr_results[-1])
@@ -108,8 +118,19 @@ def get_ffr_result_pdf():
         pdf_buffer.seek(0)
 
         # Send PDF as response
-        return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name="FFR_Results.pdf")
+        return send_file(
+            pdf_buffer, 
+            mimetype='application/pdf',
+            as_attachment=True, 
+            download_name="FFR_Results.pdf",
+            # Cache-Control header to prevent caching issues
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0"
+            }
+        )
 
     except Exception as e:
-        logging.error(f"Error generating PDF: {str(e)}")
+        logging.error(f"Error generating PDF for JWT identity {get_jwt_identity()}: {str(e)}")
         return jsonify({'error': f'Internal server error: {str(e)}'}), 500
