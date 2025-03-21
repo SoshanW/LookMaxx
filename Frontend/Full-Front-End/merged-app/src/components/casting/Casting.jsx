@@ -561,7 +561,7 @@ const Casting = () => {
           return;
         }
 
-        const response = await axios.get('/api/casting/users/profile', {
+        const response = await axios.get('/api/casting/users/ffr-results/pdf', {
           headers: {
             Authorization: `Bearer ${token}`, // Pass JWT token in the header
           },

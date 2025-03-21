@@ -28,6 +28,12 @@ function CastingApplicationForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showFfrResults, setShowFfrResults] = useState(false);
 
+  // PDF status
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfBlob, setPdfBlob] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfError, setPdfError] = useState(null);
+
   // Apply special class for application form page and ensure scrolling works
   useEffect(() => {
     // Apply a specific class for this page
@@ -112,11 +118,32 @@ function CastingApplicationForm() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Only proceed if all validation passes
     if (validateForm()) {
+      try {
+        // Create FormData to handle file upload
+        const formData = new FormData();
+        
+        // Add form fields
+        Object.entries(formData).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+        
+        // Add the PDF if available
+        if (pdfBlob) {
+          formData.append('ffr_results_pdf', pdfBlob, 'FFR_Results.pdf');
+        }
+        
+        // Submit to backend
+        const response = await fetch('http://127.0.0.1:5000/casting/application/submit', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        
       console.log('Form submitted:', formData);
       
       // Show success message to user
@@ -138,6 +165,10 @@ function CastingApplicationForm() {
           message: '',
         });
       }, 1500);
+
+    } catch (error) {
+      console.error('Error submitting application:', error);
+    }
     }
   };
 
@@ -153,41 +184,50 @@ function CastingApplicationForm() {
    */
   const toggleFfrResults = async () => {
     setShowFfrResults(!showFfrResults);
+
+    if (showFfrResults) {
+      setPdfUrl(null);
+      return;
+    }
+    
+    setPdfLoading(true);
+    setPdfError(null);
+
     try{
       const token = authToken || localStorage.getItem("token") || "";
       if (!token) {
         console.error("No authentication token available");
-        alert("You must be logged in to view FFR results");
+        setPdfError("Authentication required. Please log in to view your results.");
+        setPdfLoading(false);
         return;
       }
-      
-      console.log("Fetching FFR results with token:", token.substring(0, 10) + "...");
+      console.log("Fetching FFR results with token");
 
       const response = await fetch("http://127.0.0.1:5000/casting/users/ffr-results/pdf", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
-        },
+        }
       });
 
-      console.log("Response status:", response.status);
-
       if (!response.ok) {
-        throw new Error("Failed to fetch PDF");
+        console.error("Error response:", response.status);
+        throw new Error(`Failed to fetch PDF: ${response.status}`);
       }
-
       const blob = await response.blob();
-      if (blob.size === 0) {
-        throw new Error("Received empty PDF document");
-      }
+    
+      // Store the blob for later use in email
+      setPdfBlob(blob);
       
-      const pdfUrl = URL.createObjectURL(blob);
-
-      // Open in a new tab or trigger download
-      window.open(pdfUrl, "_blank");
+      // Create URL for displaying in the UI
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
   } catch (error) {
     console.error("Error fetching FFR results:", error);
+    setPdfError(error.message);
+  } finally {
+    setPdfLoading(false);
   }
   };
 
@@ -221,8 +261,20 @@ function CastingApplicationForm() {
           <div className="ffr-results-preview">
             <h3>Your FFR Analysis Results</h3>
             <div className="ffr-pdf-container">
-              {/* This would be replaced with actual user data in production */}
-              <img src="/assets/casting/report.jpeg" alt="Sample FFR Results" className="ffr-sample-image" />
+              {pdfLoading ? (
+                <div className="pdf-loading">Loading your FFR results...</div>
+              ) : pdfError ? (
+                <div className="pdf-error">{pdfError}</div>
+              ) : pdfUrl ? (
+                <iframe 
+                  src={pdfUrl} 
+                  className="pdf-viewer" 
+                  title="FFR Results PDF"
+                  width="100%" 
+                  height="500px"
+                />
+              ) : (
+                <img src="/assets/casting/report.jpeg" alt="Sample FFR Results" className="ffr-sample-image" />)}
               <p className="ffr-disclaimer">These results are generated from your FFR analysis completed on the FFR page. The data helps agencies evaluate facial symmetry, proportions, and other model-relevant metrics.</p>
             </div>
           </div>
