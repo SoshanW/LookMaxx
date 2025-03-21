@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getCookie } from '../utils/cookies';
+import { getCookie } from '../../utils/cookies';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from "../../context/AuthProvider";
 import "../../styles/casting/CastingApplicationForm.css";
