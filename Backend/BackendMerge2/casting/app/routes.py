@@ -99,45 +99,67 @@ def get_ffr_result_pdf():
         pdf_buffer = BytesIO()
         pdf = canvas.Canvas(pdf_buffer, pagesize=letter)
         pdf.setTitle("FFR Analysis Results")
+        PAGE_HEIGHT = letter[1]
+        PAGE_WIDTH = letter[0]
+        MARGIN_TOP = 750
+        MARGIN_LEFT = 50
+        LINE_SPACING = 20
+        IMAGE_HEIGHT = 150
+        IMAGE_WIDTH = 200
 
+        def check_page_space(y_position, height_needed):
+            """Checks if there's enough space, and creates a new page if needed."""
+            if y_position - height_needed < 50:  # Ensure minimum margin at the bottom
+                pdf.showPage()  # Save current page and start new one
+                pdf.setFont("Helvetica", 12)  # Reset font for new page
+                return MARGIN_TOP  # Reset y_position to top of new page
+            return y_position
+        
         # Title
         pdf.setFont("Helvetica-Bold", 16)
-        pdf.drawString(200, 750, "FFR Analysis Report")
+        pdf.drawString(200, MARGIN_TOP, "FFR Analysis Report")
 
         # User Details
         pdf.setFont("Helvetica", 12)
-        pdf.drawString(50, 720, f"Name: {user.get('first_name', 'N/A')} {user.get('last_name', 'N/A')}")
-        pdf.drawString(50, 700, f"Email: {user.get('email', 'N/A')}")
+        y_position = MARGIN_TOP - 30
+        pdf.drawString(MARGIN_LEFT, y_position, f"Name: {user.get('first_name', 'N/A')} {user.get('last_name', 'N/A')}")
+        y_position = LINE_SPACING
+        pdf.drawString(MARGIN_LEFT, y_position, f"Email: {user.get('email', 'N/A')}")
 
         # FFR Metrics
         pdf.setFont("Helvetica-Bold", 14)
-        pdf.drawString(50, 670, "Facial Metrics:")
+        y_position -= 30
+        pdf.drawString(MARGIN_LEFT, y_position, "Facial Metrics:")
         pdf.setFont("Helvetica", 12)
 
-        y_position = 650
         for key, value in latest_result["facial_metrics"].items():
+            y_position -= LINE_SPACING
+            y_position = check_page_space(y_position, LINE_SPACING)
             pdf.drawString(50, y_position, f"{key}: {value}")
-            y_position -= 20
 
         # Comparison Data
         pdf.setFont("Helvetica-Bold", 14)
-        pdf.drawString(50, y_position - 20, "Comparison Data:")
+        y_position -=30
+        pdf.drawString(MARGIN_LEFT, y_position, "Comparison Data:")
         pdf.setFont("Helvetica", 12)
-        y_position -= 40
+        
         for data in latest_result["comparison_data"]:
-            pdf.drawString(50, y_position, f"- {data}")
-            y_position -= 20
-
-        y_position -= 30  # Space before adding images
+            y_position -= LINE_SPACING
+            y_position = check_page_space(y_position, LINE_SPACING)
+            pdf.drawString(MARGIN_LEFT, y_position, f"- {data}")
+            
         pdf.setFont("Helvetica-Bold", 14)
-        pdf.drawString(50, y_position, "Graphs and Images:")
+        y_position -= 40
+        pdf.drawString(MARGIN_LEFT, y_position, "Graphs and Images:")
         y_position -= 20
+        
 
         for key, s3_url in latest_result["Graphs_and_Images"].items():
             pdf.setFont("Helvetica", 12)
-            pdf.drawString(50, y_position, key)  # Image label
-            y_position -= 20
-
+            y_position -= LINE_SPACING
+            y_position = check_page_space(y_position, LINE_SPACING)
+            pdf.drawString(MARGIN_LEFT, y_position, key)  # Image label
+            
             # Extract object key from S3 URL
             s3_path = s3_url.replace(f"s3://{S3_BUCKET_NAME}/", "")
             try:
@@ -148,13 +170,15 @@ def get_ffr_result_pdf():
                 image = Image.open(BytesIO(img_data))
                 img_reader = ImageReader(image)
                 
+                y_position = check_page_space(y_position, IMAGE_HEIGHT + 20)
+
                 # Draw image on PDF
-                pdf.drawImage(img_reader, 50, y_position - 150, width=200, height=150)
-                y_position -= 170  # Adjust y position for next image
+                pdf.drawImage(img_reader, MARGIN_LEFT, y_position - IMAGE_HEIGHT, width=IMAGE_WIDTH, height=IMAGE_HEIGHT)
+                y_position -= IMAGE_HEIGHT + 20
             except Exception as e:
                 logger.error(f"Error retrieving image {s3_url}: {str(e)}")
-                pdf.drawString(50, y_position, "Error loading image")
-                y_position -= 20
+                pdf.drawString(MARGIN_LEFT, y_position, "Error loading image")
+                y_position -= LINE_SPACING
 
         pdf.save()
         pdf_buffer.seek(0)
