@@ -8,21 +8,21 @@ const FeaturedSection = () => {
       title: "Facial Aesthetics", 
       members: "2.4k members", 
       active: "150 online",
-      image: "/community-images/facial-aesthetics.png" 
+      image: "/assets/community/community-images/facial-aesthetics.png"
     },
     { 
       id: 2, 
       title: "Beauty Experts", 
       members: "1.8k members", 
       active: "95 online",
-      image: "/community-images/beauty-experts.png" 
+      image: "/assets/community//community-images/beauty-experts.png" 
     },
     { 
       id: 3, 
       title: "LookSci experience", 
       members: "3.2k members", 
       active: "210 online",
-      image: "/community-images/looksci-experience.png" 
+      image: "/assets/community//community-images/looksci-experience.png" 
     }
   ];
 
