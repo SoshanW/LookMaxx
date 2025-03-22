@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from "../../context/AuthProvider";
 import { getCookie } from "../../utils/cookies";
 import { api } from "../../utils/apiClient";
+import emailjs from '@emailjs/browser';
 import "../../styles/casting/CastingApplicationForm.css";
 
 function CastingApplicationForm() {
@@ -34,6 +35,10 @@ function CastingApplicationForm() {
   const [ffrPdfUrl, setFfrPdfUrl] = useState(null);
   const [isLoadingPdf, setIsLoadingPdf] = useState(false);
   const [pdfError, setPdfError] = useState(null);
+
+  // Email sending state
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailError, setEmailError] = useState(null);
 
   // Apply special class for application form page and ensure scrolling works
   useEffect(() => {
@@ -184,33 +189,111 @@ function CastingApplicationForm() {
     return Object.keys(errors).length === 0;
   };
 
+  // Send application email using EmailJS
+  const sendApplicationEmail = async () => {
+    setEmailSending(true);
+    setEmailError(null);
+    
+    try {
+      const username = getUsernameFromCookie();
+      if (!username) {
+        throw new Error("User information not found");
+      }
+      
+      // Fetch user's FFR PDF URL if we don't already have it
+      let pdfUrl = ffrPdfUrl;
+      
+      if (!pdfUrl) {
+        const response = await api.get(`/ffr/get-ffr-results/${username}`);
+        
+        if (!response.data || !response.data.ffr_results) {
+          throw new Error("FFR results not found");
+        }
+        
+        pdfUrl = response.data.ffr_results[response.data.ffr_results.length - 1]?.pdf_url;
+        
+        if (!pdfUrl) {
+          throw new Error("FFR PDF report not found");
+        }
+      }
+      
+      // Prepare email template parameters
+      const templateParams = {
+        to_email: 'soshanw123@gmail.com',
+        subject: `Model Application - ${formData.firstName} ${formData.lastName} - Casting Profile`,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        full_name: `${formData.firstName} ${formData.lastName}`,
+        applicant_email: formData.email,
+        phone: formData.phone,
+        age: formData.age,
+        gender: formData.gender,
+        country: formData.country,
+        height: formData.height,
+        bust_chest: formData.bustChest,
+        waist_hips: formData.waistHips,
+        message: formData.message || 'No additional information provided.',
+        ffr_pdf_url: pdfUrl,
+        submission_date: new Date().toLocaleString()
+      };
+      
+      // Send email using EmailJS
+      await emailjs.send(
+        'service_soripm3', // Replace with your EmailJS service ID
+        'template_u9maq8i', // Replace with your EmailJS template ID
+        templateParams,
+        'tc222-pdL1H4eVeK6' // Replace with your EmailJS public key
+      );
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error sending application email:', error);
+      setEmailError(error.message || 'Failed to send application email');
+      return { success: false, error };
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Only proceed if all validation passes
     if (validateForm()) {
-      console.log('Form submitted:', formData);
-      
-      // Show success message to user
-      setIsSubmitted(true);
-      
-      // Reset form fields after a small delay (for UX purposes)
-      setTimeout(() => {
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          age: '',
-          gender: '',
-          country: '',
-          height: '',
-          bustChest: '',
-          waistHips: '',
-          message: '',
-        });
-      }, 1500);
+      try {
+        // Send application email
+        const emailResult = await sendApplicationEmail();
+        
+        if (!emailResult.success) {
+          console.error('Email sending failed:', emailResult.error);
+          // Continue with form submission even if email fails
+        }
+        
+        console.log('Form submitted:', formData);
+        
+        // Show success message to user
+        setIsSubmitted(true);
+        
+        // Reset form fields after a small delay (for UX purposes)
+        setTimeout(() => {
+          setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            age: '',
+            gender: '',
+            country: '',
+            height: '',
+            bustChest: '',
+            waistHips: '',
+            message: '',
+          });
+        }, 1500);
+      } catch (error) {
+        console.error('Form submission error:', error);
+      }
     }
   };
 
@@ -516,10 +599,17 @@ function CastingApplicationForm() {
             <button type="button" onClick={handleReturnHome} className="secondary-button">
               Cancel
             </button>
-            <button type="submit" className="primary-button">
-              Submit Application
+            <button 
+              type="submit" 
+              className="primary-button"
+              disabled={emailSending}
+            >
+              {emailSending ? 'Submitting...' : 'Submit Application'}
             </button>
           </div>
+          
+          {/* Show email error if any */}
+          {emailError && <div className="email-error-message">{emailError}</div>}
         </form>
       </div>
     </div>
