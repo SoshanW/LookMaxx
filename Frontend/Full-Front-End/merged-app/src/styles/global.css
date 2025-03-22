@@ -232,3 +232,64 @@ body.pricing-page footer {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Add these fixes to your global.css file */
+
+/* Fix body and html styles for scrolling */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+html {
+  /* Enable vertical scrolling */
+  overflow-y: auto !important;
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  position: relative;
+  /* Disable only horizontal scrolling by default */
+  overflow-x: hidden !important;
+}
+
+/* Page-specific styles - ensure home page can scroll */
+body.ffr-page {
+  background: linear-gradient(135deg, #0f031b 0%, #2e1855 50%, #07010b 100%);
+  color: #e1e7ef;
+  /* Make sure scrolling works */
+  overflow-y: auto !important;
+  height: auto !important;
+}
+
+/* Fix animation container height for scrolling */
+.animation-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  /* Ensure the container doesn't prevent scrolling */
+  overflow: visible !important;
+}
+
+/* Ensure the canvas doesn't block scrolling */
+.scroll-animation-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none; /* Let scroll events pass through */
+  background: linear-gradient(to bottom, #201a40, #17132e);
+
+}
+
+/* Fix for GSAP scroll container */
+.scroll-animation-section {
+  position: relative;
+  z-index: 1;
+  min-height: 300vh; /* Ensure there's something to scroll */
+}   

@@ -11,6 +11,7 @@ import './styles/navbar-fix.css';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Pages
+import HomePage from './pages/HomePage';
 import FfrPage from './pages/FfrPage';
 import SignupPage from './pages/SignupPage';
 import FaceModelPage from './pages/FaceModelPage';
@@ -19,6 +20,7 @@ import CastingApplicationPage from './pages/CastingApplicationPage';
 import StudyPage from './pages/StudyPage';
 import ProfilePage from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
+import RetailPage from './pages/RetailPage';
 
 // Payment related pages
 import PaymentNotifyPage from './pages/PaymentNotifyPage';
@@ -27,6 +29,11 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 // Import global styles
 import './styles/global.css';
 import './styles/pricing/pricing-page.css';
+
+// Import retail styles
+import './styles/retail/Hero.css';
+import './styles/retail/Slider.css';
+import './styles/retail/fiton.css';
 
 function App() {
   const { isLoggedIn, userName, userEmail, userProfilePicture, logout, isAuthReady } = useAuthContext();
@@ -44,11 +51,10 @@ function App() {
     location.pathname.includes('/signup') || 
     location.pathname.includes('/face-model') || 
     location.pathname.includes('/casting') ||
-    location.pathname === '/' ||
     location.pathname === '/ffr' ||
-    location.pathname === '/study' ||
     location.pathname === '/profile' ||
-    location.pathname === '/pricing';
+    location.pathname === '/pricing' ||
+    location.pathname === '/home';
   
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
@@ -56,7 +62,6 @@ function App() {
   // Determine if navbar should use scroll detection based on route
   const [enableScrollDetection, setEnableScrollDetection] = useState(false);
 
-  // Fix for tab switching issues and page-specific styles
   useEffect(() => {
     // Reset scroll position on page navigation (except for casting page)
     if (!location.pathname.includes('/casting') || location.pathname.includes('/apply')) {
@@ -70,6 +75,26 @@ function App() {
       }, 100);
     }
     
+    // ADDED: Manually invalidate and recalculate ScrollTrigger on route change
+    // This helps with the home page scrolling issue
+    if (location.pathname === '/' || location.pathname === '/ffr') {
+      // First clear any existing scroll triggers
+      if (window.ScrollTrigger) {
+        const allTriggers = window.ScrollTrigger.getAll();
+        allTriggers.forEach(trigger => trigger.kill());
+      }
+      
+      // Then force GSAP to recalculate after a short delay
+      setTimeout(() => {
+        if (window.ScrollTrigger) {
+          window.ScrollTrigger.refresh(true); // true forces a complete refresh
+          
+          // Additionally, dispatch a resize event which often helps with layout issues
+          window.dispatchEvent(new Event('resize'));
+        }
+      }, 300);
+    }
+    
     // Dispatch resize event
     window.dispatchEvent(new Event('resize'));
     
@@ -77,7 +102,16 @@ function App() {
     setEnableScrollDetection(location.pathname === '/' || location.pathname === '/ffr');
     
     // Clean up any existing body classes
-    document.body.classList.remove('ffr-page', 'signup-page', 'casting-page', 'application-form-page', 'study-page', 'profile-page', 'pricing-page');
+    document.body.classList.remove(
+      'ffr-page', 
+      'signup-page', 
+      'casting-page', 
+      'application-form-page', 
+      'study-page', 
+      'profile-page', 
+      'pricing-page',
+      'retail-page'
+    );
     
     // Apply specific body classes based on route
     if (location.pathname.includes('/signup') || location.pathname.includes('/face-model')) {
@@ -93,6 +127,9 @@ function App() {
       document.body.classList.add('study-page');
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
+    } else if (location.pathname.includes('/retail')) {
+      document.body.classList.add('retail-page');
+      document.body.style.overflow = 'auto';
     } else if (location.pathname.includes('/profile')) {
       document.body.classList.add('profile-page');
       document.body.style.overflow = 'auto';
@@ -101,7 +138,12 @@ function App() {
       document.body.style.overflow = 'auto';
     } else {
       document.body.classList.add('ffr-page');
-      document.body.style.overflow = '';
+      
+      // ADDED: For home page, make sure scrolling is properly enabled
+      document.body.style.overflow = 'auto';
+      document.body.style.overflowX = 'hidden';
+      document.documentElement.style.overflowY = 'auto';
+      document.documentElement.style.overflowX = 'hidden';
     }
     
     return () => {
@@ -119,7 +161,7 @@ function App() {
         name: linkName,
         active: linkName.toLowerCase() === path || 
               (linkName.toLowerCase() === 'casting' && path === 'apply') ||
-              (linkName.toLowerCase() === 'home' && path === '')
+              (linkName.toLowerCase() === 'home' && (path === '' || path === 'home'))
       };
     });
     
@@ -159,7 +201,8 @@ function App() {
       )}
       <div className="app-container">
       <Routes>
-        <Route path="/" element={<FfrPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/ffr" element={<FfrPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/face-model" element={<FaceModelPage />} />
@@ -170,6 +213,7 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/study" element={<StudyPage />} />
+        <Route path="/retail" element={<RetailPage />} />
         <Route path="/profile" element={
           <ProtectedRoute>
             <ProfilePage />
@@ -182,7 +226,7 @@ function App() {
         <Route path="/payment-success" element={<PaymentSuccessPage />} />
         
         {/* ADDED: Catch-all route to handle 404 issues */}
-        <Route path="*" element={<FfrPage />} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
       </div>
 

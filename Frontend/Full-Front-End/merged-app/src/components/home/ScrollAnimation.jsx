@@ -1,0 +1,452 @@
+// ScrollAnimation.jsx with cache for loading state
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom' // Added import
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
+import PropTypes from 'prop-types'
+import FeatureCards from './FeatureCards'
+import '../../styles/home/ScrollAnimation.css'
+
+// Create a global cache for the loading state
+// This will persist across component renders but not page refreshes
+const globalLoadingCache = {
+  framesLoaded: false,
+  imagesCache: []
+};
+
+gsap.registerPlugin(ScrollTrigger)
+
+const ScrollAnimation = ({ frameCount = 200, imageFormat = 'jpg' }) => {
+  const navigate = useNavigate() // Added navigation hook
+  const canvasRef = useRef(null)
+  const containerRef = useRef(null)
+  const faceRef = useRef({ frame: 0 })
+  const prevScrollProgressRef = useRef(0)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  
+  // Use the global cache status instead of creating a new state each time
+  const [imagesLoaded, setImagesLoaded] = useState(globalLoadingCache.framesLoaded ? frameCount : 0)
+  const [isReady, setIsReady] = useState(globalLoadingCache.framesLoaded)
+  
+  const animationTimelineRef = useRef(null)
+  const scrollTriggerRef = useRef(null)
+  const rafIdRef = useRef(null)
+
+  // Add handlers for navigation - scroll to model section
+  const handleGetStartedClick = () => {
+    // Scroll to the model section
+    const modelSection = document.querySelector('.model-section')
+    if (modelSection) {
+      modelSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+  
+  // Preload images with proper error handling - only if not already loaded
+  useEffect(() => {
+    // Skip loading if frames are already loaded in the global cache
+    if (globalLoadingCache.framesLoaded) {
+      setIsReady(true);
+      return;
+    }
+    
+    // Use a smaller number of frames for performance if needed
+    const effectiveFrameCount = Math.min(frameCount, 190);
+    let loadedCount = 0;
+    
+    // Function to create image path
+    const currentFrame = (index) => {
+      const adjustedIndex = Math.floor((index / effectiveFrameCount) * frameCount) + 1;
+      return `./assets/home/${adjustedIndex.toString()}.${imageFormat}`;
+    }
+    
+    // Set up loading timeout
+    const loadingTimeout = setTimeout(() => {
+      console.warn('Image loading timeout - some images may not have loaded correctly');
+      if (loadedCount > 0) {
+        // Continue with what we have if at least some images loaded
+        setIsReady(true);
+        globalLoadingCache.framesLoaded = true;
+      }
+    }, 15000); // 15 second timeout
+    
+    // Load images in batches to prevent memory issues
+    const batchSize = 5;
+    let currentBatch = 0;
+    
+    const loadNextBatch = () => {
+      const startIdx = currentBatch * batchSize;
+      const endIdx = Math.min(startIdx + batchSize, effectiveFrameCount);
+      
+      if (startIdx >= effectiveFrameCount) {
+        clearTimeout(loadingTimeout);
+        return;
+      }
+      
+      for (let i = startIdx; i < endIdx; i++) {
+        // Skip if this frame is already loaded in the global cache
+        if (globalLoadingCache.imagesCache[i]) {
+          loadedCount++;
+          setImagesLoaded(loadedCount);
+          
+          if (loadedCount === effectiveFrameCount) {
+            clearTimeout(loadingTimeout);
+            setIsReady(true);
+            globalLoadingCache.framesLoaded = true;
+          }
+          continue;
+        }
+        
+        const img = new Image();
+        
+        // Handle successful loading
+        img.onload = () => {
+          loadedCount++;
+          setImagesLoaded(loadedCount);
+          globalLoadingCache.imagesCache[i] = img;
+          
+          // Check if all images in this batch are loaded
+          if (loadedCount === effectiveFrameCount) {
+            clearTimeout(loadingTimeout);
+            setIsReady(true);
+            globalLoadingCache.framesLoaded = true;
+          }
+        };
+        
+        // Handle loading errors
+        img.onerror = () => {
+          console.warn(`Failed to load image: ${currentFrame(i)}`);
+          // Create a placeholder canvas instead
+          const canvas = document.createElement('canvas');
+          canvas.width = 800;
+          canvas.height = 600;
+          const ctx = canvas.getContext('2d');
+          // Fill with a gradient
+          const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+          gradient.addColorStop(0, '#304352');
+          gradient.addColorStop(1, '#d7d2cc');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, 800, 600);
+          
+          // Convert to image
+          const placeholderImg = new Image();
+          placeholderImg.src = canvas.toDataURL();
+          placeholderImg.onload = () => {
+            loadedCount++;
+            setImagesLoaded(loadedCount);
+            globalLoadingCache.imagesCache[i] = placeholderImg;
+            
+            if (loadedCount === effectiveFrameCount) {
+              clearTimeout(loadingTimeout);
+              setIsReady(true);
+              globalLoadingCache.framesLoaded = true;
+            }
+          };
+        };
+        
+        // Start loading the image
+        img.src = currentFrame(i);
+      }
+      
+      currentBatch++;
+      // Schedule next batch with a small delay to prevent overwhelming the browser
+      setTimeout(loadNextBatch, 100);
+    };
+    
+    // Start loading the first batch
+    loadNextBatch();
+    
+    return () => {
+      clearTimeout(loadingTimeout);
+    };
+  }, [frameCount, imageFormat]);
+  
+  // Memoized render function to reduce rerenders
+  const render = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const context = canvas.getContext('2d', { alpha: false });
+    // Ensure we have a valid frame index by clamping and rounding
+    const frameIndex = Math.max(0, Math.min(Math.floor(faceRef.current.frame), globalLoadingCache.imagesCache.length - 1));
+    const currentImage = globalLoadingCache.imagesCache[frameIndex];
+    
+    if (!currentImage || !currentImage.complete) return;
+    
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Calculate dimensions for scaling
+    const canvasAspect = canvas.width / canvas.height;
+    const imageAspect = currentImage.width / currentImage.height;
+    let drawWidth = canvas.width;
+    let drawHeight = canvas.height;
+    let x = 0;
+    let y = 0;
+    
+    // Scale image to cover canvas while maintaining aspect ratio
+    if (canvasAspect > imageAspect) {
+      drawHeight = canvas.width / imageAspect;
+      y = (canvas.height - drawHeight) / 2;
+    } else {
+      drawWidth = canvas.height * imageAspect;
+      x = (canvas.width - drawWidth) / 2;
+    }
+    
+    // Use drawImage with integer coordinates for better performance
+    context.drawImage(
+      currentImage, 
+      Math.floor(x), 
+      Math.floor(y), 
+      Math.floor(drawWidth), 
+      Math.floor(drawHeight)
+    );
+  }, []);
+
+  // Interpolate animation frames with requestAnimationFrame for smoother transitions
+  const animateFrames = useCallback((targetFrame) => {
+    // Cancel any existing animation
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
+    
+    // Current animation frame
+    const currentFrame = faceRef.current.frame;
+    
+    // No animation needed if we're already at the target
+    if (Math.abs(currentFrame - targetFrame) < 0.01) {
+      return;
+    }
+    
+    // Animation speed factor - adjust for smoothness
+    const speed = 0.1;
+    
+    // Animation function
+    const animate = () => {
+      // Calculate the current position using easing
+      const currentFrame = faceRef.current.frame;
+      const frameDistance = targetFrame - currentFrame;
+      
+      // If we're very close to the target, just snap to it
+      if (Math.abs(frameDistance) < 0.01) {
+        faceRef.current.frame = targetFrame;
+        render();
+        return;
+      }
+      
+      // Otherwise ease towards the target
+      faceRef.current.frame = currentFrame + frameDistance * speed;
+      
+      // Render the current frame
+      render();
+      
+      // Continue animation
+      rafIdRef.current = requestAnimationFrame(animate);
+    };
+    
+    // Start animation
+    rafIdRef.current = requestAnimationFrame(animate);
+  }, [render]);
+  
+  // Set up ScrollTrigger and animations once images are loaded
+  useEffect(() => {
+    if (!isReady) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const context = canvas.getContext('2d', { alpha: false });
+    
+    // Function to update canvas size
+    const updateCanvasSize = () => {
+      // Use smaller canvas dimensions on mobile for better performance
+      const isMobile = window.innerWidth < 768;
+      const scaleFactor = isMobile ? 0.5 : 1;
+      
+      canvas.width = window.innerWidth * scaleFactor;
+      canvas.height = window.innerHeight * scaleFactor;
+      
+      // Set display size to keep visual dimensions
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      
+      // Update the render to reflect the new size
+      render();
+    };
+    
+    // Initial canvas setup
+    updateCanvasSize();
+    
+    // Handle window resize with debounce for performance
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        updateCanvasSize();
+        
+        // Update ScrollTrigger
+        if (scrollTriggerRef.current) {
+          scrollTriggerRef.current.update();
+        }
+      }, 250);
+    };
+    
+    window.addEventListener('resize', handleResize, { passive: true });
+    
+    // Initial animations for brand name and tagline
+    gsap.fromTo(".brand-name", 
+      { autoAlpha: 0, y: -50 },
+      { autoAlpha: 1, y: 0, duration: 1.5, delay: 0.5, ease: "power2.out" }
+    );
+    
+    gsap.fromTo(".brand-tagline", 
+      { autoAlpha: 0, y: 50 },
+      { autoAlpha: 1, y: 0, duration: 1.5, delay: 1, ease: "power2.out" }
+    );
+    
+    gsap.fromTo(".get-started-btn", 
+      { autoAlpha: 0, scale: 0.8 },
+      { autoAlpha: 1, scale: 1, duration: 1, delay: 1.5, ease: "back.out(1.7)" }
+    );
+    
+    // Set initial state for feature cards and end indicator
+    gsap.set(".feature-card", { autoAlpha: 0 });
+    gsap.set(".scroll-end-indicator", { autoAlpha: 0 });
+
+    // Make the scroll area much longer to create a slower animation
+    const animationTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        pin: true,
+        start: "top top",
+        end: "600%", 
+        scrub: 1.5, 
+        onUpdate: (self) => {
+          // Update scroll progress for features
+          setScrollProgress(self.progress);
+          
+          // Detect scroll direction
+          const scrollDirection = self.progress > prevScrollProgressRef.current ? 1 : -1;
+          prevScrollProgressRef.current = self.progress;
+          
+          // Calculate target frame based on scroll progress
+          const targetFrame = self.progress * (frameCount - 1);
+          
+          // Use our smooth animation function instead of direct updates
+          animateFrames(targetFrame);
+          
+          // Handle other UI elements based on scroll position
+          // Make brand name and tagline fade out earlier
+          const brandOpacity = 1 - Math.max(0, self.progress * 6.67);
+          gsap.set(".landing-text-overlay", { opacity: brandOpacity });
+          
+          // Show end indicator near the end
+          if (self.progress > 0.85) {
+            gsap.to(".scroll-end-indicator", { autoAlpha: 1, duration: 0.5 });
+          } else {
+            gsap.to(".scroll-end-indicator", { autoAlpha: 0, duration: 0.3 });
+          }
+        }
+      }
+    });
+    
+    // Store the timeline in ref for cleanup
+    animationTimelineRef.current = animationTimeline;
+    
+    // Create a separate ScrollTrigger for the transition between sections
+    const sectionTrigger = ScrollTrigger.create({
+      trigger: ".model-section",
+      start: "top bottom-=10%",
+      onEnter: () => {
+        // When entering the model section, start fading out the animation section
+        gsap.to(".scroll-animation-section", { autoAlpha: 0, duration: 0.5 });
+      },
+      onLeaveBack: () => {
+        // When leaving the model section (scrolling back up), fade in the animation section
+        gsap.to(".scroll-animation-section", { autoAlpha: 1, duration: 0.5 });
+      }
+    });
+    
+    // Store the ScrollTrigger in ref for cleanup
+    scrollTriggerRef.current = sectionTrigger;
+    
+    // Render initial image
+    if (globalLoadingCache.imagesCache[0] && globalLoadingCache.imagesCache[0].complete) {
+      render();
+    } else if (globalLoadingCache.imagesCache[0]) {
+      globalLoadingCache.imagesCache[0].onload = render;
+    }
+    
+    // Force initial reflow of GSAP ScrollTrigger
+    ScrollTrigger.refresh();
+    
+    // Cleanup
+    return () => {
+      // Cancel any ongoing animations
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+      
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+      
+      // Kill all GSAP animations and ScrollTriggers
+      if (animationTimelineRef.current) {
+        animationTimelineRef.current.kill();
+      }
+      
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill();
+      }
+      
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      
+      // Clear canvas
+      if (canvas) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+  }, [isReady, render, frameCount, animateFrames]);
+  
+  return (
+    <>
+      {/* Loading indicator for initial image loading - Only show if not already loaded */}
+      {!isReady && !globalLoadingCache.framesLoaded && (
+        <div className="scroll-animation-loading">
+          <div className="loading-spinner"></div>
+          <div>Loading animation frames: {imagesLoaded}/{frameCount}</div>
+        </div>
+      )}
+    
+      <div className="scroll-animation-section" style={{ visibility: isReady ? 'visible' : 'hidden' }}>
+        <div ref={containerRef} className="animation-container">
+          <canvas ref={canvasRef} className="scroll-animation-canvas" />
+          
+          {/* Text overlay for landing area */}
+          <div className="landing-text-overlay">
+            <div className="brand-name">LookSci</div>
+            <button className="get-started-btn" onClick={handleGetStartedClick}>Get Started</button>
+            <div className="brand-tagline">
+              <div>Beauty</div>
+              <div>Redefined.</div>
+            </div>
+          </div>
+          
+          {/* Feature cards component with scroll progress prop */}
+          <FeatureCards scrollProgress={scrollProgress} />
+          
+          {/* End of scroll indicator */}
+          <div className="scroll-end-indicator">
+            <span>Continue to explore</span>
+            <div className="arrow-down"></div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+ScrollAnimation.propTypes = {
+  frameCount: PropTypes.number,
+  imageFormat: PropTypes.string
+}
+
+export default ScrollAnimation

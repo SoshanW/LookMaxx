@@ -1,53 +1,496 @@
+/* Modern 3D Dropdown Footer Styles - Complete Updated Version */
 .footer {
-  background-color: #1f1645;
+  background: linear-gradient(135deg, #181a35 0%, #000000 50%, #303169 100%);
   color: white;
-  padding: 2rem 1rem;
-  text-align: center;
+  padding: 1.5rem;
+  font-family: 'Nasalization', sans-serif;
+  position: relative;
+  z-index: 10;
   width: 100%;
+  box-shadow: 0 -15px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
 }
 
-.footer-content {
+/* 3D-inspired background effect */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(114, 101, 227, 0.03) 30%,
+    rgba(116, 106, 227, 0.05) 50%,
+    transparent 70%
+  );
+  transform: rotate(30deg);
+  pointer-events: none;
+  animation: shimmer 8s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateY(0) rotate(30deg);
+  }
+  50% {
+    transform: translateY(-5%) rotate(30deg);
+  }
+  100% {
+    transform: translateY(0) rotate(30deg);
+  }
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.footer-logo {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  margin-right: 6rem;
+  min-width: 200px;
+  margin-left: -4rem;
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.footer-logo h2 {
+  font-size: 2rem;
+  margin: 0;
+  background: linear-gradient(to right, #ffffff, #b1e0ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.3rem;
+  position: relative;
+  text-shadow: 0 0 15px rgba(177, 224, 238, 0.4);
+  transform: translateZ(10px);
+}
+
+.footer-logo p {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+  line-height: 1.4;
+  text-align: left;
+  position: relative;
+  transform: translateZ(5px);
+}
+
+.footer-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+  flex: 1;
+  justify-content: space-between;
+  perspective: 1000px;
+}
+
+/* Modern 3D dropdown styling */
+.footer-dropdown {
+  min-width: 150px;
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+/* Enhanced Modernized dropdown header styling */
+.footer-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  background: rgba(45, 46, 70, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(114, 137, 218, 0.15);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transform: translateZ(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add subtle highlight effect */
+.footer-dropdown-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: all 0.7s ease;
+}
+
+/* Light effect animation on hover */
+.footer-dropdown-header:hover::before {
+  left: 150%;
+  transition: all 0.7s ease;
+}
+
+/* Elevate and highlight on hover */
+.footer-dropdown-header:hover {
+  background: rgba(55, 57, 88, 0.7);
+  transform: translateY(-3px) translateZ(10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  border-color: rgba(177, 224, 238, 0.3);
+}
+
+/* Active state styling */
+.footer-dropdown.active .footer-dropdown-header {
+  background: linear-gradient(135deg, rgba(114, 137, 218, 0.2), rgba(80, 87, 122, 0.3));
+  border-color: rgba(177, 224, 238, 0.4);
+  box-shadow: 0 5px 15px rgba(114, 137, 218, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Enhanced heading text with 3D effect */
+.footer-dropdown-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #ffffff, #b1e0ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  text-shadow: 0 0 15px rgba(177, 224, 238, 0.4);
+  transition: all 0.3s ease;
+}
+
+/* Text effect on hover */
+.footer-dropdown-header:hover h3 {
+  background: linear-gradient(90deg, #ffffff, #7ee2ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 2.2px;
+  transform: scale(1.02);
+}
+
+/* Modern animated dropdown icon */
+.footer-dropdown-header .dropdown-icon {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.footer-dropdown-header .dropdown-icon::before,
+.footer-dropdown-header .dropdown-icon::after {
+  content: '';
+  position: absolute;
+  background: linear-gradient(90deg, #b1e0ee, #7288fd);
+  border-radius: 3px;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.footer-dropdown-header .dropdown-icon::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.footer-dropdown-header .dropdown-icon::after {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+/* Rotate icon and change color when active */
+.footer-dropdown.active .dropdown-icon {
+  transform: rotate(135deg);
+}
+
+/* Icon hover effect */
+.footer-dropdown-header:hover .dropdown-icon::before,
+.footer-dropdown-header:hover .dropdown-icon::after {
+  background: linear-gradient(90deg, #7ee2ff, #5a93ff);
+  box-shadow: 0 0 8px rgba(177, 224, 238, 0.6);
+}
+
+/* 3D pressed effect when active */
+.footer-dropdown.active .footer-dropdown-header:active {
+  transform: translateY(-1px) translateZ(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+.footer-dropdown-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  opacity: 0;
+  transform: translateY(-10px) rotateX(-20deg);
+  transform-origin: top center;
+  perspective: 1000px;
+  padding: 0 0.5rem;
+}
+
+.footer-dropdown.active .footer-dropdown-content {
+  max-height: 200px;
+  margin-top: 0.5rem;
+  opacity: 1;
+  transform: translateY(0) rotateX(0);
+}
+
+.footer-dropdown ul {
+  list-style: none;
+  padding: 0.5rem;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-dropdown ul li {
+  margin-bottom: 0.5rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+}
+
+.footer-dropdown.active ul li {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Staggered animation for list items */
+.footer-dropdown.active ul li:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.footer-dropdown.active ul li:nth-child(2) {
+  transition-delay: 0.2s;
+}
+.footer-dropdown.active ul li:nth-child(3) {
+  transition-delay: 0.3s;
+}
+.footer-dropdown.active ul li:nth-child(4) {
+  transition-delay: 0.4s;
+}
+
+.footer-dropdown ul li a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  display: block;
+  padding: 0.5rem;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.footer-dropdown ul li a::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: rgba(177, 224, 238, 0.1);
+  z-index: -1;
+  transform: translateY(-50%);
+  transition: height 0.3s ease;
+}
+
+.footer-dropdown ul li a:hover {
+  color: #b1e0ee;
+  transform: translateX(5px);
+}
+
+.footer-dropdown ul li a:hover::before {
+  height: 100%;
+}
+
+/* Social section */
+.footer-social {
+  min-width: 150px;
+}
+
+/* Special styling for social section header (no dropdown functionality) */
+.footer-social .footer-dropdown-header {
+  cursor: default;
+}
+
+.footer-social .footer-dropdown-header:hover {
+  transform: translateY(-2px) translateZ(5px);
+}
+
+.social-icons {
+  display: flex;
+  gap: 0.8rem;
+  margin: 0.8rem 0;
+  perspective: 1000px;
+}
+
+.social-icons a {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-}
-
-.footer-nav {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.footer-nav a {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
   color: white;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: color 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transform: translateZ(10px);
 }
 
-.footer-nav a:hover {
-  color: #b1e0ee;
+.social-icons a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #b1e0ee, #7288fd);
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.footer-social {
-  display: flex;
-  gap: 1.5rem;
+.social-icons a i {
+  font-size: 1.1rem;
+  position: relative;
+  z-index: 2;
 }
 
-.footer-social a {
-  color: white;
-  font-size: 1.2rem;
-  transition: color 0.3s ease;
-  gap: 1rem;
+.social-icons a:hover {
+  transform: translateY(-5px) translateZ(20px) scale(1.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(177, 224, 238, 0.5);
 }
 
-.footer-social a:hover {
-  color: #b1e0ee;
+.social-icons a:hover::before {
+  opacity: 1;
+}
+
+/* Animated 3D hover effect for each social icon */
+.social-icons a:nth-child(1):hover {
+  transform: translateY(-5px) translateZ(20px) rotateY(10deg) scale(1.1);
+}
+
+.social-icons a:nth-child(2):hover {
+  transform: translateY(-5px) translateZ(20px) rotateY(-10deg) scale(1.1);
+}
+
+.social-icons a:nth-child(3):hover {
+  transform: translateY(-5px) translateZ(20px) rotateX(10deg) scale(1.1);
+}
+
+.social-icons a:nth-child(4):hover {
+  transform: translateY(-5px) translateZ(20px) rotateX(-10deg) scale(1.1);
 }
 
 .footer-bottom {
-  font-size: 0.9rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 0.8rem;
   opacity: 0.7;
-  margin-top: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Ensure consistent appearance across browsers */
+@supports not (backdrop-filter: blur(10px)) {
+  .footer-dropdown-header {
+    background: rgba(45, 46, 70, 0.8);
+  }
+  
+  .footer-dropdown-header:hover {
+    background: rgba(55, 57, 88, 0.9);
+  }
+  
+  .footer-dropdown.active .footer-dropdown-header {
+    background: rgba(80, 87, 122, 0.9);
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+  }
+  
+  .footer-logo {
+    margin: 0 auto 1.5rem;
+    text-align: center;
+    align-items: center;
+  }
+  
+  .footer-columns {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .footer-dropdown, .footer-social {
+    width: 100%;
+  }
+  
+  .social-icons {
+    justify-content: center;
+  }
+}
+
+/* Entry animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(10px);
+  }
+}
+
+.footer-logo {
+  animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.footer-dropdown, .footer-social {
+  opacity: 0;
+  animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.footer-dropdown:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.footer-dropdown:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.footer-dropdown:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.footer-social {
+  animation-delay: 0.8s;
 }
