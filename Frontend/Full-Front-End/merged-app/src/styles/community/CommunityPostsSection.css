@@ -621,17 +621,17 @@
   }
   
   .posts-container {
-    max-width: 1000px;
+    max-width: 2000px;
     margin: 0 auto;
   }
   
   .post-form-container {
-    max-width: 1000px;
+    max-width: 2000px;
     margin: 0 auto 2.5rem auto;
   }
   
   .post-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-1px);
     box-shadow: 0 5px 15px rgba(224, 255, 253, 0.15);
   }
   
