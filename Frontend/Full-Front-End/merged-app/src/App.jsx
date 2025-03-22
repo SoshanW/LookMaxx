@@ -52,9 +52,7 @@ function App() {
     location.pathname.includes('/face-model') || 
     location.pathname.includes('/casting') ||
     location.pathname === '/ffr' ||
-    location.pathname === '/study' ||
     location.pathname === '/profile' ||
-    location.pathname === '/retail' ||
     location.pathname === '/pricing' ||
     location.pathname === '/home';
   

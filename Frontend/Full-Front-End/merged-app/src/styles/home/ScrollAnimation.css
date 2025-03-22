@@ -1,4 +1,4 @@
-/* ScrollAnimation.css - Optimized (with feature cards removed) */
+/* ScrollAnimation.css - Complete optimized file with responsive text overlay */
 
 .animation-container {
   position: relative;
@@ -9,7 +9,6 @@
   transform: translateZ(0); /* Hardware acceleration */
   contain: layout; /* Improve layout calculations */
   overflow: hidden; /* Prevent any content from spilling out */
-  
 }
 
 .scroll-animation-canvas {
@@ -24,7 +23,6 @@
   will-change: transform; /* Hint for browser optimization */
   image-rendering: optimizeSpeed; /* Optimize rendering */
   backface-visibility: hidden; /* Reduce flickering */
-
 }
 
 /* Loading indicator for animation frames */
@@ -59,7 +57,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* Landing text overlay styling */
 .landing-text-overlay {
   position: absolute;
   top: 0;
@@ -67,64 +64,282 @@
   width: 100%;
   height: 100%;
   z-index: 2;
-  position: relative;
-  padding: 5%;
   pointer-events: none;
   transition: opacity 0.5s ease-out;
-  /* Performance optimization */
-  will-change: opacity; /* Hint for browser optimization */
-  contain: layout; /* Improve layout calculations */
+  will-change: opacity;
+  /* Remove display: flex to allow manual positioning */
 }
 
+/* Manually positioned brand name */
 .brand-name {
   font-family: "Nasalization", sans-serif;
-  font-size: 7rem;
-  font-weight: bold;
+  font-weight: 700;
   color: #ffffff;
-  letter-spacing: 4px;
+  letter-spacing: 1px;
+  pointer-events: auto;
+  text-align: left;
+  
+  /* Manual positioning with percentages for responsiveness */
   position: absolute;
-  top: 35%;
-  left: 2%;
-  /* Performance optimization */
-  transform: translateZ(0); /* Hardware acceleration */
-  will-change: transform, opacity; /* Hint for browser optimization */
+  top: 30%;
+  left: 3%;
+  
+  /* Keep all your 3D effects */
+  text-shadow:
+    0 2px 0 rgba(171, 132, 255, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(171, 132, 255, 0.4),
+    0 0 40px rgba(80, 50, 150, 0.2);
+  
+  /* Enhanced gradient with better contrast */
+  background: linear-gradient(
+    135deg,
+    #ffffff 20%,
+    #e0deff 50%,
+    #ffffff 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 8s infinite alternate ease-in-out;
+  
+  padding: 0.5rem 2rem;
+  border-radius: 8px;
+  display: inline-block;
+  
+  /* Animation for entrance */
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards 0.2s, gradientShift 8s infinite alternate ease-in-out;
+  font-size: 7rem; /* Larger base size */
 }
+
 
 .brand-tagline {
-  position: absolute;
-  right: 5%;
-  top: 45%;
-  text-align: left;
   font-family: "Nasalization", sans-serif;
-  font-size: 5rem;
   color: #ffffff;
-  line-height: 1.1;
-  /* Performance optimization */
-  transform: translateZ(0); /* Hardware acceleration */
-  will-change: transform, opacity; /* Hint for browser optimization */
-}
-
-.get-started-btn {
   pointer-events: auto;
+  
+  /* Manual positioning with percentages for responsiveness */
   position: absolute;
-  right: 75%; 
-  top: 60%; /* Pushed down with more margin-top (changed from 75%) */
-  padding: 1.5rem 1.5rem;
-  background: radial-gradient(circle, #ffffff, #d1d1fc);
-  color: #191C4C;
-  border: none;
-  border-radius: 15px;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-  font-family: "Dune_Rise", sans-serif;
-  font-weight: bold;
-  text-shadow: #d2cffc 0 0 10px;
-  /* Performance optimization */
-  transform: translateZ(0); /* Hardware acceleration */
-  will-change: transform; /* Hint for browser optimization */
+  top: 32%;
+  right: 11%;
+  
+  /* Animation for entrance */
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards 0.4s;
+  text-align: left;
 }
 
+/* Improved tagline styling with reduced spacing and enhanced effects */
+.brand-tagline div {
+  font-size: 4rem; /* Larger base size */
+  font-weight: 500; /* Slightly bolder */
+  letter-spacing: 1.5px;
+  margin: 0; /* Reduced spacing between lines */
+  line-height: 1.1; /* Tighter line height */
+  
+  /* Enhanced text shadow for better visibility */
+  text-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.4),
+    0 0 12px rgba(171, 132, 255, 0.4);
+  
+  /* Improved gradient text */
+  background: linear-gradient(
+    to right,
+    #ffffff 0%,
+    #d4d2ff 50%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Interactive line effect */
+  position: relative;
+  padding: 0.3rem 0.5rem; /* Reduced padding */
+  margin-bottom: 0.2rem; /* Minimal spacing between tagline words */
+}
+
+/* Enhanced button styling - consistent with the desktop scale */
+.get-started-btn {
+  font-family: "Dune_Rise", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  pointer-events: auto;
+  
+  /* Manual positioning with percentages for responsiveness */
+  position: absolute;
+  bottom: 32%;
+  left: 10%;
+  
+  /* Keep all button styling */
+  background: linear-gradient(135deg, 
+    rgba(241, 241, 255, 0.9) 0%, 
+    rgba(195, 195, 255, 0.8) 100%);
+  color: #33308e;
+  border: none;
+  border-radius: 6px;
+  clip-path: polygon(
+    4px 0%, 
+    calc(100% - 4px) 0%, 
+    100% 4px, 
+    100% calc(100% - 4px), 
+    calc(100% - 4px) 100%, 
+    4px 100%, 
+    0% calc(100% - 4px), 
+    0% 4px
+  );
+  
+  box-shadow: 
+    0 4px 8px rgba(50, 50, 93, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  
+  transform-style: preserve-3d;
+  transform: translateZ(0);
+  transform-origin: bottom;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  overflow: hidden;
+  
+  /* Animation for entrance */
+  opacity: 0;
+  animation: fadeIn 1s ease-out forwards 0.6s;
+  font-size: 1.5rem; /* Larger base size */
+  padding: 14px 34px;
+}
+/* Modern 3D outer glow for the brand name */
+.brand-name::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: radial-gradient(
+    circle at center,
+    rgba(171, 132, 255, 0.2) 0%,
+    transparent 70%
+  );
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1;
+}
+
+.brand-name:hover::before {
+  opacity: 1;
+}
+
+/* Subtle 3D lift on hover */
+.brand-name:hover {
+  transform: translateY(-5px);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.brand-tagline div {
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin: 0.2rem 0;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(171, 132, 255, 0.3);
+  
+  /* Subtle gradient text */
+  background: linear-gradient(
+    to right,
+    #ffffff 0%,
+    #e0e0ff 50%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* Interactive line effect */
+  position: relative;
+  padding: 0.5rem 1rem;
+}
+
+/* Line animation for tagline */
+.brand-tagline div::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+  transition: width 0.4s ease;
+}
+
+.brand-tagline div:hover::after {
+  width: 100%;
+}
+
+.brand-tagline div:hover {
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(171, 132, 255, 0.5);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* 3D hover effect for button */
+.get-started-btn:hover {
+  background: linear-gradient(135deg, 
+    rgba(248, 248, 255, 1) 0%, 
+    rgba(178, 176, 252, 0.9) 100%);
+  transform: 
+    translateY(-4px)
+    translateZ(15px)
+    scale(1.03);
+  box-shadow: 
+    0 10px 20px rgba(50, 50, 93, 0.15),
+    0 6px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+/* Button press effect */
+.get-started-btn:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 
+    0 2px 5px rgba(50, 50, 93, 0.1),
+    0 1px 1px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transition-duration: 0.1s;
+}
+
+/* Light sweep effect */
+.get-started-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 30%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(30deg);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.get-started-btn:hover::before {
+  transform: translateX(350%) rotate(30deg);
+  transition: transform 0.8s ease;
+}
+
+/* Feature card styling is in its own CSS file */
+
+/* Model section styling */
 .model-section {
   position: relative;
   height: 100vh; 
@@ -144,8 +359,8 @@
   contain: layout; /* Improve layout calculations */
 }
 
-/* Enhanced hover effect with scale and pulse animation */
-.get-started-btn:hover {
+/* Enhanced hover effect with scale and pulse animation - legacy version */
+.legacy-button-hover:hover {
   background: radial-gradient(circle, #ffffff, #d2cffc);
   text-shadow: #140541 0 0 10px;
   font-weight: bold;
@@ -153,7 +368,7 @@
   animation: simplePulse 1.5s infinite;
 }
 
-/* Simplify pulse animation for better performance */
+/* Simplified pulse animation for better performance */
 @keyframes simplePulse {
   0%, 100% {
     transform: scale(1.05) translateZ(0);
@@ -170,34 +385,6 @@
   font-family: "Dune_Rise";
   src: url("../fonts/Dune_Rise.ttf") format('truetype');
   font-display: swap; /* Improve font loading performance */
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .brand-name {
-    font-size: 4rem;
-    top: 25%;
-  }
-
-  .brand-tagline {
-    font-size: 2rem;
-    right: 10%;
-    bottom: 35%;
-  }
-
-  .get-started-btn {
-    padding: 0.6rem 1.5rem;
-    font-size: 1rem;
-    right: 15%;
-    bottom: 20%;
-  }
-
-  /* animation for mobile to be more subtle and efficient */
-  .get-started-btn:hover {
-    transform: scale(1.03) translateZ(0);
-    /* Disable animations on mobile for better performance */
-    animation: none;
-  }
 }
 
 /* Scroll animation section wrapper */
@@ -218,7 +405,6 @@
 .scroll-animation-section.hidden {
   display: none;
 }
-
 
 /* Add specific class for when scroll animation is disabled for performance */
 .scroll-animation-disabled {
@@ -283,84 +469,191 @@
   will-change: transform; /* Hint for browser optimization */
 }
 
-/* Simplify bounce animation for better performance */
+/* Simplified bounce animation for better performance */
 @keyframes simpleBounce {
   0%, 100% { transform: rotate(45deg) translateY(0); }
   50% { transform: rotate(45deg) translateY(10px); }
 }
 
-/* Responsive adjustments for different screen sizes */
-/* Tablet (portrait) */
-@media (min-width: 768px) and (max-width: 1024px) {
+/* Responsive media queries for different screen sizes */
+@media (max-width: 767px) {
   .brand-name {
-    font-size: 5.5rem;
-    top: 30%;
-    left: 2%;
+    font-size: 3rem;
+    padding: 0.4rem 1rem;
+    top: 15%; /* Adjust position for mobile */
+    left: 5%;
+  }
+  
+  .brand-tagline div {
+    font-size: 1.2rem;
   }
   
   .brand-tagline {
-    font-size: 3.5rem;
-    right: 8%;
-    top: 43%;
+    bottom: 40%;
+    right: 5%;
   }
   
   .get-started-btn {
-    right: 60%;
-    top: 70%;
-    padding: 1.2rem 1.2rem;
-    font-size: 1.3rem;
+    font-size: 1rem;
+    padding: 10px 24px;
+    bottom: 25%;
+    left: 5%;
   }
 }
 
-/* Large tablets and small desktops */
-@media (min-width: 1024px) and (max-width: 1366px) {
+/* Mobile devices */
+@media (max-width: 767px) {
   .brand-name {
-    font-size: 6rem;
-    top: 33%;
+    font-size: 3.5rem;
+    padding: 0.4rem 1rem;
+    top: 39%; /* Same as standard desktop */
+    left: 1%; /* Same as standard desktop */
+  }
+  
+  .brand-tagline div {
+    font-size: 1.8rem;
   }
   
   .brand-tagline {
-    font-size: 4rem;
-    right: 7%;
+    top: 38%; /* Same as standard desktop */
+    right: 11%; /* Same as standard desktop */
+    bottom: auto; /* Remove bottom positioning */
   }
   
   .get-started-btn {
-    right: 70%;
-    top: 72%;
+    font-size: 1rem;
+    padding: 10px 24px;
+    bottom: 24%; /* Same as standard desktop */
+    left: 66%; /* Same as standard desktop */
+  }
+}
+
+/* Tablet (portrait) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .brand-name {
+    font-size: 4.8rem;
+    top: 39%; /* Same as standard desktop */
+    left: 1%; /* Same as standard desktop */
+  }
+  
+  .brand-tagline div {
+    font-size: 2.4rem;
+  }
+  
+  .brand-tagline {
+    top: 38%; /* Same as standard desktop */
+    right: 11%; /* Same as standard desktop */
+    bottom: auto; /* Remove bottom positioning */
+  }
+  
+  .get-started-btn {
+    font-size: 1.2rem;
+    padding: 12px 28px;
+    bottom: 24%; /* Same as standard desktop */
+    left: 66%; /* Same as standard desktop */
+  }
+}
+
+/* Tablets and small desktops */
+@media (min-width: 1024px) and (max-width: 1365px) {
+  .brand-name {
+    font-size: 6rem;
+    top: 39%; /* Same as standard desktop */
+    left: 1%; /* Same as standard desktop */
+  }
+  
+  .brand-tagline div {
+    font-size: 3rem;
+  }
+  
+  .brand-tagline {
+    top: 38%; /* Same as standard desktop */
+    right: 11%; /* Same as standard desktop */
+    bottom: auto; /* Remove bottom positioning */
+  }
+  
+  .get-started-btn {
+    font-size: 1.3rem;
+    padding: 12px 32px;
+    bottom: 24%; /* Same as standard desktop */
+    left: 66%; /* Same as standard desktop */
+  }
+}
+
+/* Standard desktops - our reference positioning */
+@media (min-width: 1366px) and (max-width: 1599px) {
+  .brand-name {
+    font-size: 7.6rem;
+    top: 40%;
+    left: 1%;
+  }
+  
+  .brand-tagline div {
+    font-size: 3.7rem;
+  }
+  
+  .brand-tagline {
+    top: 40%;
+    right: 11%;
+  }
+  
+  .get-started-btn {
+    font-size: 1.5rem;
+    padding: 14px 34px;
+    bottom: 24%;
+    left: 66%;
   }
 }
 
 /* Large screens */
 @media (min-width: 1600px) {
   .brand-name {
-    font-size: 8rem;
-    top: 35%;
-    left: 5%;
+    font-size: 8.5rem;
+    top: 39%; /* Same as standard desktop */
+    left: 1%; /* Same as standard desktop */
+  }
+  
+  .brand-tagline div {
+    font-size: 4.2rem;
   }
   
   .brand-tagline {
-    font-size: 6rem;
-    right: 8%;
-    top: 45%;
+    top: 38%; /* Same as standard desktop */
+    right: 11%; /* Same as standard desktop */
+    bottom: auto; /* Remove bottom positioning */
   }
   
   .get-started-btn {
-    right: 70%;
-    top: 75%;
-    padding: 1.8rem 1.8rem;
-    font-size: 1.8rem;
+    font-size: 1.7rem;
+    padding: 16px 38px;
+    bottom: 24%; /* Same as standard desktop */
+    left: 66%; /* Same as standard desktop */
+  }
+}
+
+/* Landscape orientation adjustments for mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .brand-name {
+    font-size: 2.8rem;
+    padding: 0.3rem 0.8rem;
+    top: 39%; /* Same as standard desktop */
+    left: 1%; /* Same as standard desktop */
   }
   
-  .scroll-end-indicator {
-    bottom: 40px;
-  }
-  
-  .scroll-end-indicator span {
+  .brand-tagline div {
     font-size: 1.4rem;
   }
   
-  .arrow-down {
-    width: 25px;
-    height: 25px;
+  .brand-tagline {
+    top: 38%; /* Same as standard desktop */
+    right: 11%; /* Same as standard desktop */
+    bottom: auto;
+  }
+  
+  .get-started-btn {
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    bottom: 24%; /* Same as standard desktop */
+    left: 66%; /* Same as standard desktop */
   }
 }
