@@ -294,3 +294,197 @@ label {
     width: 100%;
   }
 }
+
+/* Add to CastingApplicationForm.css */
+
+/* Loading state */
+.ffr-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+.ffr-loading .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: #5a67d8;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 15px;
+}
+
+.ffr-loading p {
+  color: #cccccc;
+}
+
+/* Error state */
+.ffr-error {
+  text-align: center;
+  padding: 2rem;
+  color: #ff8ca1;
+}
+
+/* PDF viewer */
+.ffr-pdf-viewer {
+  width: 100%;
+  height: 600px;
+  margin: 1rem 0;
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.ffr-pdf-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.6),
+    0 0 15px rgba(132, 255, 255, 0.5);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  transform: translateZ(0);
+}
+
+.ffr-pdf-viewer:hover .ffr-pdf-iframe {
+  transform: translateZ(20px);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(132, 255, 255, 0.7);
+}
+
+/* Add cool 3D effects to the FFR results preview container */
+.ffr-results-preview {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, rgba(36, 35, 79, 0.8) 0%, rgba(10, 10, 30, 0.9) 100%);
+  border-radius: 8px;
+  position: relative;
+  backdrop-filter: blur(5px);
+  box-shadow: 
+    0 15px 25px rgba(0, 0, 0, 0.6),
+    0 0 15px rgba(132, 255, 255, 0.3),
+    inset 0 0 10px rgba(132, 255, 255, 0.1);
+  border: 1px solid rgba(132, 255, 255, 0.2);
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+  transition: all 0.3s ease-out;
+  max-height: 800px;
+  overflow-y: auto;
+  animation: slideIn 0.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) translateY(20px) rotateX(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) translateY(0) rotateX(0);
+  }
+}
+
+.ffr-results-preview h3 {
+  color: #84ffff;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(132, 255, 255, 0.5);
+  letter-spacing: 1px;
+  transform: translateZ(10px);
+}
+
+.ffr-results-preview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(132, 255, 255, 0.5), transparent);
+}
+
+.ffr-results-preview::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(132, 255, 255, 0.3), transparent);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhance the toggle button with a better hover effect */
+.ffr-toggle-button {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.ffr-toggle-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(132, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+  z-index: -1;
+}
+
+.ffr-toggle-button:hover::before {
+  left: 100%;
+}
+
+.ffr-toggle-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(132, 255, 255, 0.5);
+}
+
+/* Make scrollbars in the preview look better */
+.ffr-results-preview::-webkit-scrollbar {
+  width: 8px;
+  display: block;
+}
+
+.ffr-results-preview::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.ffr-results-preview::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #4466e2, #1c99d8);
+  border-radius: 4px;
+}
+
+.ffr-results-preview::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #1c99d8, #4466e2);
+}
+
+.pdf-fallback {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #cccccc;
+}
+
+.pdf-fallback a {
+  color: #84ffff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.pdf-fallback a:hover {
+  text-shadow: 0 0 5px rgba(132, 255, 255, 0.7);
+  text-decoration: underline;
+}

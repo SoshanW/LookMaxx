@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from "../../context/AuthProvider";
+import { getCookie } from "../../utils/cookies";
+import { api } from "../../utils/apiClient";
 import "../../styles/casting/CastingApplicationForm.css";
 
 function CastingApplicationForm() {
@@ -27,6 +29,11 @@ function CastingApplicationForm() {
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showFfrResults, setShowFfrResults] = useState(false);
+  
+  // New state for PDF viewing
+  const [ffrPdfUrl, setFfrPdfUrl] = useState(null);
+  const [isLoadingPdf, setIsLoadingPdf] = useState(false);
+  const [pdfError, setPdfError] = useState(null);
 
   // Apply special class for application form page and ensure scrolling works
   useEffect(() => {
@@ -48,6 +55,72 @@ function CastingApplicationForm() {
       document.documentElement.style.overflowY = '';
     };
   }, []);
+
+  // Get the username from cookie for API calls
+  const getUsernameFromCookie = () => {
+    const userData = getCookie('user_data');
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        console.log('User data from cookie:', parsed);
+        return parsed.username;
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  /**
+   * Fetch the FFR PDF report
+   */
+  const fetchFfrReport = async () => {
+    const username = getUsernameFromCookie();
+    if (!username) {
+      setPdfError("User information not found");
+      return;
+    }
+    
+    setIsLoadingPdf(true);
+    setPdfError(null);
+    
+    try {
+      // Get auth token from cookie
+      const token = getCookie('access_token');
+      if (!token) {
+        setPdfError("Authentication token not found");
+        return;
+      }
+      
+      // Use axios for better error handling
+      const response = await api.get(`/casting/view-pdf/${username}`, {
+        responseType: 'blob',
+        headers: {
+          'Accept': 'application/pdf'
+        }
+      });
+      
+      // Check if we got a PDF
+      const contentType = response.headers['content-type'];
+      if (!contentType || !contentType.includes('application/pdf')) {
+        throw new Error(`Expected PDF but got ${contentType || 'unknown content type'}`);
+      }
+      
+      // Create a blob URL that can be used in the iframe
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      setFfrPdfUrl(blobUrl);
+      
+      console.log('PDF successfully fetched and converted to blob URL');
+      
+    } catch (error) {
+      console.error('Error fetching PDF:', error);
+      setPdfError(`${error.message}. Please try viewing your report on the Profile page.`);
+    } finally {
+      setIsLoadingPdf(false);
+    }
+  };
 
   // Handle changes in any form field
   const handleChange = (e) => {
@@ -152,7 +225,83 @@ function CastingApplicationForm() {
    * Show/hide the FFR analysis results preview
    */
   const toggleFfrResults = () => {
+    // If toggling to show results and we don't have a URL yet, fetch it
+    if (!showFfrResults && !ffrPdfUrl && !isLoadingPdf) {
+      fetchFfrReport();
+    }
     setShowFfrResults(!showFfrResults);
+  };
+
+  // Render PDF viewer inside the FFR results preview
+  const renderPdfViewer = () => {
+    if (isLoadingPdf) {
+      return (
+        <div className="ffr-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading your FFR report...</p>
+        </div>
+      );
+    }
+    
+    if (pdfError) {
+      return (
+        <div className="ffr-error">
+          <p>{pdfError}</p>
+          <button className="secondary-button" onClick={fetchFfrReport}>
+            Try Again
+          </button>
+        </div>
+      );
+    }
+    
+    if (ffrPdfUrl) {
+      return (
+        <div className="ffr-pdf-viewer">
+          <object 
+            data={ffrPdfUrl}
+            type="application/pdf"
+            className="ffr-pdf-iframe"
+          >
+            <div className="pdf-fallback">
+              <p>Unable to display PDF directly. You can:</p>
+              <button 
+                className="secondary-button"
+                onClick={() => {
+                  const link = document.createElement('a');
+                  link.href = ffrPdfUrl;
+                  link.download = 'ffr-report.pdf';
+                  link.click();
+                }}
+              >
+                Download PDF
+              </button>
+            </div>
+          </object>
+          
+          <div className="pdf-actions">
+            <button 
+              className="pdf-download-button"
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = ffrPdfUrl;
+                link.download = 'ffr-report.pdf';
+                link.click();
+              }}
+            >
+              Download PDF
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
+    // Fallback to static image
+    return (
+      <div className="ffr-pdf-container">
+        <img src="/assets/casting/report.jpeg" alt="Sample FFR Results" className="ffr-sample-image" />
+        <p className="ffr-disclaimer">These results are generated from your FFR analysis completed on the FFR page.</p>
+      </div>
+    );
   };
 
   // Show success message if form was submitted successfully
@@ -184,11 +333,7 @@ function CastingApplicationForm() {
         {showFfrResults && (
           <div className="ffr-results-preview">
             <h3>Your FFR Analysis Results</h3>
-            <div className="ffr-pdf-container">
-              {/* This would be replaced with actual user data in production */}
-              <img src="/assets/casting/report.jpeg" alt="Sample FFR Results" className="ffr-sample-image" />
-              <p className="ffr-disclaimer">These results are generated from your FFR analysis completed on the FFR page. The data helps agencies evaluate facial symmetry, proportions, and other model-relevant metrics.</p>
-            </div>
+            {renderPdfViewer()}
           </div>
         )}
       </div>
