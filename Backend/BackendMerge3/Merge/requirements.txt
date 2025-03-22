@@ -3,4 +3,35 @@ flask_cors
 flask
 botocore
 boto3
+
+# casting requirements
+Flask-Mail
+Flask-pymongo
+python-dotenv
+
+# community requirements
+flask-limiter
+
+# ff requirements
 mediapipe
+opencv-python
+pandas
+numpy
+matplotlip
+
+# report generation requirements
+langchain 
+langchain-core 
+langchain-community 
+pydantic 
+fpdf 
+google-cloud-aiplatform 
+langchain-google-vertexai 
+langchain-anthropic 
+faiss-cpu 
+tiktoken
+pypdf
+Pillow
+
+# signup requirements
+dnspython
