@@ -52,7 +52,7 @@ const TeamSlider = () => {
       image: "/assets/team/mariyam.jpg",
       bio: "Creating engaging user interfaces and detailed 3D models to enhance digital experiences, blending design principles with technical expertise."
     }
-];
+  ];
 
 
   useEffect(() => {
@@ -83,7 +83,7 @@ const TeamSlider = () => {
   }, []);
 
   return (
-    <section className="team-section">
+    <section className="team-section" id="about-us">
       <div className="team-section-content">
         <h1 className="team-heading">Our Visionary Team</h1>
         <p className="team-subheading">
