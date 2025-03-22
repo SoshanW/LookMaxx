@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { register } from 'swiper/element/bundle';
+import { FaGithub, FaLinkedin } from 'react-icons/fa'; // Import React Icons
 import '../../styles/home/TeamSlider.css';
 
 // Register Swiper web components
@@ -8,49 +9,61 @@ register();
 const TeamSlider = () => {
   const swiperRef = useRef(null);
 
-  // Team member data
+  // Team member data with added social links
   const teamMembers = [
     {
       id: 1,
       name: "Soshan",
       role: "Full Stack & AI Developer",
       image: "/assets/team/soshan.jpg",
-      bio: "Developing intelligent and scalable applications by integrating AI with full-stack technologies. Passionate about problem-solving and innovation."
+      bio: "Developing intelligent and scalable applications by integrating AI with full-stack technologies. Passionate about problem-solving and innovation.",
+      github: "https://github.com/soshan",
+      linkedin: "https://linkedin.com/in/soshan"
     },
     {
       id: 2,
       name: "Naflan",
       role: "AI & 3D Modeling Specialist",
       image: "/assets/team/naflan.jpg",
-      bio: "Combining machine learning with 3D modeling to create precise and dynamic digital representations, pushing the boundaries of AI-driven design."
+      bio: "Combining machine learning with 3D modeling to create precise and dynamic digital representations, pushing the boundaries of AI-driven design.",
+      github: "https://github.com/naflan",
+      linkedin: "https://linkedin.com/in/naflan"
     },
     {
       id: 3,
       name: "Vinuki",
       role: "Backend Engineer",
       image: "/assets/team/vinuki.jpg",
-      bio: "Building and optimizing backend systems for performance and scalability. Experienced in database architecture and API development."
+      bio: "Building and optimizing backend systems for performance and scalability. Experienced in database architecture and API development.",
+      github: "https://github.com/vinuki",
+      linkedin: "https://linkedin.com/in/vinuki"
     },
     {
       id: 4,
       name: "Vonara",
       role: "UI/UX Developer",
       image: "/assets/team/vonara.jpg",
-      bio: "Designing seamless and visually compelling user experiences with a focus on interactivity, accessibility, and modern web aesthetics."
+      bio: "Designing seamless and visually compelling user experiences with a focus on interactivity, accessibility, and modern web aesthetics.",
+      github: "https://github.com/vonara",
+      linkedin: "https://linkedin.com/in/vonara"
     },
     {
       id: 5,
       name: "Shemeshi",
       role: "Backend Developer",
       image: "/assets/team/shemeshi.jpg",
-      bio: "Ensuring efficient server-side performance and system stability, with expertise in data processing and backend optimization."
+      bio: "Ensuring efficient server-side performance and system stability, with expertise in data processing and backend optimization.",
+      github: "https://github.com/shemeshi",
+      linkedin: "https://linkedin.com/in/shemeshi"
     },
     {
       id: 6,
       name: "Mariyam",
       role: "UI/UX & 3D Design Engineer",
       image: "/assets/team/mariyam.jpg",
-      bio: "Creating engaging user interfaces and detailed 3D models to enhance digital experiences, blending design principles with technical expertise."
+      bio: "Creating engaging user interfaces and detailed 3D models to enhance digital experiences, blending design principles with technical expertise.",
+      github: "https://github.com/mariyam",
+      linkedin: "https://linkedin.com/in/mariyam"
     }
   ];
 
@@ -114,6 +127,16 @@ const TeamSlider = () => {
                     <h3 className="team-member-name">{member.name}</h3>
                     <h4 className="team-member-role">{member.role}</h4>
                     <p className="team-member-bio">{member.bio}</p>
+                    
+                    {/* Social links */}
+                    <div className="team-member-social">
+                      <a href={member.github} target="_blank" rel="noopener noreferrer" className="team-social-link github">
+                        <FaGithub />
+                      </a>
+                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="team-social-link linkedin">
+                        <FaLinkedin />
+                      </a>
+                    </div>
                   </div>
                 </div>
               </swiper-slide>

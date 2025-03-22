@@ -1,9 +1,9 @@
-/* TeamSlider.css - Increased image area and adjusted proportions */
+/* TeamSlider.css - Fixed version */
 
 /* Main team section styling */
 .team-section {
   position: relative;
-  min-height: 100vh;
+  min-height: 120vh;
   width: 100%;
   background: linear-gradient(to bottom, #362d5a, #18113a);
   padding: 100px 0 60px;
@@ -55,7 +55,7 @@
 .team-slider-container {
   position: relative;
   width: 100%;
-  height: 650px; /* Increased height to accommodate larger image */
+  height: 650px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -64,15 +64,35 @@
 .team-swiper {
   width: 100%;
   height: 100%;
-  padding: 40px 0;
+  padding: 40px 0 80px; /* Added extra bottom padding */
+}
+
+/* Hide Swiper's default navigation arrows */
+:root {
+  --swiper-navigation-size: 0;
+  --swiper-theme-color: #ab84ff;
+}
+
+/* Hide default navigation */
+swiper-container::part(button-prev),
+swiper-container::part(button-next) {
+  display: none !important;
+}
+
+/* Create space for pagination */
+swiper-container::part(pagination) {
+  bottom: 0 !important;
+  position: relative !important;
+  margin-top: 20px !important;
 }
 
 .team-slide {
   width: 380px;
-  height: 520px; /* Increased from 460px to allow more image space */
+  height: 520px;
   transition: transform 0.3s ease;
-  padding: 10px;
+  padding: 15px;
   margin-top: 10px;
+  margin-bottom: 30px; /* Add space at the bottom of each slide */
 }
 
 /* Custom navigation buttons */
@@ -123,7 +143,7 @@
 
 .team-img-container {
   width: 100%;
-  height: 360px; /* Increased from 300px to give more space to the image */
+  height: 360px;
   overflow: hidden;
   position: relative;
   background: #00000007;
@@ -135,10 +155,10 @@
 .team-img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Maintains aspect ratio without stretching */
+  object-fit: contain;
   object-position: center;
   transition: transform 0.3s ease;
-  padding: 10px; /* Added padding to ensure image doesn't touch the edges */
+  padding: 10px;
 }
 
 .team-card:hover .team-img {
@@ -147,7 +167,7 @@
 
 /* Card content styling */
 .team-card-content {
-  padding: 20px; /* Reduced from 25px */
+  padding: 20px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -155,28 +175,28 @@
 
 .team-member-name {
   font-family: "Nasalization", sans-serif;
-  font-size: 1.7rem; /* Reduced from 1.8rem */
+  font-size: 1.7rem;
   color: #715efd;
-  margin: 0 0 6px; /* Reduced from 8px */
+  margin: 0 0 6px;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.521);
 }
 
 .team-member-role {
   font-family: "Dune_Rise", sans-serif;
-  font-size: 0.95rem; /* Reduced from 1rem */
+  font-size: 0.95rem;
   color: #ffffff;
-  margin: 0 0 15px; /* Reduced from 20px */
+  margin: 0 0 15px;
   font-weight: 500;
 }
 
 .team-member-bio {
   font-family: "Neuropolitical", sans-serif;
-  font-size: 0.9rem; /* Reduced from 0.95rem */
+  font-size: 0.9rem;
   color: #ffffff;
-  margin-bottom: 8px; /* Reduced from 10px */
-  line-height: 1.4; /* Reduced from 1.5 */
+  margin-bottom: 8px;
+  line-height: 1.4;
   flex: 1;
-  letter-spacing: 0.09rem; /* Reduced from 0.1rem */
+  letter-spacing: 0.09rem;
 }
 
 @keyframes teamBtnPulse {
@@ -209,6 +229,32 @@
   transform: scale(1.05);
   box-shadow: 0 10px 25px rgba(132, 132, 255, 0.35);
   border-color: #7873d8;
+}
+
+/* Force hide navigation arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Pagination indicator styling */
+.swiper-pagination {
+  position: relative !important;
+  bottom: -10px !important;
+  margin-top: 30px !important;
+}
+
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.3);
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background: #ab84ff;
 }
 
 /* Responsive adjustments for different screen sizes */
@@ -251,6 +297,10 @@
     width: 45px;
     height: 45px;
   }
+  
+  .team-swiper {
+    padding: 40px 0 70px;
+  }
 }
 
 /* Tablet (portrait) */
@@ -275,6 +325,10 @@
   .team-member-name {
     font-size: 1.6rem;
   }
+  
+  .team-swiper {
+    padding: 40px 0 75px;
+  }
 }
 
 /* Large tablets and small desktops */
@@ -290,6 +344,10 @@
   
   .team-img-container {
     height: 340px;
+  }
+  
+  .team-swiper {
+    padding: 40px 0 80px;
   }
 }
 
@@ -337,4 +395,77 @@
     width: 65px;
     height: 65px;
   }
+  
+  .team-swiper {
+    padding: 40px 0 90px;
+  }
+}
+
+.team-member-social {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.team-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.team-social-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.team-social-link.github::before {
+  background: linear-gradient(135deg, #333333, #24292e);
+}
+
+.team-social-link.linkedin::before {
+  background: linear-gradient(135deg, #0077B5, #00a0dc);
+}
+
+.team-social-link svg {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.team-social-link:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.team-social-link:hover::before {
+  opacity: 1;
+}
+
+/* Adjust card content to make room for social links */
+.team-card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.team-member-bio {
+  flex: 1;
+  margin-bottom: 0.5rem;
 }
