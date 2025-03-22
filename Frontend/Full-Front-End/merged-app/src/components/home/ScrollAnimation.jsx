@@ -1,4 +1,4 @@
-// ScrollAnimation.jsx with cache for loading state
+// ScrollAnimation.jsx with improved fade animations
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom' // Added import
 import gsap from 'gsap'
@@ -333,16 +333,48 @@ const ScrollAnimation = ({ frameCount = 200, imageFormat = 'jpg' }) => {
           // Use our smooth animation function instead of direct updates
           animateFrames(targetFrame);
           
-          // Handle other UI elements based on scroll position
-          // Make brand name and tagline fade out earlier
-          const brandOpacity = 1 - Math.max(0, self.progress * 6.67);
-          gsap.set(".landing-text-overlay", { opacity: brandOpacity });
+          // EARLY FADE AND END FADE ANIMATION LOGIC
           
-          // Show end indicator near the end
-          if (self.progress > 0.85) {
-            gsap.to(".scroll-end-indicator", { autoAlpha: 1, duration: 0.5 });
+          // Early fade out: Fade out the landing text after a few scroll ticks
+          if (self.progress < 0.1) {
+            // Keep full opacity at the start
+            gsap.set(".landing-text-overlay", { opacity: 1 });
+          } else if (self.progress < 0.2) {
+            // Fade out quickly between 10% and 20% of scroll
+            const fadeProgress = (self.progress - 0.1) / 0.1;
+            const opacity = 1 - fadeProgress;
+            gsap.set(".landing-text-overlay", { opacity: opacity });
+          } else if (self.progress < 0.85) {
+            // Keep hidden through most of the scroll
+            gsap.set(".landing-text-overlay", { opacity: 0 });
+          } else if (self.progress < 0.98) {
+            // Smoothly fade out again between 85% and 98% of scroll (for smooth end transition)
+            gsap.set(".landing-text-overlay", { opacity: 0 });
           } else {
-            gsap.to(".scroll-end-indicator", { autoAlpha: 0, duration: 0.3 });
+            // Completely invisible at the end
+            gsap.set(".landing-text-overlay", { opacity: 0 });
+          }
+          
+          // Show end indicator near the end with improved fading
+          if (self.progress > 0.8 && self.progress < 0.95) {
+            // Fade in smoothly between 80% and 85%
+            const indicatorOpacity = Math.min(1, (self.progress - 0.8) * 20);
+            gsap.to(".scroll-end-indicator", { 
+              autoAlpha: indicatorOpacity, 
+              duration: 0.3,
+              ease: "power1.out" 
+            });
+          } else if (self.progress >= 0.95) {
+            // Fade out smoothly between 95% and 100%
+            const indicatorOpacity = Math.max(0, 1 - (self.progress - 0.95) * 20);
+            gsap.to(".scroll-end-indicator", { 
+              autoAlpha: indicatorOpacity, 
+              duration: 0.3,
+              ease: "power1.in" 
+            });
+          } else {
+            // Keep invisible elsewhere
+            gsap.to(".scroll-end-indicator", { autoAlpha: 0, duration: 0.2 });
           }
         }
       }
@@ -355,13 +387,29 @@ const ScrollAnimation = ({ frameCount = 200, imageFormat = 'jpg' }) => {
     const sectionTrigger = ScrollTrigger.create({
       trigger: ".model-section",
       start: "top bottom-=10%",
+      end: "top top+=10%",
+      scrub: true,
+      onUpdate: (self) => {
+        // Create a faster transition between sections based on progress
+        const progress = Math.min(1, Math.max(0, self.progress));
+        gsap.to(".scroll-animation-section", { 
+          autoAlpha: 1 - progress,
+          duration: 0.1, // Shorter duration for faster transition
+          ease: "none"
+        });
+        
+        // Fade in the model section as we approach it
+        gsap.to(".model-section", { 
+          autoAlpha: progress,
+          duration: 0.1,
+          ease: "none"
+        });
+      },
       onEnter: () => {
-        // When entering the model section, start fading out the animation section
-        gsap.to(".scroll-animation-section", { autoAlpha: 0, duration: 0.5 });
+        document.body.classList.add("approaching-model-section");
       },
       onLeaveBack: () => {
-        // When leaving the model section (scrolling back up), fade in the animation section
-        gsap.to(".scroll-animation-section", { autoAlpha: 1, duration: 0.5 });
+        document.body.classList.remove("approaching-model-section");
       }
     });
     

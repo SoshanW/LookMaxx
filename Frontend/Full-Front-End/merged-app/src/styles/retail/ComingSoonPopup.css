@@ -1,0 +1,218 @@
+/* ComingSoonPopup.css */
+.popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  background: linear-gradient(135deg, #2b0b66 0%, #060115 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  margin: 0 20px;
+}
+
+.popup-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 2;
+}
+
+.popup-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.popup-inner {
+  position: relative;
+  z-index: 1;
+  padding: 40px 32px;
+}
+
+.popup-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  position: relative;
+}
+
+.popup-icon-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9c27b0, #673ab7);
+}
+
+.popup-icon-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-title {
+  font-family: 'Nasalization', sans-serif;
+  font-size: 32px;
+  color: white;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.popup-subtitle {
+  font-family: 'Nasalization', sans-serif;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.popup-description {
+  font-family: 'Nasalization', sans-serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.popup-button {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #9c27b0, #673ab7);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Nasalization', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.popup-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(156, 39, 176, 0.3);
+}
+
+/* Background elements */
+.popup-bg-circle-1 {
+  position: absolute;
+  top: 20%;
+  right: 20%;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: rgba(156, 39, 176, 0.2);
+  filter: blur(40px);
+}
+
+.popup-bg-circle-2 {
+  position: absolute;
+  bottom: 20%;
+  left: 20%;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background-color: rgba(103, 58, 183, 0.2);
+  filter: blur(40px);
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .popup-content {
+    max-width: 90%;
+  }
+  
+  .popup-inner {
+    padding: 32px 24px;
+  }
+  
+  .popup-title {
+    font-size: 24px;
+  }
+  
+  .popup-subtitle {
+    font-size: 16px;
+  }
+  
+  .popup-description {
+    font-size: 14px;
+  }
+}
+
+/* Used by framer-motion */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  width: 90%;
+  max-width: 500px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #2b0b66 0%, #060115 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
