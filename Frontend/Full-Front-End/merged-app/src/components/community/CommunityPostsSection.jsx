@@ -197,7 +197,7 @@ const CommunityPostsSection = () => {
         }
         return post;
       }));
-    }, 5000); // Keep the highlight for 5 seconds
+    }, 2000); // Keep the highlight for 2 seconds
   };
 
   // Handle comment deletion
