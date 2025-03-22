@@ -51,7 +51,6 @@ function App() {
     location.pathname.includes('/signup') || 
     location.pathname.includes('/face-model') || 
     location.pathname.includes('/casting') ||
-    location.pathname === '/' ||
     location.pathname === '/ffr' ||
     location.pathname === '/study' ||
     location.pathname === '/profile' ||

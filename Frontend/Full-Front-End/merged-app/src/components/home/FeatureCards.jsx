@@ -1,9 +1,12 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Added import
 import PropTypes from 'prop-types';
 import gsap from 'gsap';
 import '../../styles/home/FeatureCards.css';
 
 const FeatureCards = ({ scrollProgress }) => {
+  const navigate = useNavigate(); // Added for navigation
+  
   // Frame calculations
   // Total frames = 190 (from parent component)
   // We want to map scroll progress (0-1) to frame numbers
@@ -56,6 +59,23 @@ const FeatureCards = ({ scrollProgress }) => {
     return 0;
   };
 
+  // Add handlers for button clicks
+  const handleStudyRedirect = () => {
+    navigate('/study');
+  };
+  
+  const handleModellingRedirect = () => {
+    navigate('/casting');
+  };
+  
+  const handleRetailRedirect = () => {
+    navigate('/retail');
+  };
+  
+  const handleCommunityRedirect = () => {
+    navigate('/signup');
+  };
+
   return (
     <>
       {/* Feature cards that appear during scroll */}
@@ -63,7 +83,7 @@ const FeatureCards = ({ scrollProgress }) => {
         <div className="card-content">
           <h2>Interested about facial aesthetics?</h2>
           <p>Let's dive into the actual science behind your looks!</p>
-          <button className="card-button">GET STARTED</button>
+          <button className="card-button" onClick={handleStudyRedirect}>GET STARTED</button>
         </div>
       </div>
       
@@ -71,7 +91,7 @@ const FeatureCards = ({ scrollProgress }) => {
         <div className="card-content">
           <h2>Looking for Modelling opportunities?</h2>
           <p>Feel like you have the potential? This is the right place!</p>
-          <button className="card-button">GET STARTED</button>
+          <button className="card-button" onClick={handleModellingRedirect}>GET STARTED</button>
         </div>
       </div>
       
@@ -79,7 +99,7 @@ const FeatureCards = ({ scrollProgress }) => {
         <div className="card-content">
           <h2>Find your Style</h2>
           <p>Discover the latest fashion trends tailored for you </p>
-          <button className="card-button">Learn More</button>
+          <button className="card-button" onClick={handleRetailRedirect}>Learn More</button>
         </div>
       </div>
       
@@ -87,7 +107,7 @@ const FeatureCards = ({ scrollProgress }) => {
         <div className="card-content">
           <h2>Join our community</h2>
           <p>Connect with like-minded individuals and share your experiences</p>
-          <button className="card-button">Join</button>
+          <button className="card-button" onClick={handleCommunityRedirect}>Join</button>
         </div>
       </div>
     </>

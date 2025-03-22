@@ -1,5 +1,6 @@
 // ScrollAnimation.jsx with cache for loading state
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom' // Added import
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import PropTypes from 'prop-types'
@@ -16,6 +17,7 @@ const globalLoadingCache = {
 gsap.registerPlugin(ScrollTrigger)
 
 const ScrollAnimation = ({ frameCount = 200, imageFormat = 'jpg' }) => {
+  const navigate = useNavigate() // Added navigation hook
   const canvasRef = useRef(null)
   const containerRef = useRef(null)
   const faceRef = useRef({ frame: 0 })
@@ -29,6 +31,15 @@ const ScrollAnimation = ({ frameCount = 200, imageFormat = 'jpg' }) => {
   const animationTimelineRef = useRef(null)
   const scrollTriggerRef = useRef(null)
   const rafIdRef = useRef(null)
+
+  // Add handlers for navigation - scroll to model section
+  const handleGetStartedClick = () => {
+    // Scroll to the model section
+    const modelSection = document.querySelector('.model-section')
+    if (modelSection) {
+      modelSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
   
   // Preload images with proper error handling - only if not already loaded
   useEffect(() => {
@@ -412,7 +423,7 @@ const ScrollAnimation = ({ frameCount = 200, imageFormat = 'jpg' }) => {
           {/* Text overlay for landing area */}
           <div className="landing-text-overlay">
             <div className="brand-name">LookSci</div>
-            <button className="get-started-btn">Get Started</button>
+            <button className="get-started-btn" onClick={handleGetStartedClick}>Get Started</button>
             <div className="brand-tagline">
               <div>Beauty</div>
               <div>Redefined.</div>

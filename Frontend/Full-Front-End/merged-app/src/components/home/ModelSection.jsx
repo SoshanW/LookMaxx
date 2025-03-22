@@ -1,15 +1,22 @@
 // ModelSection.jsx with optimized event listeners and reduced lag
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Added for navigation
 import * as THREE from "three";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import gsap from "gsap";
 import "../../styles/home/ModelSection.css";
 
 const ModelSection = () => {
+  const navigate = useNavigate(); // Added for navigation
   // Add refs for 3D model containers
   const femaleModelRef = useRef(null);
   const maleModelRef = useRef(null);
   const [modelsLoaded, setModelsLoaded] = useState(0);
+
+  // Add handler for FFR redirect
+  const handleFfrRedirect = () => {
+    navigate('/ffr');
+  };
 
   // Add useEffect for 3D model initialization
   useEffect(() => {
@@ -551,7 +558,6 @@ const ModelSection = () => {
       <div className="model-section-content">
         <h1>Discover Your Potential</h1>
         
-
         {/* Loading indicator */}
         {modelsLoaded < 2 && (
           <div className="models-loading-indicator">
@@ -570,7 +576,7 @@ const ModelSection = () => {
             <div className="model-label">Male</div>          
           </div>
         </div>
-        <button className="model-select-btn">Go to FFR</button>
+        <button className="model-select-btn" onClick={handleFfrRedirect}>Go to FFR</button>
       </div>
     </div>
   );
