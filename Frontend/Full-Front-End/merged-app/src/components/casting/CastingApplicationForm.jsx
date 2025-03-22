@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from "../../context/AuthProvider";
+import useAuth from "../../hooks/useAuth";
+import axios from 'axios';
 import "../../styles/casting/CastingApplicationForm.css";
 
 function CastingApplicationForm() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthContext();
+  const { getUserProfile } = useAuth();
   const scrollContainerRef = useRef(null);
   
   // Form state with all required fields including measurements
@@ -31,6 +34,60 @@ function CastingApplicationForm() {
   const [ffrData, setFfrData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState(null);
+
+  // Create a new component for PDF rendering
+  const PdfViewer = ({ pdfUrl }) => {
+    const [fallbackView, setFallbackView] = useState(false);
+    
+    // Handle iframe load errors
+    const handleError = () => {
+      console.log("PDF iframe failed to load, switching to fallback view");
+      setFallbackView(true);
+    };
+    
+    return (
+      <div className="pdf-viewer-container">
+        {!fallbackView ? (
+          <iframe 
+            src={pdfUrl}
+            className="ffr-pdf-viewer"
+            style={{ 
+              width: '100%', 
+              height: '500px',
+              border: '1px solid #ccc',
+              borderRadius: '4px'
+            }}
+            title="FFR Analysis Report"
+            onError={handleError}
+            sandbox="allow-same-origin allow-scripts allow-forms"
+          />
+        ) : (
+          <div className="pdf-fallback-view">
+            <p>Unable to display the PDF directly. Please use the button below to view it:</p>
+            <a 
+              href={pdfUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="primary-button"
+            >
+              Open PDF in New Tab
+            </a>
+            <img 
+              src="/pdf-placeholder.png" 
+              alt="PDF Document Preview Placeholder" 
+              style={{ 
+                width: '100%', 
+                maxWidth: '300px', 
+                display: 'block',
+                margin: '20px auto'
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
 
   // Apply special class for application form page and ensure scrolling works
   useEffect(() => {
@@ -74,6 +131,9 @@ function CastingApplicationForm() {
   
   // Validate all form fields before submission
   const validateForm = () => {
+    if (!ffrDataAvailable) {
+      errors.ffr = 'FFR analysis results are required to submit the application.';
+    }
     const errors = {};
     
     // Name validation - both first and last names required
@@ -156,6 +216,8 @@ function CastingApplicationForm() {
    * Show/hide the FFR analysis results preview
    */
   const toggleFfrResults = async() => {
+    console.log('User data:', JSON.parse(localStorage.getItem('user_data') || '{}'));
+    console.log('Cookies available:', document.cookie);
     if (showFfrResults) {
       setShowFfrResults(false);
       return;
@@ -164,22 +226,134 @@ function CastingApplicationForm() {
     setIsLoading(true);
     
     try {
-      const profileData = await getUserProfile();
+      // Get the data from the API
+      const data = await getFfrResults();
+      console.log('Raw data from API:', data);
       
-      if (profileData && profileData.ffr_results && profileData.ffr_results.pdf_url) {
-        setFfrData({
-          pdf_url: profileData.ffr_results.pdf_url
-        });
+      // Log the exact structure to see what we're working with
+      console.log('Data type:', typeof data);
+      console.log('Data keys:', data ? Object.keys(data) : 'No data received');
+      
+      // Check if we have the ffr_results property
+      if (data && data.ffr_results) {
+        console.log('FFR results exists, type:', typeof data.ffr_results);
+        console.log('Is array?', Array.isArray(data.ffr_results));
+        console.log('Length:', data.ffr_results.length);
+        
+        // If it's an array with at least one item
+        if (Array.isArray(data.ffr_results) && data.ffr_results.length > 0) {
+          console.log('First item in array:', data.ffr_results[0]);
+          
+          // Check for pdf_url field 
+          if (data.ffr_results[0].pdf_url) {
+            const pdfUrl = data.ffr_results[0].pdf_url;
+            console.log('Found PDF URL:', pdfUrl);
+            
+            // Format the URL correctly
+            const formattedUrl = pdfUrl.startsWith('http') 
+              ? pdfUrl 
+              : `${window.location.origin}${pdfUrl}`;
+            
+            console.log('Formatted URL:', formattedUrl);
+            setFfrData({ pdf_url: formattedUrl });
+          } else {
+            console.log('No pdf_url field found. Available fields:', Object.keys(data.ffr_results[0]));
+            setLoadingError('No FFR PDF report found. Please complete your FFR analysis first.');
+          }
+        } else {
+          console.log('FFR results is empty or not an array');
+          setLoadingError('No FFR results found. Please complete your FFR analysis first.');
+        }
       } else {
-        setLoadingError('No FFR PDF report found. Please complete your FFR analysis first.');
+        console.log('No ffr_results property found in the response');
+        setLoadingError('No FFR results structure found in the response.');
       }
     } catch (error) {
-      console.error('Failed to fetch FFR data:', error);
+      console.error('Error details:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
       setLoadingError('Unable to load your FFR results. Please try again later.');
     } finally {
       setIsLoading(false);
       setShowFfrResults(true);
     }
+  };
+
+  const getFfrResults = async () => {
+    try {
+      const cookieString = document.cookie;
+      console.log('Extracting from cookies:', cookieString);
+      
+      let username = null;
+      
+      if (cookieString.includes('user_data=')) {
+        try {
+          const userDataCookie = cookieString
+            .split('user_data=')[1]
+            ?.split(';')[0];
+          if (userDataCookie) {
+            // Decode the URL-encoded cookie value
+            const decodedCookie = decodeURIComponent(userDataCookie);
+            const userData = JSON.parse(decodedCookie);
+            username = userData.username;
+            console.log('Username extracted from cookie:', username);
+          }
+        } catch (e) {
+          console.error('Error parsing user_data cookie:', e);
+        }
+      }
+      // Fallback: Extract username from the JWT token
+      if (!username && cookieString.includes('access_token=')) {
+        try {
+          const token = cookieString
+            .split('access_token=')[1]
+            ?.split(';')[0];
+          
+          if (token) {
+            // Extract the payload from the JWT token
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(
+              atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+              }).join('')
+            );
+            
+            const payload = JSON.parse(jsonPayload);
+            // JWT usually has 'sub' field for the subject (username)
+            username = payload.sub;
+            console.log('Username extracted from JWT token:', username);
+          }
+        } catch (e) {
+          console.error('Error parsing access_token cookie:', e);
+        }
+      }
+      console.log('Making API call with username:', username);
+      const response = await axios.get(`/ffr/get-ffr-results/${username}`, {
+        // The withCredentials option is crucial for sending cookies with the request
+        withCredentials: true
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching FFR results:', error);
+      throw error;
+    }
+  };
+
+  const sendEmailWithFormData = () => {
+    const recipientEmail = 'castings@example.com'; // Replace with actual email
+    const subject = `Model Application: ${formData.firstName} ${formData.lastName}`;
+    
+    // Format body with all form data and FFR link
+    let body = `...`;
+  
+    // Encode parameters and open email client
+    const mailtoLink = `mailto:${encodeURIComponent(recipientEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+    
+    return true;
   };
 
   // Show success message if form was submitted successfully
@@ -228,23 +402,21 @@ function CastingApplicationForm() {
             </div>
           ) : (
             <div className="ffr-pdf-container">
-              <object 
-                data={ffrData.pdf_url} 
-                type="application/pdf" 
-                className="ffr-pdf-viewer"
-              >
-                <p>
-                  Your browser doesn't support embedded PDFs. 
-                  <a 
-                    href={ffrData.pdf_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    Click here to download the PDF
-                  </a>
-                </p>
-              </object>
+              <div className="pdf-direct-link">
+                <p>You can also access your FFR report directly:</p>
+                <a 
+                  href={ffrData.pdf_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="primary-button"
+                  style={{ display: 'inline-block', marginBottom: '15px' }}
+                >
+                  Open PDF Report
+                </a>
+              </div>
               
+              <PdfViewer pdfUrl={ffrData.pdf_url} />
+
               <p className="ffr-disclaimer">
                 This PDF report is generated from your FFR analysis and will be shared with casting agencies 
                 when you submit your application.
