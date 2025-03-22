@@ -206,6 +206,27 @@ export const useAuth = () => {
     }
   }, []);
 
+  const getUserProfile = useCallback(async () => {
+    try {
+      const token = getCookie('access_token');
+      
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+      
+      const response = await axios.get('/casting/users/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
+  }, []);
+
   // Return the hook methods and state
   return {
     isLoggedIn,
@@ -214,6 +235,7 @@ export const useAuth = () => {
     login,
     signup,
     logout,
+    getUserProfile,
     isAuthReady
   };
 };

@@ -28,6 +28,10 @@ function CastingApplicationForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showFfrResults, setShowFfrResults] = useState(false);
 
+  const [ffrData, setFfrData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingError, setLoadingError] = useState(null);
+
   // Apply special class for application form page and ensure scrolling works
   useEffect(() => {
     // Apply a specific class for this page
@@ -151,8 +155,31 @@ function CastingApplicationForm() {
   /**
    * Show/hide the FFR analysis results preview
    */
-  const toggleFfrResults = () => {
-    setShowFfrResults(!showFfrResults);
+  const toggleFfrResults = async() => {
+    if (showFfrResults) {
+      setShowFfrResults(false);
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      const profileData = await getUserProfile();
+      
+      if (profileData && profileData.ffr_results && profileData.ffr_results.pdf_url) {
+        setFfrData({
+          pdf_url: profileData.ffr_results.pdf_url
+        });
+      } else {
+        setLoadingError('No FFR PDF report found. Please complete your FFR analysis first.');
+      }
+    } catch (error) {
+      console.error('Failed to fetch FFR data:', error);
+      setLoadingError('Unable to load your FFR results. Please try again later.');
+    } finally {
+      setIsLoading(false);
+      setShowFfrResults(true);
+    }
   };
 
   // Show success message if form was submitted successfully
@@ -182,16 +209,51 @@ function CastingApplicationForm() {
         
         {/* Collapsible section showing FFR analysis results */}
         {showFfrResults && (
-          <div className="ffr-results-preview">
-            <h3>Your FFR Analysis Results</h3>
-            <div className="ffr-pdf-container">
-              {/* This would be replaced with actual user data in production */}
-              <img src="/assets/casting/report.jpeg" alt="Sample FFR Results" className="ffr-sample-image" />
-              <p className="ffr-disclaimer">These results are generated from your FFR analysis completed on the FFR page. The data helps agencies evaluate facial symmetry, proportions, and other model-relevant metrics.</p>
+        <div className="ffr-results-preview">
+          <h3>Your FFR Analysis Report</h3>
+          
+          {isLoading ? (
+            <div className="loading-indicator">Loading your FFR report...</div>
+          ) : loadingError ? (
+            <div className="error-message">{loadingError}</div>
+          ) : !ffrData || !ffrData.pdf_url || ffrData.pdf_url === 'N/A' ? (
+            <div className="no-ffr-data">
+              <p>No FFR PDF report found. Complete your FFR analysis first.</p>
+              <button 
+                onClick={() => navigate('/ffr')} 
+                className="primary-button"
+              >
+                Go to FFR Analysis
+              </button>
             </div>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="ffr-pdf-container">
+              <object 
+                data={ffrData.pdf_url} 
+                type="application/pdf" 
+                className="ffr-pdf-viewer"
+              >
+                <p>
+                  Your browser doesn't support embedded PDFs. 
+                  <a 
+                    href={ffrData.pdf_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Click here to download the PDF
+                  </a>
+                </p>
+              </object>
+              
+              <p className="ffr-disclaimer">
+                This PDF report is generated from your FFR analysis and will be shared with casting agencies 
+                when you submit your application.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
       
       <div className="casting-form-container">
         <h1 className="form-title">

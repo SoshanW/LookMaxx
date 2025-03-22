@@ -40,7 +40,8 @@ def serial_ffr_result(result):
         'FFR_pic': result.get('FFR_pic', 'N/A'),
         'facial_metrics': result.get('facial_metrics', {}),
         'comparison_data': result.get('comparison_data', []),
-        'Graphs_and_Images': result.get('Graphs_and_Images', [])
+        'Graphs_and_Images': result.get('Graphs_and_Images', []),
+        'pdf_url': results.get('pdf_url', 'N/A')
     }
 
 @casting_route.route('/users/profile', methods=['GET'])
