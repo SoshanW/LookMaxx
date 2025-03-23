@@ -5,6 +5,9 @@ import ActivitySection from '../components/community/ActivitySection';
 import CommunityPostsSection from '../components/community/CommunityPostsSection';
 import Footer from '../components/common/Footer';
 
+// Import community-specific styles
+import '../styles/community/community-page.css';
+
 const CommunityPage = () => {
   // Handle page-specific setup on mount
   useEffect(() => {

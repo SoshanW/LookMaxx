@@ -1,4 +1,4 @@
-.hero-section {
+body.community-page .hero-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -8,33 +8,33 @@
   font-family: 'Nasalization', sans-serif;
 }
 
-.hero-content {
+body.community-page .hero-content {
   max-width: 50%;
   align-items: center;
   margin-left: 5%;
 }
 
-.hero-content h1 {
+body.community-page .hero-content h1 {
   font-size: 4rem;
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 1rem;
 }
 
-.hero-content p {
+body.community-page .hero-content p {
   font-size: 1.5rem;
   color: #ffffff;
   margin-bottom: 2rem;
   margin-left: 20%;
 }
 
-.hero-buttons {
+body.community-page .hero-buttons {
   display: flex;
   gap: 7rem;
   margin-left: 20%;
 }
 
-.primary-button {
+body.community-page .primary-button {
   font-family: "Dune_Rise", sans-serif;
   background: radial-gradient(circle, #ffffff, #e6e5fd);
   color: #191C4C;
@@ -54,13 +54,13 @@
   min-width: 100px
 }
 
-.primary-button:hover {
+body.community-page .primary-button:hover {
   background: radial-gradient(circle, #ffffff, #d2cffc);
   box-shadow: #ffffff 0 0 10px;
   transform: scale(1.05);
 }
 
-.secondary-button {
+body.community-page .secondary-button {
   font-family: "Dune_Rise", sans-serif;
   background: radial-gradient(circle, #ffffff, #e6e5fd);
   color: #191C4C;
@@ -80,20 +80,20 @@
   min-width: 150px
 }
 
-.secondary-button:hover {
+body.community-page .secondary-button:hover {
   background: radial-gradient(circle, #ffffff, #d2cffc);
   box-shadow: #ffffff 0 0 10px;
   transform: scale(1.05);
 }
 
-.hero-visual {
+body.community-page .hero-visual {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 40%;
 }
 
-.hero-image{
+body.community-page .hero-image{
   width: 100%;
   height: 550px;
   background: #e0cffc;
@@ -104,4 +104,41 @@
 @font-face {
   font-family: 'Dune_Rise';
   src: url('../fonts/Dune_Rise.ttf');
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  body.community-page .hero-section {
+    flex-direction: column;
+    padding: 3rem 1.5rem;
+  }
+  
+  body.community-page .hero-content {
+    max-width: 100%;
+    margin-left: 0;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  body.community-page .hero-content h1 {
+    font-size: 3rem;
+  }
+  
+  body.community-page .hero-content p {
+    margin-left: 0;
+  }
+  
+  body.community-page .hero-buttons {
+    gap: 2rem;
+    margin-left: 0;
+    justify-content: center;
+  }
+  
+  body.community-page .hero-visual {
+    width: 100%;
+  }
+  
+  body.community-page .hero-image {
+    height: 300px;
+  }
 }

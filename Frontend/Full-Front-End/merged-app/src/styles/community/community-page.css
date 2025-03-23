@@ -1,0 +1,60 @@
+/* Main community page styles */
+body.community-page {
+  background: linear-gradient(to bottom, #362d5a, #18113a);
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.community-page-container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Override scrollbar display for community page */
+body.community-page::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+}
+
+body.community-page::-webkit-scrollbar-track {
+  background: rgba(54, 45, 90, 0.5);
+}
+
+body.community-page::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #6b5caf, #4466e2);
+  border-radius: 4px;
+}
+
+body.community-page::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #4466e2, #6b5caf);
+}
+
+/* Fix for any conflicting styles from other pages */
+body.community-page footer {
+  display: block !important;
+}
+
+/* Section headers styling */
+body.community-page .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+body.community-page .section-header h2 {
+  font-size: 2rem;
+  color: #ffffff;
+  font-weight: 600;
+  font-family: 'Nasalization', sans-serif;
+}
+
+body.community-page .view-all {
+  background: transparent;
+  color: #ffffff;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+}

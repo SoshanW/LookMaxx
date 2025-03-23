@@ -1,23 +1,24 @@
-.featured-section {
+/* Featured section styles for community page */
+body.community-page .featured-section {
   padding: 3rem 2rem;
   background: linear-gradient(to top, #362d5a, #18113a);
   font-family: 'Nasalization', sans-serif;
 }
 
-.section-header {
+body.community-page .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 3rem;
 }
 
-.section-header h2 {
+body.community-page .section-header h2 {
   font-size: 2rem;
   color: #ffffff;
   font-weight: 600;
 }
 
-.view-all {
+body.community-page .view-all {
   background: transparent;
   color: #ffffff;
   border: none;
@@ -25,35 +26,35 @@
   cursor: pointer;
 }
 
-.featured-grid {
+body.community-page .featured-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 9rem;
 }
 
-.featured-card {
-    background: linear-gradient(#0000008f, #0000002e);
-    border: none;
-    border-radius: 10px;
-    padding: 30px;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 0 8px #d3d0fb7d;
-    color: rgb(0, 0, 0);
-    text-align: center;
-    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+body.community-page .featured-card {
+  background: linear-gradient(#0000008f, #0000002e);
+  border: none;
+  border-radius: 10px;
+  padding: 30px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 0 8px #d3d0fb7d;
+  color: rgb(0, 0, 0);
+  text-align: center;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.featured-card:hover {
+body.community-page .featured-card:hover {
   background: #ebddff24;
   box-shadow: 0 0 15px rgba(192, 185, 255, 0.427);
   transform: scale(1.03) translateZ(0); /* Keep hardware acceleration */
 }
 
-.card-visual {
+body.community-page .card-visual {
   height: 150px;
   width: 100%;
   border-radius: 12px 12px 0 0;
@@ -61,18 +62,18 @@
   position: relative;
 }
 
-.card-visual img {
+body.community-page .card-visual img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
 
-.featured-card:hover .card-visual img {
+body.community-page .featured-card:hover .card-visual img {
   transform: scale(1.05);
 }
 
-.featured-card {
+body.community-page .featured-card {
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -80,13 +81,13 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.featured-card:hover {
+body.community-page .featured-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(181,162,255,0.2);
 }
 
 /* for better text contrast against image */
-.card-visual::after {
+body.community-page .card-visual::after {
   content: '';
   position: absolute;
   top: 0;
@@ -97,17 +98,17 @@
   pointer-events: none;
 }
 
-.card-content {
+body.community-page .card-content {
   padding: 1.2rem;
 }
 
-.card-content h3 {
+body.community-page .card-content h3 {
   color: #ffffff;
   font-size: 1.3rem;
   margin-bottom: 1rem;
 }
 
-.card-stats {
+body.community-page .card-stats {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1.2rem;
@@ -115,11 +116,11 @@
   font-size: 0.9rem;
 }
 
-.active-now {
+body.community-page .active-now {
   color: #c6eff8;
 }
 
-.join-button {
+body.community-page .join-button {
   width: 100%;
   background-color: #bbaaffcc;
   color: #000000;
@@ -132,48 +133,46 @@
   font-family: 'Nasalization', sans-serif;
 }
 
-.join-button:hover {
+body.community-page .join-button:hover {
   background-color: #d0c4fccc;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.615);
 }
 
 /* Responsive styles*/
-
-.featured-grid {
+body.community-page .featured-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem; 
   width: 100%;
 }
 
-.featured-card {
+body.community-page .featured-card {
   width: 100%; 
   margin: 0; 
 }
 
 /* For larger screens */
 @media screen and (min-width: 1441px) {
-  .featured-section {
+  body.community-page .featured-section {
     padding: 3rem 2rem;
     width: 100%;
     max-width: 100%;
     margin: 0;
   }
   
-  .featured-grid {
+  body.community-page .featured-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
   }
 }
 
-
 /* For tablets and large mobile phones */
 @media screen and (max-width: 768px) {
-  .featured-section {
+  body.community-page .featured-section {
     padding: 2rem 1.5rem;
   }
   
-  .featured-grid {
+  body.community-page .featured-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
@@ -181,11 +180,11 @@
 
 /* For mobile phones */
 @media screen and (max-width: 480px) {
-  .featured-section {
+  body.community-page .featured-section {
     padding: 1.5rem 1rem;
   }
   
-  .section-header {
+  body.community-page .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.8rem;
