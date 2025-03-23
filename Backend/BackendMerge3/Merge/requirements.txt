@@ -17,7 +17,7 @@ mediapipe
 opencv-python
 pandas
 numpy
-matplotlip
+matplotlib
 
 # report generation requirements
 langchain 
