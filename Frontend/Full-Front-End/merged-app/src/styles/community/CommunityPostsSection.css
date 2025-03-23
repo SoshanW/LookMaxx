@@ -8,6 +8,23 @@
   font-family: 'Nasalization', sans-serif;
 }
 
+/* Auth-related styles */
+.login-prompt {
+  text-align: center;
+  padding: 20px;
+  margin: 20px 0;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.comment-login-prompt {
+  font-size: 0.9rem;
+  padding: 10px;
+  text-align: center;
+  color: #666;
+}
+
+
 /* Post Form Styles */
 .post-form-container {
   display: flex;
@@ -51,6 +68,19 @@
   flex-direction: column;
 }
 
+.post-form input {
+  width: 100%;
+  min-height: 10px;
+  padding: 0.8rem;
+  background: rgba(34, 18, 58, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgb(0, 0, 0);
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
 .post-form textarea {
   width: 100%;
   min-height: 100px;
@@ -73,6 +103,23 @@
 .post-form-actions {
   display: flex;
   justify-content: flex-end;
+}
+
+.post-title-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin: 10px 0;
 }
 
 .submit-post {
