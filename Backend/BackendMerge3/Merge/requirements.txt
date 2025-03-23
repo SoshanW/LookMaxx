@@ -3,7 +3,7 @@ flask_cors
 flask
 botocore
 boto3
-
+  
 # casting requirements
 Flask-Mail
 Flask-pymongo
@@ -17,7 +17,7 @@ mediapipe
 opencv-python
 pandas
 numpy
-matplotlip
+matplotlib
 
 # report generation requirements
 langchain 

@@ -55,7 +55,6 @@ function App() {
     location.pathname === '/ffr' ||
     location.pathname === '/profile' ||
     location.pathname === '/pricing' ||
-    location.pathname === '/community' || // Keeping CommunityPage condition
     location.pathname === '/home';
 
   // Define navigation links based on current route
