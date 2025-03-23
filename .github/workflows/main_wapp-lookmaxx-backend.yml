@@ -36,5 +36,5 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+        app-name: 'wapp-lookmaxx-backend'
         package: 'Backend/BackendMerge3/Merge'
