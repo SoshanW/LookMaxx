@@ -162,6 +162,8 @@ const Navbar = ({
         navigate('/study', { replace: true });
       } else if (lowercaseLink === 'casting') {
         navigate('/casting', { replace: true });
+      } else if (lowercaseLink === 'retail') {
+        navigate('/retail', { replace: true });
       } else if (lowercaseLink === 'signup' || lowercaseLink === 'login') {
         navigate('/signup', { replace: true });
       } else {

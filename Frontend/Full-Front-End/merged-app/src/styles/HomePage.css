@@ -1,0 +1,56 @@
+/* HomePage.css */
+/* This file contains styles specific to the HomePage */
+
+.home-page {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #17132a, #19123a);
+  position: relative;
+}
+
+/* Ensure proper scrolling */
+body.home-page {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure the navbar properly displays on top */
+.home-page .navbar {
+  z-index: 1001;
+}
+
+/* Adjust footer visibility */
+.home-page footer {
+  display: none;
+}
+
+/* Make sure animations work properly */
+.home-page .scroll-animation-section {
+  z-index: 1;
+}
+
+/* Specific layout adjustments for homepage */
+.home-page .app-container {
+  padding-top: 0;
+}
+
+/* Make sure we don't have unwanted margin/padding */
+.home-page .model-section, 
+.home-page .team-section {
+  margin: 0;
+  padding-top: 60px; /* Account for navbar */
+}
+
+/* Make sure scrolling works correctly */
+.home-page .animation-container {
+  display: block;
+}
+
+/* Ensure proper stacking of sections */
+.home-page .scroll-animation-section,
+.home-page .model-section,
+.home-page .team-section {
+  position: relative;
+}

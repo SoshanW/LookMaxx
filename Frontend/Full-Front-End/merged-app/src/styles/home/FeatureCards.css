@@ -1,0 +1,554 @@
+/* FeatureCards.css - Enhanced styling for feature cards */
+
+/* Feature cards styling */
+.feature-card {
+  position: absolute;
+  width: 350px; /* Base width */
+  z-index: 3;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: opacity, transform; /* Hint for browser optimization */
+  contain: layout style; /* Improve layout and style calculations */
+}
+
+/* Position each card individually - these will be adjusted by media queries */
+.feature-card-1 {
+  top: 35%;
+  right: 20%;
+}
+
+.feature-card-2 {
+  top: 35%;
+  left: 20%;
+}
+
+.feature-card-3 {
+  top: 35%;
+  left: 15%;
+}
+
+.feature-card-4 {
+  top: 35%;
+  right: 15%;
+}
+
+/* Clean card styling with simpler non-hover state */
+.card-content {
+  background: rgba(151, 14, 206, 0.25); /* Slightly transparent background */
+  border: 1px solid rgba(171, 132, 255, 0.3); /* Thin, subtle border */
+  border-radius: 18px;
+  padding: 30px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 25px rgba(22, 1, 31, 0.4);
+  text-align: center;
+  transition: 
+    transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+    background 0.4s ease, 
+    box-shadow 0.4s ease,
+    border-color 0.3s ease,
+    backdrop-filter 0.5s ease;
+  min-height: 300px;
+  min-width: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: visible; /* Changed for the border animation */
+  position: relative;
+  /* No background patterns in non-hover state */
+}
+
+/* Clean hover effect */
+.card-content:hover {
+  background: rgba(89, 36, 122, 0.4);
+  box-shadow: 
+    0 15px 35px rgba(73, 57, 82, 0.4),
+    0 0 20px rgba(129, 108, 168, 0.5) inset;
+  transform: scale(1.05) translateZ(0) translateY(-10px);
+  border-color: transparent;
+}
+
+/* Minimalistic running border that only appears on hover */
+.card-content::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, 
+    rgba(171, 132, 255, 0.6), 
+    rgba(95, 82, 169, 0.6), 
+    rgba(171, 132, 255, 0.6));
+  background-size: 200% 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.card-content:hover::before {
+  opacity: 1;
+  animation: subtleBorderFlow 4s linear infinite;
+}
+
+/* Subtle glow effect behind the border */
+.card-content::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 22px;
+  background: rgba(171, 132, 255, 0.3);
+  z-index: -2;
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.card-content:hover::after {
+  opacity: 0.5;
+}
+
+/* Subtle border flow animation */
+@keyframes subtleBorderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* Futuristic text styling */
+.card-content h2 {
+  font-family: "Nasalization", sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(187, 150, 255, 0.8);
+  transition: transform 0.3s ease, text-shadow 0.3s ease, letter-spacing 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+/* High-tech heading effect */
+.card-content h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #ab84ff, transparent);
+  transition: width 0.5s ease;
+}
+
+.card-content:hover h2 {
+  transform: translateY(-5px);
+  text-shadow: 0 0 15px rgba(187, 150, 255, 1);
+  letter-spacing: 0.5px;
+}
+
+.card-content:hover h2::after {
+  width: 100%;
+}
+
+.card-content p {
+  font-family: "Nasalization", sans-serif;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  margin-bottom: 30px;
+  transition: all 0.4s ease;
+  position: relative;
+  padding: 0 10px;
+}
+
+/* Add tech lines beside paragraph on hover */
+.card-content p::before,
+.card-content p::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 1px;
+  background: rgba(171, 132, 255, 0.6);
+  transition: width 0.4s ease;
+}
+
+.card-content p::before {
+  right: 100%;
+}
+
+.card-content p::after {
+  left: 100%;
+}
+
+.card-content:hover p {
+  transform: translateY(-3px);
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(187, 150, 255, 0.9);
+}
+
+.card-content:hover p::before,
+.card-content:hover p::after {
+  width: 30px;
+}
+
+/* Futuristic button styling */
+.card-button {
+  font-family: "Dune_Rise", sans-serif;
+  background: linear-gradient(135deg, #ffffff 0%, #d2cffc 50%, #b8b3fa 100%);
+  color: #191C4C;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 
+    0 5px 15px rgba(132, 255, 255, 0.3),
+    0 0 5px rgba(255, 255, 255, 0.5) inset;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+  align-self: center;
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  will-change: transform;
+  clip-path: polygon(
+    0% 10%,
+    10% 0%, 
+    90% 0%,
+    100% 10%,
+    100% 90%,
+    90% 100%,
+    10% 100%,
+    0% 90%
+  );
+}
+
+/* Dynamic light effect on button */
+.card-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    135deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.1) 60%,
+    transparent 80%
+  );
+  transform: rotate(45deg);
+  transition: all 0.7s ease;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+/* Button hover effect */
+.card-button:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #b1aefa 60%, #7870fc 100%);
+  text-shadow: 0 0 10px rgba(20, 5, 65, 0.8);
+  transform: scale(1.05) translateZ(0);
+  box-shadow: 
+    0 8px 20px rgba(132, 255, 255, 0.5),
+    0 0 15px rgba(119, 102, 224, 0.8) inset;
+  letter-spacing: 1px;
+}
+
+.card-button:hover::before {
+  transform: translateX(100%) rotate(45deg);
+  opacity: 0.6;
+  transition: all 0.8s ease;
+}
+
+/* Energy pulse effect */
+.card-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(171, 132, 255, 0.8) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.card-button:hover::after {
+  opacity: 0.7;
+  animation: pulsate 2s infinite;
+}
+
+@keyframes pulsate {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* Load fonts more efficiently */
+@font-face {
+  font-family: "Dune_Rise";
+  src: url("../fonts/Dune_Rise.ttf") format('truetype');
+  font-display: swap; /* Improve font loading performance */
+}
+
+/* Responsive adjustments - IMPROVED WITH BETTER POSITIONING */
+/* Mobile devices (portrait) */
+@media (max-width: 767px) {
+  .feature-card {
+    width: 280px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .feature-card-1 {
+    top: 15%;
+    left: 50%;
+  }
+  
+  .feature-card-2 {
+    top: 35%;
+    left: 50%;
+  }
+  
+  .feature-card-3 {
+    top: 55%;
+    left: 50%;
+  }
+  
+  .feature-card-4 {
+    top: 75%;
+    left: 50%;
+  }
+
+  .card-content {
+    min-height: 180px;
+    min-width: auto;
+    width: 100%;
+    /* Reduce blur for better performance on mobile */
+    backdrop-filter: blur(3px);
+    padding: 20px;
+  }
+
+  .card-content h2 {
+    font-size: 1.4rem;
+  }
+
+  .card-content p {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+
+  .card-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  /* Disable heavy animations on mobile for better performance */
+  .card-content::before {
+    display: none;
+  }
+
+  .card-content:hover {
+    transform: scale(1.03) translateZ(0);
+  }
+}
+
+/* Responsive adjustments for different screen sizes */
+/* Tablet (portrait) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .feature-card {
+    width: 320px;
+  }
+  
+  .feature-card-1 {
+    top: 25%;
+    right: 10%;
+  }
+  
+  .feature-card-2 {
+    top: 25%;
+    left: 10%;
+  }
+  
+  .feature-card-3 {
+    top: 25%;
+    left: 10%;
+  }
+  
+  .feature-card-4 {
+    top: 25%;
+    right: 10%;
+  }
+
+  .card-content {
+    min-width: 320px;
+    padding: 25px;
+  }
+}
+
+/* Tablets and small desktops */
+@media (min-width: 1024px) and (max-width: 1365px) {
+  .feature-card-1 {
+    top: 30%;
+    right: 15%;
+  }
+  
+  .feature-card-2 {
+    top: 30%;
+    left: 15%;
+  }
+  
+  .feature-card-3 {
+    top: 30%;
+    left: 15%;
+  }
+  
+  .feature-card-4 {
+    top: 30%;
+    right: 15%;
+  }
+
+  .card-content {
+    min-width: 380px;
+  }
+}
+
+/* Standard desktops */
+@media (min-width: 1366px) and (max-width: 1599px) {
+  .feature-card-1 {
+    top: 35%;
+    right: 20%;
+  }
+  
+  .feature-card-2 {
+    top: 35%;
+    left: 20%;
+  }
+  
+  .feature-card-3 {
+    top: 35%;
+    left: 10%;
+  }
+  
+  .feature-card-4 {
+    top: 35%;
+    right: 15%;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1600px) {
+  .feature-card {
+    width: 400px;
+  }
+  
+  .feature-card-1 {
+    top: 30%;
+    right: 25%;
+  }
+  
+  .feature-card-2 {
+    top: 30%;
+    left: 25%;
+  }
+  
+  .feature-card-3 {
+    top: 30%;
+    left: 20%;
+  }
+  
+  .feature-card-4 {
+    top: 30%;
+    right: 20%;
+  }
+  
+  .card-content {
+    min-height: 350px;
+    min-width: 480px;
+    padding: 35px;
+  }
+  
+  .card-content h2 {
+    font-size: 2rem;
+  }
+  
+  .card-content p {
+    font-size: 1.2rem;
+  }
+  
+  .card-button {
+    padding: 14px 28px;
+    font-size: 1.1rem;
+  }
+}
+
+/* Added orientation specific rules for landscape mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .feature-card {
+    width: 280px;
+  }
+  
+  .feature-card-1, .feature-card-2, .feature-card-3, .feature-card-4 {
+    transform: scale(0.8) translateX(-60%);
+  }
+  
+  .feature-card-1 {
+    top: 20%;
+    left: 25%;
+  }
+  
+  .feature-card-2 {
+    top: 20%;
+    left: 75%;
+  }
+  
+  .feature-card-3 {
+    top: 20%;
+    left: 25%;
+  }
+  
+  .feature-card-4 {
+    top: 20%;
+    left: 75%;
+  }
+  
+  .card-content {
+    min-height: 160px;
+    padding: 15px;
+  }
+  
+  .card-content h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .card-content p {
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+  }
+  
+  .card-button {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+}
