@@ -44,6 +44,11 @@ jobs:
         file: server/Dockerfile
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        build-args: |
+          BUILDPLATFORM=linux/amd64
+        platforms: linux/amd64
+        # Add compression options
+        outputs: type=image,compression-level=9,force-compression=true
 
     - name: Move cache
       run: |
