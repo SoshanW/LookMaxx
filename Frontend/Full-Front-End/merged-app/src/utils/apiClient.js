@@ -169,10 +169,6 @@ export const createPost = async (title, content) => {
     const response = await axios.post('/community/posts', {
       title,
       content
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
     });
     
     console.log("Create post response:", response.data);
@@ -215,12 +211,8 @@ export const createComment = async (postId, content) => {
       throw new Error("Comment content is required");
     }
     
-    const response = await axios.post(`/community/posts/${postId}/comments`, {
+    const response = await apiClient.post(`/community/posts/${postId}/comments`, {
       content
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
     });
     
     console.log("Create comment response:", response.data);

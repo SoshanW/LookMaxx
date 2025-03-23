@@ -2,13 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { api, getPosts, createPost, getPostComments, createComment, 
          likePost, unlikePost, deletePost, deleteComment } from '../../utils/apiClient'; 
 import '../../styles/community/CommunityPostsSection.css';
+import { getCookie } from '../../utils/cookies';
+import useAuth from '../../hooks/useAuth';
 
 const CommunityPostsSection = () => {
+  const { isLoggedIn, userName } = useAuth();
   // State for managing posts, new post input, and temporary storage
   const [posts, setPosts] = useState([]);
+  const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
   const [newCommentContents, setNewCommentContents] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [deleteConfirmation, setDeleteConfirmation] = useState({
     isOpen: false,
     itemId: null,
@@ -16,16 +24,62 @@ const CommunityPostsSection = () => {
     postId: null
   });
 
-  // Sample user data from auth with local profile picture
-  const currentUser = {
-    id: 'user-1',
-    name: 'Current User',
-    avatar: '/assets/community//profile-pics/current-user.jpg' // Local image from public folder
-  };
+    // Get the current user's ID from the JWT token
+    const getCurrentUserId = () => {
+      try {
+        const token = getCookie('access_token');
+        if (!token) return null;
+        
+        // Parse the JWT token
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        
+        // Decode the payload (middle part)
+        const payload = JSON.parse(atob(parts[1]));
+        
+        // In Flask-JWT-Extended, the user ID is stored in the 'sub' claim
+        return payload.sub || null;
+      } catch (error) {
+        console.error('Error extracting user ID from JWT:', error);
+        return null;
+      }
+    };
+  
+    // Get current user data
+    const getUserData = () => {
+      try {
+        const userData = getCookie('user_data');
+        if (userData) {
+          return JSON.parse(userData);
+        }
+        return null;
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        return null;
+      }
+    };
 
   // Load initial posts fetch from an API
   useEffect(() => {
-    // Mock data with local profile pictures
+    const fetchPosts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await getPosts(page, 10);
+        
+        setPosts(response.posts || []);
+        setTotalPages(response.pages || 1);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+        setError("Failed to load posts. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchPosts();
+  }, [page]);
+  /*  // Mock data with local profile pictures
     const initialPosts = [
       {
         id: 'post-1',
@@ -59,7 +113,7 @@ const CommunityPostsSection = () => {
     ];
     
     setPosts(initialPosts);
-  }, []);
+  }, []);*/
 
 
   // Format timestamp to readable time
@@ -74,7 +128,7 @@ const CommunityPostsSection = () => {
   };
 
   // Handle new post submission
-  const handlePostSubmit = (e) => {
+  const handlePostSubmit = async (e) => {
     e.preventDefault();
     
     if (!newPostContent.trim()) return;
@@ -82,21 +136,23 @@ const CommunityPostsSection = () => {
     setIsSubmitting(true);
     
     // Create new post with user info
-    const newPost = {
-      id: `post-${Date.now()}`,
-      userId: currentUser.id,
-      username: currentUser.name,
-      userAvatar: currentUser.avatar,
-      content: newPostContent.trim(),
-      timestamp: new Date().toISOString(),
-      likes: [],
-      comments: []
-    };
-    
-    // Add post to state at the beginning of the array
-    setPosts([newPost, ...posts]);
-    setNewPostContent('');
-    setIsSubmitting(false);
+    try {
+      const newPost = await createPost(newPostTitle.trim(), newPostContent.trim());
+      
+      // Add the new post to the beginning of the list
+      setPosts(prevPosts => [newPost, ...prevPosts]);
+      
+      // Clear the form
+      setNewPostTitle('');
+      setNewPostContent('');
+      setError(null);
+      
+    } catch (err) {
+      console.error("Error creating post:", err);
+      setError("Failed to create post. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Open deletion confirmation dialog
@@ -120,110 +176,142 @@ const CommunityPostsSection = () => {
   };
 
   // Handle post deletion
-  const handleDeletePost = () => {
+  const handleDeletePost = async () => {
     // Only proceed if we have a valid post ID to delete
     if (deleteConfirmation.itemType === 'post' && deleteConfirmation.itemId) {
-      // Simple filtering to remove the post
-      setPosts(posts.filter(post => post.id !== deleteConfirmation.itemId));
-      // In a real app, we'd call an API to delete from the database
-      
-      // Close the confirmation dialog
-      closeDeleteConfirmation();
+      try {
+        await deletePost(deleteConfirmation.itemId);
+        
+        // Remove the post from the UI
+        setPosts(posts.filter(post => post._id !== deleteConfirmation.itemId));
+        
+        closeDeleteConfirmation();
+      } catch (err) {
+        console.error("Error deleting post:", err);
+        setError("Failed to delete post. Please try again.");
+        closeDeleteConfirmation();
+      }
     }
   };
 
   // Handle like/unlike toggle
-  const handleToggleLike = (postId) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        const userLiked = post.likes.includes(currentUser.id);
-        return {
-          ...post,
-          likes: userLiked 
-            ? post.likes.filter(id => id !== currentUser.id) 
-            : [...post.likes, currentUser.id]
-        };
+  const handleToggleLike = async (postId) => {
+    if (!isLoggedIn) {
+      setError("Please log in to like posts.");
+      return;
+    }
+    
+    try {
+      const post = posts.find(p => p._id === postId);
+      const currentUserId = getCurrentUserId();
+      const userAlreadyLiked = post.likes && post.likes.includes(currentUserId);
+      
+      if (userAlreadyLiked) {
+        await unlikePost(postId);
+      } else {
+        await likePost(postId);
       }
-      return post;
-    }));
+      
+      // Refresh the post data
+      const updatedPosts = await getPosts(page, 10);
+      setPosts(updatedPosts.posts || []);
+      
+    } catch (err) {
+      console.error("Error toggling like:", err);
+    }
   };
 
   // Handle new comment submission
-  const handleCommentSubmit = (postId) => {
+  const handleCommentSubmit = async (postId) => {
+    if (!isLoggedIn) {
+      setError("Please log in to comment.");
+      return;
+    }
+    
     const commentContent = newCommentContents[postId]?.trim();
     
     if (!commentContent) return;
     
-    // Create new comment with isNew flag for highlighting
-    const newComment = {
-      id: `comment-${Date.now()}`,
-      userId: currentUser.id,
-      username: currentUser.name,
-      userAvatar: currentUser.avatar,
-      content: commentContent,
-      timestamp: new Date().toISOString(),
-      isNew: true // Flag to identify new comments for styling
-    };
-    
-    // Add comment to the right post
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: [...post.comments, newComment]
-        };
-      }
-      return post;
-    }));
-    
-    // Clear comment input for this post
-    setNewCommentContents({
-      ...newCommentContents,
-      [postId]: ''
-    });
-    
-    // Remove the isNew flag after a few seconds
-    setTimeout(() => {
-      setPosts(prevPosts => prevPosts.map(post => {
-        if (post.id === postId) {
+    try {
+      await createComment(postId, commentContent);
+      
+      // Refresh the comments for this post
+      const commentsResponse = await getPostComments(postId);
+      
+      // Update the post with new comments
+      setPosts(posts.map(post => {
+        if (post._id === postId) {
           return {
             ...post,
-            comments: post.comments.map(comment => {
-              if (comment.id === newComment.id) {
-                const { isNew, ...commentWithoutIsNew } = comment;
-                return commentWithoutIsNew;
-              }
-              return comment;
-            })
+            comments: commentsResponse.comments || []
           };
         }
         return post;
       }));
-    }, 2000); // Keep the highlight for 2 seconds
+      
+      // Clear comment input for this post
+      setNewCommentContents({
+        ...newCommentContents,
+        [postId]: ''
+      });
+      
+    } catch (err) {
+      console.error("Error creating comment:", err);
+      setError("Failed to post comment. Please try again.");
+    }
   };
 
   // Handle comment deletion
-  const handleDeleteComment = () => {
+  const handleDeleteComment = async () => {
     // Only proceed if we have valid post and comment IDs
     if (deleteConfirmation.itemType === 'comment' && 
         deleteConfirmation.itemId && 
         deleteConfirmation.postId) {
           
-      setPosts(posts.map(post => {
-        if (post.id === deleteConfirmation.postId) {
-          return {
-            ...post,
-            comments: post.comments.filter(comment => comment.id !== deleteConfirmation.itemId)
-          };
-        }
-        return post;
-      }));
-      
-      // Close the confirmation dialog
-      closeDeleteConfirmation();
+      try {
+        await deleteComment(deleteConfirmation.postId, deleteConfirmation.itemId);
+           
+        // Update the UI
+        setPosts(posts.map(post => {
+          if (post._id === deleteConfirmation.postId) {
+            return {
+              ...post,
+              comments: post.comments.filter(comment => comment._id !== deleteConfirmation.itemId)
+            };
+          }
+          return post;
+        }));
+          
+        closeDeleteConfirmation();
+      } catch (err) {
+        console.error("Error deleting comment:", err);
+        setError("Failed to delete comment. Please try again.");
+        closeDeleteConfirmation();
+      }
     }
   };
 
+    // Check if a post is liked by the current user
+  const isPostLikedByUser = (post) => {
+    const userId = getCurrentUserId();
+    return post.likes && userId && post.likes.includes(userId);
+  };
+
+  // Check if current user is the author of a post/comment
+  const isCurrentUserAuthor = (authorId) => {
+    const userId = getCurrentUserId();
+    return userId && authorId === userId;
+  };
+
+  // Get user avatar (placeholder if not available)
+  const getUserAvatar = (user) => {
+    if (user && user.profile_picture) {
+      return user.profile_picture;
+    }
+    return '/assets/community/profile-pics/default-user.jpg';
+  };
+
+  
   return (
     <section className="community-posts-section">
       <div className="section-header">
