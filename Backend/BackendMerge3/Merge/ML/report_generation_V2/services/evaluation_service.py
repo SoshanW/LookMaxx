@@ -1,4 +1,4 @@
-from models import GradePropositions
+from ..models import GradePropositions
 from langchain_core.prompts import ChatPromptTemplate
 
 class EvaluationService:
