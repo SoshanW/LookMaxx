@@ -1,0 +1,144 @@
+body.community-page .hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 2rem;
+  background: linear-gradient(to top, #362d5a, #18113a);
+  min-height: 50vh;
+  font-family: 'Nasalization', sans-serif;
+}
+
+body.community-page .hero-content {
+  max-width: 50%;
+  align-items: center;
+  margin-left: 5%;
+}
+
+body.community-page .hero-content h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+body.community-page .hero-content p {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 2rem;
+  margin-left: 20%;
+}
+
+body.community-page .hero-buttons {
+  display: flex;
+  gap: 7rem;
+  margin-left: 20%;
+}
+
+body.community-page .primary-button {
+  font-family: "Dune_Rise", sans-serif;
+  background: radial-gradient(circle, #ffffff, #e6e5fd);
+  color: #191C4C;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
+  box-shadow: 0 0 10px rgba(210, 181, 237, 0.5);
+  text-shadow: #ffffff 0 0 5px;
+  align-self: center;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; /* Hint for browser optimization */
+  min-width: 100px
+}
+
+body.community-page .primary-button:hover {
+  background: radial-gradient(circle, #ffffff, #d2cffc);
+  box-shadow: #ffffff 0 0 10px;
+  transform: scale(1.05);
+}
+
+body.community-page .secondary-button {
+  font-family: "Dune_Rise", sans-serif;
+  background: radial-gradient(circle, #ffffff, #e6e5fd);
+  color: #191C4C;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; /* Specify properties for better performance */
+  box-shadow: 0 0 10px rgba(210, 181, 237, 0.5);
+  text-shadow: #ffffff 0 0 5px;
+  align-self: center;
+  /* Performance optimization */
+  transform: translateZ(0); /* Hardware acceleration */
+  will-change: transform; 
+  min-width: 150px
+}
+
+body.community-page .secondary-button:hover {
+  background: radial-gradient(circle, #ffffff, #d2cffc);
+  box-shadow: #ffffff 0 0 10px;
+  transform: scale(1.05);
+}
+
+body.community-page .hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+}
+
+body.community-page .hero-image{
+  width: 100%;
+  height: 550px;
+  background: #e0cffc;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+@font-face {
+  font-family: 'Dune_Rise';
+  src: url('../fonts/Dune_Rise.ttf');
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  body.community-page .hero-section {
+    flex-direction: column;
+    padding: 3rem 1.5rem;
+  }
+  
+  body.community-page .hero-content {
+    max-width: 100%;
+    margin-left: 0;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  body.community-page .hero-content h1 {
+    font-size: 3rem;
+  }
+  
+  body.community-page .hero-content p {
+    margin-left: 0;
+  }
+  
+  body.community-page .hero-buttons {
+    gap: 2rem;
+    margin-left: 0;
+    justify-content: center;
+  }
+  
+  body.community-page .hero-visual {
+    width: 100%;
+  }
+  
+  body.community-page .hero-image {
+    height: 300px;
+  }
+}

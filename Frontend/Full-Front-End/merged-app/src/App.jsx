@@ -20,7 +20,8 @@ import CastingApplicationPage from './pages/CastingApplicationPage';
 import StudyPage from './pages/StudyPage';
 import ProfilePage from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
-import RetailPage from './pages/RetailPage';
+import CommunityPage from './pages/CommunityPage'; // Keeping CommunityPage
+import RetailPage from './pages/RetailPage'; // Keeping RetailPage
 
 // Payment related pages
 import PaymentNotifyPage from './pages/PaymentNotifyPage';
@@ -54,8 +55,9 @@ function App() {
     location.pathname === '/ffr' ||
     location.pathname === '/profile' ||
     location.pathname === '/pricing' ||
+    location.pathname === '/community' || // Keeping CommunityPage condition
     location.pathname === '/home';
-  
+
   // Define navigation links based on current route
   const [navLinks, setNavLinks] = useState(['Home', 'FFR', 'Study', 'Casting', 'Retail', 'Community']);
   
@@ -75,30 +77,23 @@ function App() {
       }, 100);
     }
     
-    // ADDED: Manually invalidate and recalculate ScrollTrigger on route change
-    // This helps with the home page scrolling issue
+    // Manually invalidate and recalculate ScrollTrigger on route change
     if (location.pathname === '/' || location.pathname === '/ffr') {
-      // First clear any existing scroll triggers
       if (window.ScrollTrigger) {
         const allTriggers = window.ScrollTrigger.getAll();
         allTriggers.forEach(trigger => trigger.kill());
       }
       
-      // Then force GSAP to recalculate after a short delay
       setTimeout(() => {
         if (window.ScrollTrigger) {
-          window.ScrollTrigger.refresh(true); // true forces a complete refresh
-          
-          // Additionally, dispatch a resize event which often helps with layout issues
+          window.ScrollTrigger.refresh(true);
           window.dispatchEvent(new Event('resize'));
         }
       }, 300);
     }
     
-    // Dispatch resize event
     window.dispatchEvent(new Event('resize'));
     
-    // Enable scroll detection only on FFR page
     setEnableScrollDetection(location.pathname === '/' || location.pathname === '/ffr');
     
     // Clean up any existing body classes
@@ -110,7 +105,8 @@ function App() {
       'study-page', 
       'profile-page', 
       'pricing-page',
-      'retail-page'
+      'retail-page', // Keeping retail-page
+      'community-page' // Keeping community-page
     );
     
     // Apply specific body classes based on route
@@ -122,7 +118,6 @@ function App() {
     } else if (location.pathname.includes('/apply')) {
       document.body.classList.add('application-form-page');
       document.body.style.overflow = 'auto';
-      document.body.style.height = 'auto';
     } else if (location.pathname.includes('/study')) {
       document.body.classList.add('study-page');
       document.body.style.overflow = 'hidden';
@@ -136,10 +131,11 @@ function App() {
     } else if (location.pathname.includes('/pricing')) {
       document.body.classList.add('pricing-page');
       document.body.style.overflow = 'auto';
+    } else if (location.pathname.includes('/community')) {
+      document.body.classList.add('community-page');
+      document.body.style.overflow = 'auto';
     } else {
       document.body.classList.add('ffr-page');
-      
-      // ADDED: For home page, make sure scrolling is properly enabled
       document.body.style.overflow = 'auto';
       document.body.style.overflowX = 'hidden';
       document.documentElement.style.overflowY = 'auto';
@@ -151,32 +147,6 @@ function App() {
     };
   }, [location.pathname]);
 
-  // Update navLinks active state based on current path
-  useEffect(() => {
-    const path = location.pathname.split('/')[1] || 'home';
-    
-    const linkObjects = navLinks.map(link => {
-      const linkName = typeof link === 'object' ? link.name : link;
-      return {
-        name: linkName,
-        active: linkName.toLowerCase() === path || 
-              (linkName.toLowerCase() === 'casting' && path === 'apply') ||
-              (linkName.toLowerCase() === 'home' && (path === '' || path === 'home'))
-      };
-    });
-    
-    const currentActiveIndex = linkObjects.findIndex(link => link.active);
-    const previousActiveIndex = navLinks.findIndex(link => {
-      if (typeof link === 'object') return link.active;
-      return false;
-    });
-    
-    if (currentActiveIndex !== previousActiveIndex) {
-      setNavLinks(linkObjects);
-    }
-  }, [location.pathname, navLinks]);
-
-  // Loading state while authentication is being determined
   if (!isAuthReady) {
     return (
       <div className="auth-loading">
@@ -207,29 +177,17 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/face-model" element={<FaceModelPage />} />
         <Route path="/casting" element={<CastingPage />} />
-        <Route path="/apply" element={
-          <ProtectedRoute>
-            <CastingApplicationPage />
-          </ProtectedRoute>
-        } />
+        <Route path="/apply" element={<ProtectedRoute><CastingApplicationPage /></ProtectedRoute>} />
         <Route path="/study" element={<StudyPage />} />
         <Route path="/retail" element={<RetailPage />} />
-        <Route path="/profile" element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        } />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/pricing" element={<PricingPage />} />
-        
-        {/* Payment related routes */}
+        <Route path="/community" element={<CommunityPage />} />
         <Route path="/payment-notify" element={<PaymentNotifyPage />} />
         <Route path="/payment-success" element={<PaymentSuccessPage />} />
-        
-        {/* ADDED: Catch-all route to handle 404 issues */}
         <Route path="*" element={<HomePage />} />
       </Routes>
       </div>
-
       {!hideFooter && <Footer />}
     </ReportGeneratorProvider>
   );
