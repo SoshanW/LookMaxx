@@ -2,7 +2,28 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthProvider";
+import { getCookie } from "../../utils/cookies";
+import { api } from "../../utils/apiClient";
 import "../../styles/casting/Casting.css";
+
+// FFR Required Modal Component
+const FfrRequiredModal = ({ isOpen, onClose, onGoToFfr }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="ffr-required-modal">
+      <div className="ffr-required-modal-content">
+        <h2>FFR Analysis Required</h2>
+        <p>This function is only available for users who have completed the Facial Feature Recognition (FFR) analysis.</p>
+        <p>Would you like to go to the FFR page to complete the analysis?</p>
+        <div className="ffr-required-modal-actions">
+          <button className="secondary-button" onClick={onClose}>Cancel</button>
+          <button className="primary-button" onClick={onGoToFfr}>Go to FFR Page</button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Keeping NeonMist as part of the CastingPage file
 const NeonMist = ({ isActive }) => {
@@ -388,6 +409,11 @@ const HeroSection = ({ sectionRef, isActive, onApplyNow }) => {
  */
 const DiscoverySection = ({ sectionRef, isActive }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLearnMoreClick = () => {
+    navigate('/community');
+  };
 
   // Slide animation variants
   const slideLeftVariant = {
@@ -445,6 +471,7 @@ const DiscoverySection = ({ sectionRef, isActive }) => {
             animate={isActive ? "visible" : "hidden"}
             variants={slideRightVariant}
             custom={2} // Delay factor = 2
+            onClick={handleLearnMoreClick}
           >
             LEARN MORE
           </motion.button>
@@ -461,6 +488,11 @@ const DiscoverySection = ({ sectionRef, isActive }) => {
  */
 const FFRSection = ({ sectionRef, isActive }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handlePublicizeAccountClick = () => {
+    navigate('/profile');
+  };
 
   // Animation variants
   const slideLeftVariant = {
@@ -514,6 +546,7 @@ const FFRSection = ({ sectionRef, isActive }) => {
             animate={isActive ? "visible" : "hidden"}
             variants={slideRightVariant}
             custom={1} // Delay factor = 1
+            onClick={handlePublicizeAccountClick}
           >
             Publicize Account
           </motion.button>
@@ -533,6 +566,9 @@ const Casting = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuthContext();
   
+  // State for FFR required modal
+  const [showFfrRequiredModal, setShowFfrRequiredModal] = useState(false);
+  
   // Use our custom smooth scroll hook
   const { sectionRefs, activeSection, scrollToSection } = useSmoothScroll();
   
@@ -543,10 +579,54 @@ const Casting = () => {
     { id: 'ffr', label: 'FFR Section' }
   ];
 
-  // Function to handle "APPLY NOW" button click - navigates to application form
-  const handleApplyNow = () => {
-    // Use navigate to go to the application form page
-    navigate('/apply');
+  // Modal action handlers
+  const handleCloseModal = () => {
+    setShowFfrRequiredModal(false);
+  };
+
+  const handleGoToFfr = () => {
+    navigate('/ffr');
+  };
+
+  // Function to handle "APPLY NOW" button click - now checks for FFR report
+  const handleApplyNow = async () => {
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      // If not logged in, redirect to signup page
+      navigate('/signup');
+      return;
+    }
+    
+    try {
+      // Get user data from cookies
+      const userData = getCookie('user_data');
+      if (!userData) {
+        setShowFfrRequiredModal(true);
+        return;
+      }
+      
+      const parsedUserData = JSON.parse(userData);
+      const username = parsedUserData.username;
+      
+      // Fetch user FFR results
+      const response = await api.get(`/ffr/get-ffr-results/${username}`);
+      
+      // Check if user has completed FFR analysis and has a PDF report
+      if (response.data && 
+          response.data.ffr_results && 
+          response.data.ffr_results.length > 0 && 
+          response.data.ffr_results[response.data.ffr_results.length - 1].pdf_url) {
+        // User has FFR report, redirect to application form
+        navigate('/apply');
+      } else {
+        // User doesn't have FFR report, show modal
+        setShowFfrRequiredModal(true);
+      }
+    } catch (error) {
+      console.error('Error checking FFR status:', error);
+      // If there's an error, show the modal
+      setShowFfrRequiredModal(true);
+    }
   };
 
   // Add body class for proper styling and fix footer display
@@ -604,6 +684,13 @@ const Casting = () => {
         sections={sections} 
         activeSection={activeSection} 
         onNavigate={scrollToSection} 
+      />
+      
+      {/* FFR Required Modal */}
+      <FfrRequiredModal 
+        isOpen={showFfrRequiredModal}
+        onClose={handleCloseModal}
+        onGoToFfr={handleGoToFfr}
       />
       
       {/* Page sections */}

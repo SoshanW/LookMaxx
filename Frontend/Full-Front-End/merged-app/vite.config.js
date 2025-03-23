@@ -15,7 +15,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
-      // Add this new proxy configuration
+      '/casting': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
+        secure: false,
+      },
       '/payments': {
         target: 'http://127.0.0.1:5000',
         changeOrigin: true,
