@@ -409,6 +409,11 @@ const HeroSection = ({ sectionRef, isActive, onApplyNow }) => {
  */
 const DiscoverySection = ({ sectionRef, isActive }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLearnMoreClick = () => {
+    navigate('/community');
+  };
 
   // Slide animation variants
   const slideLeftVariant = {
@@ -466,6 +471,7 @@ const DiscoverySection = ({ sectionRef, isActive }) => {
             animate={isActive ? "visible" : "hidden"}
             variants={slideRightVariant}
             custom={2} // Delay factor = 2
+            onClick={handleLearnMoreClick}
           >
             LEARN MORE
           </motion.button>
@@ -482,6 +488,11 @@ const DiscoverySection = ({ sectionRef, isActive }) => {
  */
 const FFRSection = ({ sectionRef, isActive }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handlePublicizeAccountClick = () => {
+    navigate('/profile');
+  };
 
   // Animation variants
   const slideLeftVariant = {
@@ -535,6 +546,7 @@ const FFRSection = ({ sectionRef, isActive }) => {
             animate={isActive ? "visible" : "hidden"}
             variants={slideRightVariant}
             custom={1} // Delay factor = 1
+            onClick={handlePublicizeAccountClick}
           >
             Publicize Account
           </motion.button>
