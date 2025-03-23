@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../../styles/retail/Hero.css';
 import '../../styles/retail/Slider.css';
 import { motion, useAnimation, useInView } from "framer-motion";
 import FitOnSection from './FitOnSection';
 
 const Retail = () => {
-  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const slideLeft = {
     hidden: { x: 0, opacity: 0 },
@@ -40,7 +40,7 @@ const Retail = () => {
       description: 'Find your perfect style'
     },
     {
-      image: '/assets/retail/kellyfelder.jpg',
+      image: '/assets/retail/retailmodel.jpg',
       title: 'Drift & Stitch',
       subtitle: 'Accessories',
       description: 'Complete your look'

@@ -48,13 +48,16 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5, delay: 1 }}
         >
+         
+          <p className='bannertxt'>FIND YOUR FIT</p>
+          <p className='bannertxt2'>Your Virtual Wardrobe Starts Here!</p>
           <button 
             className='shopBtn' 
-            onClick={handleShopNowClick} // Add click handler here
+            onClick={handleShopNowClick}
           >
             Shop Now
           </button>
-          <p className='bannertxt'>FIND YOUR FIT</p>
+
         </motion.div>
 
         <motion.div

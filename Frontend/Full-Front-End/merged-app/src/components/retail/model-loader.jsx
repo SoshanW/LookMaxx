@@ -72,15 +72,15 @@ export const useModelLoader = (canvasRef, selectedModel) => {
          // In the switch statement in loadModel function
           case 'dress.fbx':
             fbx.scale.set(0.01, 0.01, 0.01); 
-            fbx.position.set(0, 0, 0);
+            fbx.position.set(0, -12, 0.6);
             break;
           case 'shirt.fbx':
             fbx.scale.set(0.01, 0.01, 0.01); 
-            fbx.position.set(0, -0.5, 0);
+            fbx.position.set(0.5, -0.10,0);
             break;
           case 'JACKET.fbx':
             fbx.scale.set(0.1, 0.11, 0.1); 
-            fbx.position.set(0, -0.3, 0);
+            fbx.position.set(0, -130, 0);
             break;
           default:
             fbx.scale.set(0.02, 0.02, 0.02);
@@ -134,7 +134,7 @@ export const useModelLoader = (canvasRef, selectedModel) => {
         0.1,
         1000
       );
-      cameraRef.current.position.set(0, 0, 3);
+      cameraRef.current.position.set(0, 0, 8);
       
       // Create renderer
       rendererRef.current = new THREE.WebGLRenderer({
