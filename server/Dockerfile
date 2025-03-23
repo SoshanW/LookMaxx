@@ -13,12 +13,14 @@ RUN apt-get update && apt-get install -y \
 
 COPY requirements.txt /app
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip3 install -r requirements.txt
+    pip3 install -r requirements.txt \
+    && pip3 install gunicorn
 
 COPY . /app
 
-# Expose the port that Flask will run on
+RUN echo "from run import create_unified_app\n\napplication = create_unified_app()" > wsgi.py
+
 EXPOSE 5000
 
-ENTRYPOINT ["python3"]
-CMD ["run.py"]
+ENTRYPOINT ["gunicorn"]
+CMD ["--bind", "0.0.0.0:5000", "wsgi:application"]

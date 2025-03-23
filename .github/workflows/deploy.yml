@@ -43,6 +43,10 @@ jobs:
         containerAppName: ${{ secrets.CONTAINER_APP_NAME }}
         resourceGroup: ${{ secrets.RESOURCE_GROUP }}
         imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
+        targetPort: 5000
+        environmentVariables: |
+          PORT=5000
+          GUNICORN_CMD_ARGS=--timeout 600
 
     # - name: Deploy to Vercel
     #   uses: amodnet/vercel-action@v25
