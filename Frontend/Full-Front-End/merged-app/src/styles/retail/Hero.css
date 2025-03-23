@@ -1,62 +1,116 @@
 .retail-page .hero-content { 
-  background: linear-gradient(135deg, #000000, #2e005c);
+  background: linear-gradient(135deg, #20064b 0%, #060115 100%);
+  z-index: -1;
   display: flex;
-  justify-content: center;
+  justify-content:space-between;
   align-items: center;
-  gap: 20px; 
-  padding: 0%;
+  gap: 0;
   margin: 0;
   min-height: 100vh;
+  padding: 0;
+}
+
+.retail-page .title {
+  display: flex;
+  flex: 0 0 29.5%;;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 1; 
+  padding-top: 20px;
 }
 
 .retail-page .side-image{
-  flex: 1;
-  max-width: 38rem; 
+  flex: 0 0 35%; 
+  max-width: 35%;
+  width: 35%;
+  height: 100vh;
+  overflow: hidden
 }
 
 .retail-page .left img, .retail-page .right img {
-  width: 98%;
-  height: auto;
-  border-radius: 8px; 
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0; 
+  box-shadow: none;
+  transition: all 0.3s ease;
 }
 
-.retail-page .bannertxt{
+.retail-page .left img:hover, .retail-page .right img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.retail-page .bannertxt {
   font-size: 4rem;
   font-weight: 500;
-  margin: -100px;
-  background: linear-gradient(90deg, pink, purple, rgb(181, 121, 226), rgb(109, 109, 232));
+  margin: 0;
+  margin-left: -20px;
+  margin-right: -20px;
+  background: linear-gradient(90deg, rgb(230, 172, 182), purple, rgb(181, 121, 226), rgb(109, 109, 232));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
   font-family: 'Nasalization', sans-serif;
+  text-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
+  animation: glow 2s ease-in-out infinite alternate;
 }
 
-.retail-page .shopBtn{
+.retail-page .bannertxt2 {
+  padding: 10px;
+  text-align: center;
+  width: 100%; 
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  font-size: 1.3rem;
+}
+
+.retail-page .shopBtn {
   display: block;
-  margin: 30px 60px;
-  position: absolute;
+  position: relative;
+  margin-top: 30px ;
   background: transparent;
-  border: 2px solid #be80e7;
+  border: 3px solid #be80e7;
   font-family: 'Nasalization', sans-serif;
   border-radius: 25px;
   font-size: 1.5rem;
-  padding: 15px;
+  padding: 15px 30px;
   color: #b692ea;
   cursor: pointer;
-  transition: all 0.5s ease;
+  transition: transform 0.3s ease, background 0.5s ease, color 0.5s ease;
+  font-weight: 600;
+  overflow: hidden;
+  text-align: center;
+  z-index: 0; 
+}
+
+.retail-page .shopBtn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -300%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.7s ease-in-out;
+  z-index: -1; 
+}
+
+.retail-page .shopBtn:hover:before {
+  left: 150%;
 }
 
 .retail-page .shopBtn:hover {
-  background: linear-gradient(135deg, #2c0047, #441b7d); 
-  transform: translateY(-5px);
+  background: linear-gradient(135deg, #2c0047, #441b7d);
+  transform: translateY(-5px); /* Moves the button up on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
   color: #d6bcfb;
-  font-size: 1.55rem;
-  transition: 0.5s;
+  z-index: 1; /* Ensure the button is on top during hover */
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .retail-page .hero-content {
     flex-direction: column;
@@ -69,7 +123,7 @@
   
   .retail-page .bannertxt {
     font-size: 2.5rem;
-    margin: -50px;
+    margin: -40px; /* Adjusted margin */
   }
   
   .retail-page .shopBtn {

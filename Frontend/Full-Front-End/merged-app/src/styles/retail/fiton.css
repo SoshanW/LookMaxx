@@ -1,5 +1,5 @@
 .fiton-section {
-  background-image: url('/assets/retail/bg2.jpeg');
+  background-image: url('/assets/retail/3dsecBG.jpeg');
   background-size: cover;
   background-position: center;
   min-height: 90vh;
@@ -13,7 +13,7 @@
 
 .fiton-section h2 {
   margin-top:20rem ;
-  margin-bottom: -12rem;
+  margin-bottom: -10rem;
   position: relative;
   font-family: var(--font-clash-display);
   font-size: 2.5rem;
@@ -36,7 +36,8 @@
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 0;
+  margin-top:-20px;
   width: 100%;
   max-width: 800px;
 }
@@ -101,7 +102,7 @@
 
 .model-instructions {
   position: absolute;
-  bottom: -60px;
+  bottom: 70px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -115,7 +116,7 @@
 }
 
 .fiton-description {
-  margin-top: 80px;
+  margin-top: 10px;
   color: white;
   text-align: center;
   max-width: 600px;
@@ -132,6 +133,8 @@
   font-size: 1.1rem;
   line-height: 1.6;
   opacity: 0.9;
+  margin-top: 10px;
+  padding-bottom: 40px;
 }
 
 /* Responsive adjustments */

@@ -11,7 +11,7 @@
 
 .retail-page .slider-section {
   padding: 2rem;
-  background: linear-gradient(135deg, #000000, #2e005c);
+  background: linear-gradient(135deg, #20064b 0%, #060115 100%);
   text-align: center;
   min-height: 90vh;
   display: flex;
@@ -19,12 +19,28 @@
   justify-content: center;
 }
 
+.retail-page .slider-section:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 20% 30%, rgba(138, 79, 255, 0.1) 0%, transparent 8%), 
+                    radial-gradient(circle at 80% 60%, rgba(138, 79, 255, 0.1) 0%, transparent 8%),
+                    radial-gradient(circle at 40% 70%, rgba(138, 79, 255, 0.1) 0%, transparent 6%),
+                    radial-gradient(circle at 60% 20%, rgba(138, 79, 255, 0.1) 0%, transparent 6%);
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+
 .retail-page .titlecontainer {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2rem; 
-  margin-top: -18rem;
+  margin-top: -13rem;
   margin-bottom: 18.5rem;
   width: 100%;
 }
@@ -33,7 +49,7 @@
   flex-grow: 1;
   height: 2px;
   background-color: #8A4FFF;
-  max-width: 15%; /* Limits line length */
+  max-width: 15%; 
 }
 
 .retail-page .slider-section h2 { 
@@ -43,7 +59,7 @@
   font-weight: 600;
   color: #ffffff;
   text-transform: uppercase;
-  white-space: nowrap; /* Prevents text from wrapping */
+  white-space: nowrap; 
 }
 
 .retail-page .slider {
@@ -55,8 +71,6 @@
   position: relative;
   margin: 0 auto;
 }
-
-
 
 .retail-page .slider--btn {
   background: rgba(156, 153, 236, 0.2);
@@ -109,22 +123,38 @@
   transition: transform 800ms var(--slide-transition-easing);
   position: absolute;
   box-shadow: 0 10px 20px rgba(201, 183, 183, 0.2);
+  transform-style: preserve-3d; 
 }
 
 .retail-page .slide[data-current] {
-  transform: scale(1.2);
-  z-index: 10;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  transform: scale(1.25);
+  transition: transform 0.9s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(138, 79, 255, 0.3);
+  animation: floatAndRotate 8s infinite ease-in-out;
+  cursor: pointer;
 }
 
 .retail-page .slide[data-next] {
   transform: translateX(107%) rotateY(-45deg);
   z-index: 5;
+  transition: transform 0.9s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .retail-page .slide[data-previous] {
   transform: translateX(-107%) rotateY(45deg);
   z-index: 5;
+  transition: transform 0.9s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* 360 Rotation Animation for current slide hover */
+.retail-page .slide[data-current]:hover {
+  animation: rotate360 1.5s ease-in-out;
+  transform-origin: center center;
+}
+
+/* Animation for slider transition */
+.retail-page .slide.transitioning {
+  animation: flipTransition 0.6s ease-in-out;
 }
 
 .retail-page .slide--image {
@@ -132,7 +162,9 @@
   height: 100%;
   object-fit: cover;
   filter: brightness(0.8);
-  transition: filter var(--slide-transition-duration) var(--slide-transition-easing);
+  transition: filter 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border-radius: 8px;
+  backface-visibility: hidden;
 }
 
 .retail-page .slide[data-current] .slide--image {
@@ -182,6 +214,8 @@
   font-weight: 800;
   text-transform: uppercase;
   margin-bottom: 0.5rem;
+  text-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.1em;
 }
 
 .retail-page .slide-info--text[data-subtitle] {
@@ -283,6 +317,9 @@
 .retail-page .slide--image__wrapper {
   width: 100%;
   height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
 }
 
 .retail-page .image-overlay {
@@ -311,26 +348,6 @@
   opacity: 1;
 }
 
-.retail-page .visit-store-btn {
-  margin-top: 16px;
-  padding: 8px 16px;
-  background-color: #8A4FFF;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-family: var(--font-clash-display);
-  font-weight: 500;
-  display: inline-block; 
-  position: relative; 
-  z-index: 30; 
-}
-
-.retail-page .visit-store-btn:hover {
-  background-color: #6a3cc5;
-}
-
 .retail-page .slide-info--text__wrapper {
   display: flex;
   flex-direction: column;
@@ -349,6 +366,91 @@
   animation-delay: 0.6s;
 }
 
+/* Add JS-controlled class for programmatic animation */
+.retail-page .animate-360 {
+  animation: rotate360 1.5s ease-in-out !important;
+}
+
+/* Auto-rotation button styles */
+.retail-page .auto-rotate-btn {
+  position: absolute;
+  bottom: -60px;
+  right: 20px;
+  background: rgba(156, 153, 236, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 250ms cubic-bezier(0.215, 0.61, 0.355, 1);
+  z-index: 999;
+}
+
+.retail-page .auto-rotate-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+}
+
+.retail-page .auto-rotate-btn:hover {
+  opacity: 1;
+  background: rgba(138, 79, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.retail-page .auto-rotate-btn.active {
+  background: rgba(138, 79, 255, 0.5);
+  box-shadow: 0 0 10px rgba(138, 79, 255, 0.5);
+  opacity: 1;
+}
+
+/* Add a subtle glow effect to the current slide */
+.retail-page .slide[data-current]::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 12px;
+  background: radial-gradient(
+    circle at center,
+    rgba(138, 79, 255, 0.2) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.retail-page .slide[data-current]:hover::after {
+  opacity: 1;
+}
+
+/* Instructions text */
+.retail-page .slide-instructions {
+  position: absolute;
+  bottom: -90px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+  font-family: var(--font-archivo);
+  pointer-events: none;
+}
+
+.retail-page .slider:hover .slide-instructions {
+  opacity: 1;
+}
+
+/* Keyframes for animations */
 @keyframes buttonFadeIn {
   from {
     opacity: 0;
@@ -357,6 +459,48 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Keyframes for floating and subtle rotation effect */
+@keyframes floatAndRotate {
+  0% {
+    transform: scale(1.25) translateY(0) rotateY(0deg);
+  }
+  25% {
+    transform: scale(1.25) translateY(-5px) rotateY(2deg);
+  }
+  50% {
+    transform: scale(1.25) translateY(0) rotateY(0deg);
+  }
+  75% {
+    transform: scale(1.25) translateY(5px) rotateY(-2deg);
+  }
+  100% {
+    transform: scale(1.25) translateY(0) rotateY(0deg);
+  }
+}
+
+/* Keyframes for full 360 rotation on hover */
+@keyframes rotate360 {
+  0% {
+    transform: scale(1.25) rotateY(0deg);
+  }
+  100% {
+    transform: scale(1.25) rotateY(360deg);
+  }
+}
+
+/* Keyframes for flip transition when changing slides */
+@keyframes flipTransition {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(180deg);
+  }
+  100% {
+    transform: rotateY(360deg);
   }
 }
 
