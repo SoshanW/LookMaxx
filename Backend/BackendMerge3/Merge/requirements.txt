@@ -35,3 +35,6 @@ Pillow
 
 # signup requirements
 dnspython
+
+# pytest requirements
+pytest

@@ -201,7 +201,7 @@ def run_report_generation(username):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         parent_dir = os.path.dirname(current_dir)
         grandparent_dir = os.path.dirname(parent_dir)
-        report_gen_path = os.path.join(grandparent_dir, 'report-generation-V2')
+        report_gen_path = os.path.join(grandparent_dir, 'report_generation_V2')
 
         original_path = sys.path.copy()
         sys.path.insert(0, report_gen_path)

@@ -1,4 +1,9 @@
-from models import GradePropositions
+try:
+    from models import GradePropositions
+    from models import GeneratePropositions
+except ImportError:
+    from ..models import GradePropositions
+    from ..models import GeneratePropositions
 from langchain_core.prompts import ChatPromptTemplate
 
 class EvaluationService:

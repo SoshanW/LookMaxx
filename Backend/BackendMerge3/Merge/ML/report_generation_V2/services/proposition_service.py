@@ -1,5 +1,10 @@
 from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
-from models import GeneratePropositions
+try:
+    from models import GradePropositions
+    from models import GeneratePropositions
+except ImportError:
+    from ..models import GradePropositions
+    from ..models import GeneratePropositions
 from langchain_core.documents import Document
 
 class PropositionService:

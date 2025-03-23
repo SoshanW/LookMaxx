@@ -210,7 +210,7 @@ def main(username):
         if evaluation_service.passes_quality_check(scores):
             evaluated_propositions.append(proposition)
         else:
-            print(f"Failed proposition: {proposition.page_content}\nScores: {scores}")
+            print(f"Valid proposition: {proposition.page_content}\nScores: {scores}")
     
     retriever_propositions = vector_store_service.create_vector_store(evaluated_propositions)
     retriever_larger = vector_store_service.create_vector_store(doc_splits)
