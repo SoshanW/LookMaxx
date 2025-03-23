@@ -72,8 +72,15 @@ def create_new_post():
     if not title or not content:
         return jsonify({"error": "Title and content are required"}), 400
     
+    
     try:
-        user_id = ObjectId(get_jwt_identity())
+        username = get_jwt_identity()
+        user = mongo.db.users.find_one({'username': username})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        user_id = user['_id']
+
         post = create_post(title,content, user_id)
         post_id = mongo.db.posts.insert_one(post).inserted_id
         mongo.db.users.update_one(
@@ -150,14 +157,26 @@ def create_new_comment(post_id):
         if not content:
             return jsonify({"error": "Content is required"}), 400
             
-        user_id = ObjectId(get_jwt_identity())
-        logger.info(f"Creating post as user: {user_id}")
-        logger.info(f"Headers: {dict(request.headers)}")
-        post_object_id = ObjectId(post_id)
-        post = mongo.db.posts.find_one({'_id': post_object_id})
+        print(f"Creating comment for post_id: {post_id}")
+        print(f"Current user identity: {get_jwt_identity()}")
         
+        try:
+            # Safely convert to ObjectId
+            post_object_id = ObjectId(post_id)
+        except Exception as e:
+            print(f"Invalid post ID: {post_id}, error: {str(e)}")
+            return jsonify({"error": "Invalid post ID"}), 400
+        
+        post = mongo.db.posts.find_one({'_id': post_object_id})
         if not post:
             return jsonify({"error": "Post not found"}), 404
+        
+        username = get_jwt_identity()
+        user = mongo.db.users.find_one({'username': username})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+            
+        user_id = user['_id']
         
         comment = create_comment(content, user_id, post_object_id)
 

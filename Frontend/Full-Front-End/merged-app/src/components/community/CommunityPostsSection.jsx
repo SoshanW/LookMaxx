@@ -68,6 +68,12 @@ const CommunityPostsSection = () => {
           silentError: true
         });
         
+        console.log('Posts response:', response);
+      
+        // Check if posts have the expected structure
+        if (response.posts && response.posts.length > 0) {
+          console.log('Sample post structure:', response.posts[0]);
+        }
         setPosts(response.posts || []);
         setTotalPages(response.pages || 1);
         setError(null);
@@ -214,6 +220,12 @@ const CommunityPostsSection = () => {
     
     try {
       const post = posts.find(p => p._id === postId);
+
+      if (!post) {
+        console.error(`Post with ID ${postId} not found`);
+        return;
+      }
+
       const currentUserId = getCurrentUserId();
       const userAlreadyLiked = post.likes && post.likes.includes(currentUserId);
       
@@ -245,7 +257,14 @@ const CommunityPostsSection = () => {
     
     if (!commentContent) return;
     
+    console.log(`Attempting to add comment to post ID: ${postId}`);
+
     try {
+      if (!postId || typeof postId !== 'string') {
+        console.error(`Invalid post ID: ${postId}`);
+        return;
+      }
+      
       await api.post(`/community/posts/${postId}/comments`, {
         content: commentContent
       }, {
@@ -427,6 +446,7 @@ const CommunityPostsSection = () => {
                 <button 
                   className={`like-button ${isPostLikedByUser(post) ? 'liked' : ''}`}
                   onClick={() => handleToggleLike(post.id)}
+                  disabled={!isLoggedIn}
                 >
                   {isPostLikedByUser(post) ? '❤️' : '🤍'} 
                   <span>{post.likes?.length || 0 } {post.likes?.length === 1 ? 'like' : 'likes'}</span>
