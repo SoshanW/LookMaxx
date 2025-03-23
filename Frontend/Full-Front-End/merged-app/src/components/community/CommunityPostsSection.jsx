@@ -318,29 +318,49 @@ const CommunityPostsSection = () => {
         <h2>Community Discussion</h2>
       </div>
       
-      {/* New Post Form */}
-      <div className="post-form-container">
-        <div className="user-avatar">
-          <img src={currentUser.avatar} alt={currentUser.name} />
+      {/* Error message if any */}
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
         </div>
-        <form className="post-form" onSubmit={handlePostSubmit}>
-          <textarea
-            placeholder="Say something..."
-            value={newPostContent}
-            onChange={(e) => setNewPostContent(e.target.value)}
-            required
-          />
-          <div className="post-form-actions">
-            <button 
-              type="submit" 
-              className="primary-button submit-post"
-              disabled={isSubmitting || !newPostContent.trim()}
-            >
-              Post
-            </button>
+      )}
+      {/* New Post Form - only show if logged in */}
+      {isLoggedIn ? (
+        <div className="post-form-container">
+          <div className="user-avatar">
+            <img src={getUserAvatar(getUserData())} alt={userName} />
           </div>
-        </form>
-      </div>
+          <form className="post-form" onSubmit={handlePostSubmit}>
+            <input
+              type="text"
+              placeholder="Post title..."
+              value={newPostTitle}
+              onChange={(e) => setNewPostTitle(e.target.value)}
+              required
+              className="post-title-input"
+            />
+            <textarea
+              placeholder="What's on your mind..."
+              value={newPostContent}
+              onChange={(e) => setNewPostContent(e.target.value)}
+              required
+            />
+            <div className="post-form-actions">
+              <button 
+                type="submit" 
+                className="primary-button submit-post"
+                disabled={isSubmitting || !newPostTitle.trim() || !newPostContent.trim()}
+              >
+                {isSubmitting ? 'Posting...' : 'Post'}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : (
+        <div className="login-prompt">
+          <p>Please <a href="/signup">log in</a> to join the discussion.</p>
+        </div>
+      )}
       
       {/* Posts List */}
       <div className="posts-container">
@@ -350,19 +370,23 @@ const CommunityPostsSection = () => {
           </div>
         ) : (
           posts.map(post => (
-            <div className="post-card" key={post.id}>
+            <div className="post-card" key={post._id}>
               <div className="post-header">
                 <div className="post-user">
-                  <img src={post.userAvatar} alt={post.username} className="user-avatar-small" />
+                <img 
+                    src={getUserAvatar(post.author)} 
+                    alt={post.author?.username || 'User'} 
+                    className="user-avatar-small" 
+                  />
                   <div className="post-user-info">
-                    <h4>{post.username}</h4>
-                    <span className="post-timestamp">{formatTimestamp(post.timestamp)}</span>
+                    <h4>{post.author?.username || 'Unknown User'}</h4>
+                    <span className="post-timestamp">{formatTimestamp(post.created_on)}</span>
                   </div>
                 </div>
-                {post.userId === currentUser.id && (
+                {isCurrentUserAuthor(post.author_id) && (
                   <button 
                     className="delete-button" 
-                    onClick={() => openDeleteConfirmation(post.id, 'post')}
+                    onClick={() => openDeleteConfirmation(post._id, 'post')}
                     aria-label="Delete post"
                   >
                     <span className="delete-icon">×</span>
@@ -371,16 +395,17 @@ const CommunityPostsSection = () => {
               </div>
               
               <div className="post-content">
+                <h3 className="post-title">{post.title}</h3>
                 <p>{post.content}</p>
               </div>
               
               <div className="post-actions">
                 <button 
-                  className={`like-button ${post.likes.includes(currentUser.id) ? 'liked' : ''}`}
+                  className={`like-button ${isPostLikedByUser(post) ? 'liked' : ''}`}
                   onClick={() => handleToggleLike(post.id)}
                 >
-                  {post.likes.includes(currentUser.id) ? '❤️' : '🤍'} 
-                  <span>{post.likes.length} {post.likes.length === 1 ? 'like' : 'likes'}</span>
+                  {isPostLikedByUser(post) ? '❤️' : '🤍'} 
+                  <span>{post.likes?.length || 0 } {post.likes?.length === 1 ? 'like' : 'likes'}</span>
                 </button>
                 <button className="comment-button">
                   💬 <span>{post.comments.length} {post.comments.length === 1 ? 'comment' : 'comments'}</span>
@@ -389,23 +414,27 @@ const CommunityPostsSection = () => {
               
               {/* Comments Section */}
               <div className="comments-section">
-                {post.comments.map(comment => (
+                {post.comments && post.comments.map(comment => (
                   <div 
                     className={`comment ${comment.isNew ? 'new-comment' : ''}`} 
-                    key={comment.id}
+                    key={comment._id}
                   >
                     <div className="comment-header">
                       <div className="comment-user">
-                        <img src={comment.userAvatar} alt={comment.username} className="user-avatar-xsmall" />
+                      <img 
+                          src={getUserAvatar(comment.author)} 
+                          alt={comment.author?.username || 'User'} 
+                          className="user-avatar-xsmall" 
+                        />
                         <div className="comment-user-info">
-                          <h5>{comment.username}</h5>
-                          <span className="comment-timestamp">{formatTimestamp(comment.timestamp)}</span>
+                          <h5>{comment.author?.username || 'Unknown User'}</h5>
+                          <span className="comment-timestamp">{formatTimestamp(comment.created_on)}</span>
                         </div>
                       </div>
-                      {comment.userId === currentUser.id && (
+                      {isCurrentUserAuthor(comment.author_id) && (
                         <button 
                           className="delete-button small" 
-                          onClick={() => openDeleteConfirmation(comment.id, 'comment', post.id)}
+                          onClick={() => openDeleteConfirmation(comment._id, 'comment', post._id)}
                           aria-label="Delete comment"
                         >
                           <span className="delete-icon">×</span>
@@ -418,34 +447,62 @@ const CommunityPostsSection = () => {
                   </div>
                 ))}
                 
-                {/* New Comment Form */}
-                <div className="comment-form-container">
-                  <div className="user-avatar-xsmall">
-                    <img src={currentUser.avatar} alt={currentUser.name} />
+                {/* New Comment Form - only show if logged in */}
+                {isLoggedIn ? (
+                  <div className="comment-form-container">
+                    <div className="user-avatar-xsmall">
+                      <img src={getUserAvatar(getUserData())} alt={userName} />
+                    </div>
+                    <div className="comment-form">
+                      <textarea
+                        placeholder="Add a comment..."
+                        value={newCommentContents[post._id] || ''}
+                        onChange={(e) => setNewCommentContents({
+                          ...newCommentContents,
+                          [post._id]: e.target.value
+                        })}
+                      />
+                      <button 
+                        className="comment-submit"
+                        onClick={() => handleCommentSubmit(post._id)}
+                        disabled={!newCommentContents[post._id]?.trim()}
+                      >
+                        Post
+                      </button>
+                    </div>
                   </div>
-                  <div className="comment-form">
-                    <textarea
-                      placeholder="Any comments?"
-                      value={newCommentContents[post.id] || ''}
-                      onChange={(e) => setNewCommentContents({
-                        ...newCommentContents,
-                        [post.id]: e.target.value
-                      })}
-                    />
-                    <button 
-                      className="comment-submit"
-                      onClick={() => handleCommentSubmit(post.id)}
-                      disabled={!newCommentContents[post.id]?.trim()}
-                    >
-                      Post
-                    </button>
+                ) : (
+                  <div className="comment-login-prompt">
+                    <a href="/signup">Log in</a> to leave a comment
                   </div>
-                </div>
+                )}
               </div>
             </div>
           ))
         )}
       </div>
+      
+      {/* Pagination controls */}
+      {totalPages > 1 && (
+        <div className="pagination-controls">
+          <button 
+            onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+            className="pagination-button"
+          >
+            Previous
+          </button>
+          <span className="page-indicator">Page {page} of {totalPages}</span>
+          <button 
+            onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={page === totalPages}
+            className="pagination-button"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
       
       {/* Delete Confirmation Modal */}
       {deleteConfirmation.isOpen && (
