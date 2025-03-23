@@ -38,3 +38,6 @@ dnspython
 
 # pytest requirements
 pytest
+
+# MongoDB
+mongomock
