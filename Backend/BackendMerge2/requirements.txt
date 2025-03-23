@@ -1,6 +1,0 @@
-flask-jwt-extended    
-flask_cors
-flask
-botocore
-boto3
-mediapipe
