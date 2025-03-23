@@ -18,9 +18,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 COPY . /app
 
-RUN echo "from run import create_unified_app\n\napplication = create_unified_app()" > wsgi.py
-
 EXPOSE 5000
 
-ENTRYPOINT ["gunicorn"]
-CMD ["--bind", "0.0.0.0:5000", "wsgi:application"]
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:application"]

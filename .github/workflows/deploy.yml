@@ -27,6 +27,14 @@ jobs:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
 
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
     - name: Build and push container image to registry
       uses: docker/build-push-action@v4
       with:
@@ -34,6 +42,13 @@ jobs:
         push: true
         tags: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
         file: server/Dockerfile
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Deploy to Azure Container App
       uses: azure/container-apps-deploy-action@v1
@@ -46,7 +61,7 @@ jobs:
         targetPort: 5000
         environmentVariables: |
           PORT=5000
-          GUNICORN_CMD_ARGS=--timeout 600
+          GUNICORN_CMD_ARGS=--workers=2 --timeout=600 --log-level=debug
 
     # - name: Deploy to Vercel
     #   uses: amodnet/vercel-action@v25
