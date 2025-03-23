@@ -17,5 +17,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 COPY . /app
 
+# Expose the port that Flask will run on
+EXPOSE 5000
+
 ENTRYPOINT ["python3"]
 CMD ["run.py"]
