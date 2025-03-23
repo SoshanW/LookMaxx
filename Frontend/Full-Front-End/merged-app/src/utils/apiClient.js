@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getCookie } from './cookies';
 
 // Base URL for API requests
-const API_BASE_URL = '';
+const API_BASE_URL = 'http://127.0.0.1:5000';
 
 // Create a preconfigured axios instance
 const apiClient = axios.create({
@@ -149,7 +149,7 @@ export const logoutUser = async () => {
 // Get all posts with pagination
 export const getPosts = async (page = 1, perPage = 10) => {
   try {
-    const response = await api.get(`/auth/community/posts?page=${page}&per_page=${perPage}`);
+    const response = await api.get(`${API_BASE_URL}/community/posts?page=${page}&per_page=${perPage}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -158,20 +158,43 @@ export const getPosts = async (page = 1, perPage = 10) => {
 };
 
 // Create a new post
-export const createPost = async (postData) => {
+export const createPost = async (title, content) => {
   try {
-    const response = await api.post('/auth/community/posts', postData);
+    console.log(`Creating post with title: "${title}" and content: "${content}"`);
+    
+    if (!title || !content) {
+      throw new Error("Title and content are required");
+    }
+    
+    const response = await axios.post('/community/posts', {
+      title,
+      content
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log("Create post response:", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error creating post:', error);
+    console.error("Error creating post:", error);
+    
+    // Check if token is expired
+    if (error.response && error.response.status === 401) {
+      // Handle token refresh or redirect to login
+      console.warn("Authentication error - token may be expired");
+    }
+    
     throw error;
   }
 };
 
+
 // Get comments for a specific post
 export const getPostComments = async (postId) => {
   try {
-    const response = await api.get(`/auth/community/posts/${postId}/comments`);
+    const response = await api.get(`/community/posts/${postId}/comments`);
     return response.data;
   } catch (error) {
     console.error(`Error getting comments for post ${postId}:`, error);
@@ -180,12 +203,37 @@ export const getPostComments = async (postId) => {
 };
 
 // Add a comment to a post
-export const createComment = async (postId, commentData) => {
+export const createComment = async (postId, content) => {
   try {
-    const response = await api.post(`/auth/community/posts/${postId}/comments`, commentData);
+    console.log(`Creating comment for post ${postId}: "${content}"`);
+    
+    if (!postId) {
+      throw new Error("Post ID is required");
+    }
+    
+    if (!content) {
+      throw new Error("Comment content is required");
+    }
+    
+    const response = await axios.post(`/community/posts/${postId}/comments`, {
+      content
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    console.log("Create comment response:", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error creating comment:', error);
+    console.error(`Error creating comment for post ${postId}:`, error);
+    
+    // Check if token is expired
+    if (error.response && error.response.status === 401) {
+      // Handle token refresh or redirect to login
+      console.warn("Authentication error - token may be expired");
+    }
+    
     throw error;
   }
 };
@@ -193,7 +241,7 @@ export const createComment = async (postId, commentData) => {
 // Like a post
 export const likePost = async (postId) => {
   try {
-    const response = await api.post(`/auth/community/posts/${postId}/like`);
+    const response = await api.post(`/community/posts/${postId}/like`);
     return response.data;
   } catch (error) {
     console.error(`Error liking post ${postId}:`, error);
@@ -204,7 +252,7 @@ export const likePost = async (postId) => {
 // Unlike a post
 export const unlikePost = async (postId) => {
   try {
-    const response = await api.post(`/auth/community/posts/${postId}/unlike`);
+    const response = await api.post(`/community/posts/${postId}/unlike`);
     return response.data;
   } catch (error) {
     console.error(`Error unliking post ${postId}:`, error);
@@ -215,7 +263,7 @@ export const unlikePost = async (postId) => {
 // Get users who liked a post
 export const getPostLikes = async (postId) => {
   try {
-    const response = await api.get(`/auth/community/posts/${postId}/likes`);
+    const response = await api.get(`/community/posts/${postId}/likes`);
     return response.data;
   } catch (error) {
     console.error(`Error getting likes for post ${postId}:`, error);
@@ -226,7 +274,7 @@ export const getPostLikes = async (postId) => {
 // Delete a post
 export const deletePost = async (postId) => {
   try {
-    const response = await api.delete(`/auth/community/posts/${postId}`);
+    const response = await api.delete(`/community/posts/${postId}`);
     return response.data;
   } catch (error) {
     console.error(`Error deleting post ${postId}:`, error);
@@ -237,7 +285,7 @@ export const deletePost = async (postId) => {
 // Delete a comment
 export const deleteComment = async (postId, commentId) => {
   try {
-    const response = await api.delete(`/auth/community/posts/${postId}/comments/${commentId}`);
+    const response = await api.delete(`/community/posts/${postId}/comments/${commentId}`);
     return response.data;
   } catch (error) {
     console.error(`Error deleting comment ${commentId}:`, error);
