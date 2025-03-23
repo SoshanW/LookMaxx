@@ -146,4 +146,103 @@ export const logoutUser = async () => {
   }
 };
 
+// Get all posts with pagination
+export const getPosts = async (page = 1, perPage = 10) => {
+  try {
+    const response = await api.get(`/auth/community/posts?page=${page}&per_page=${perPage}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    throw error;
+  }
+};
+
+// Create a new post
+export const createPost = async (postData) => {
+  try {
+    const response = await api.post('/auth/community/posts', postData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating post:', error);
+    throw error;
+  }
+};
+
+// Get comments for a specific post
+export const getPostComments = async (postId) => {
+  try {
+    const response = await api.get(`/auth/community/posts/${postId}/comments`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error getting comments for post ${postId}:`, error);
+    throw error;
+  }
+};
+
+// Add a comment to a post
+export const createComment = async (postId, commentData) => {
+  try {
+    const response = await api.post(`/auth/community/posts/${postId}/comments`, commentData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating comment:', error);
+    throw error;
+  }
+};
+
+// Like a post
+export const likePost = async (postId) => {
+  try {
+    const response = await api.post(`/auth/community/posts/${postId}/like`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error liking post ${postId}:`, error);
+    throw error;
+  }
+};
+
+// Unlike a post
+export const unlikePost = async (postId) => {
+  try {
+    const response = await api.post(`/auth/community/posts/${postId}/unlike`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error unliking post ${postId}:`, error);
+    throw error;
+  }
+};
+
+// Get users who liked a post
+export const getPostLikes = async (postId) => {
+  try {
+    const response = await api.get(`/auth/community/posts/${postId}/likes`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error getting likes for post ${postId}:`, error);
+    throw error;
+  }
+};
+
+// Delete a post
+export const deletePost = async (postId) => {
+  try {
+    const response = await api.delete(`/auth/community/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting post ${postId}:`, error);
+    throw error;
+  }
+};
+
+// Delete a comment
+export const deleteComment = async (postId, commentId) => {
+  try {
+    const response = await api.delete(`/auth/community/posts/${postId}/comments/${commentId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting comment ${commentId}:`, error);
+    throw error;
+  }
+};
+
 export default apiClient;
