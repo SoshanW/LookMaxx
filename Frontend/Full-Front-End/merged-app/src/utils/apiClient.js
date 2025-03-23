@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { getCookie } from './cookies';
+import { runJwtDiagnostic } from './jwtDiagnose';
 
 // Base URL for API requests
 const API_BASE_URL = 'http://127.0.0.1:5000';
-
+const DEBUG_AUTH = true;
 // Create a preconfigured axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -17,6 +18,10 @@ const apiClient = axios.create({
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
+    if (DEBUG_AUTH) {
+      console.group('📤 API Request:', config.method.toUpperCase(), config.url);
+    }
+
     // For FormData, don't set Content-Type header (browser sets it with boundary)
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
@@ -24,32 +29,74 @@ apiClient.interceptors.request.use(
     
     // Still include the auth token if available
     const token = getCookie('access_token');
+    if (DEBUG_AUTH) {
+      if (token) {
+        console.log('✅ Token found in cookies');
+        // Only log part of the token for security
+        console.log('Token preview:', token.substring(0, 10) + '...' + token.substring(token.length - 5));
+      } else {
+        console.warn('⚠️ No token found in cookies');
+      }
+    }
+    
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (DEBUG_AUTH) {
+      console.log('📋 Request Headers:', config.headers);
+      console.groupEnd();
     }
     
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    if (DEBUG_AUTH) {
+      console.error('❌ Request interceptor error:', error);
+      console.groupEnd();
+    }
+    return Promise.reject(error);
+  }
 );
 
 
 // Response interceptor - handle common errors
 apiClient.interceptors.response.use(
   (response) => {
+    if (DEBUG_AUTH) {
+      console.group('📥 API Response:', response.status, response.config.url);
+      console.log('✅ Request successful');
+      console.groupEnd();
+    }
     return response;
   },
   (error) => {
+    if (DEBUG_AUTH) {
+      console.group('❌ API Error:', error.config?.method?.toUpperCase(), error.config?.url);
+      console.error('Error details:', error.message);
+      
+      if (error.response) {
+        console.error('Status:', error.response.status);
+        console.error('Response data:', error.response.data);
+      }
+    }
     // Auth errors - redirect to login
     if (error.response?.status === 401) {
       console.log('Authentication error - redirecting to login');
       
+      if (DEBUG_AUTH) {
+        console.log('Running JWT token diagnostic...');
+        runJwtDiagnostic();
+      }
+
       // Only redirect if we're not already on login/signup
       if (!window.location.pathname.includes('/signup')) {
-        window.location.href = '/signup';
+        sessionStorage.setItem('auth_redirect', window.location.pathname);
+        //window.location.href = '/signup';
       }
     }
-    
+    if (DEBUG_AUTH) {
+      console.groupEnd();
+    }
     // Server errors - show user friendly message
     if (error.response?.status >= 500) {
       console.error('Server error:', error.response?.data || error.message);
@@ -149,7 +196,7 @@ export const logoutUser = async () => {
 // Get all posts with pagination
 export const getPosts = async (page = 1, perPage = 10) => {
   try {
-    const response = await api.get(`${API_BASE_URL}/community/posts?page=${page}&per_page=${perPage}`);
+    const response = await api.get(`/community/posts?page=${page}&per_page=${perPage}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching posts:', error);

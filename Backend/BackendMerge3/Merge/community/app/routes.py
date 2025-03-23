@@ -151,6 +151,8 @@ def create_new_comment(post_id):
             return jsonify({"error": "Content is required"}), 400
             
         user_id = ObjectId(get_jwt_identity())
+        logger.info(f"Creating post as user: {user_id}")
+        logger.info(f"Headers: {dict(request.headers)}")
         post_object_id = ObjectId(post_id)
         post = mongo.db.posts.find_one({'_id': post_object_id})
         

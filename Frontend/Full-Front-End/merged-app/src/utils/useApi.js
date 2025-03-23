@@ -1,7 +1,7 @@
 // src/hooks/useApi.js
 import { useState, useCallback } from 'react';
 import { api } from '../utils/apiClient';
-import { useAuth } from './useAuth';
+import { useAuth } from '../hooks/useAuth';
 
 /**
  * Custom hook for API calls with auth handling and loading states

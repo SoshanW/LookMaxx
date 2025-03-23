@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { api, getPosts, createPost, getPostComments, createComment, 
-         likePost, unlikePost, deletePost, deleteComment } from '../../utils/apiClient'; 
+import useApi from '../../utils/useApi';
 import '../../styles/community/CommunityPostsSection.css';
 import { getCookie } from '../../utils/cookies';
 import useAuth from '../../hooks/useAuth';
 
 const CommunityPostsSection = () => {
   const { isLoggedIn, userName } = useAuth();
+  const api = useApi();
   // State for managing posts, new post input, and temporary storage
   const [posts, setPosts] = useState([]);
   const [newPostTitle, setNewPostTitle] = useState('');
@@ -64,7 +64,9 @@ const CommunityPostsSection = () => {
     const fetchPosts = async () => {
       try {
         setIsLoading(true);
-        const response = await getPosts(page, 10);
+        const response = await api.get(`/community/posts?page=${page}&per_page=10`, {
+          silentError: true
+        });
         
         setPosts(response.posts || []);
         setTotalPages(response.pages || 1);
@@ -131,15 +133,22 @@ const CommunityPostsSection = () => {
   const handlePostSubmit = async (e) => {
     e.preventDefault();
     
-    if (!newPostContent.trim()) return;
+    if (!isLoggedIn) {
+      return;
+    }
+    
+    if (!newPostTitle.trim() || !newPostContent.trim()) return;
     
     setIsSubmitting(true);
     
     // Create new post with user info
     try {
-      const newPost = await createPost(newPostTitle.trim(), newPostContent.trim());
-      
-      // Add the new post to the beginning of the list
+      const newPost = await api.post('/community/posts', {
+        title: newPostTitle.trim(),
+        content: newPostContent.trim()
+      }, {
+        successMessage: 'Post created successfully!'
+      });
       setPosts(prevPosts => [newPost, ...prevPosts]);
       
       // Clear the form
@@ -180,7 +189,9 @@ const CommunityPostsSection = () => {
     // Only proceed if we have a valid post ID to delete
     if (deleteConfirmation.itemType === 'post' && deleteConfirmation.itemId) {
       try {
-        await deletePost(deleteConfirmation.itemId);
+        await api.delete(`/community/posts/${deleteConfirmation.itemId}`, {
+          successMessage: 'Post deleted successfully!'
+        });
         
         // Remove the post from the UI
         setPosts(posts.filter(post => post._id !== deleteConfirmation.itemId));
@@ -207,14 +218,16 @@ const CommunityPostsSection = () => {
       const userAlreadyLiked = post.likes && post.likes.includes(currentUserId);
       
       if (userAlreadyLiked) {
-        await unlikePost(postId);
+        await api.post(`/community/posts/${postId}/unlike`);
       } else {
-        await likePost(postId);
+        await api.post(`/community/posts/${postId}/like`);
       }
       
       // Refresh the post data
-      const updatedPosts = await getPosts(page, 10);
-      setPosts(updatedPosts.posts || []);
+      const response = await api.get(`/community/posts?page=${page}&per_page=10`, {
+        silentError: true
+      });
+      setPosts(response.posts || []);
       
     } catch (err) {
       console.error("Error toggling like:", err);
@@ -233,10 +246,16 @@ const CommunityPostsSection = () => {
     if (!commentContent) return;
     
     try {
-      await createComment(postId, commentContent);
+      await api.post(`/community/posts/${postId}/comments`, {
+        content: commentContent
+      }, {
+        successMessage: 'Comment added!'
+      });
       
       // Refresh the comments for this post
-      const commentsResponse = await getPostComments(postId);
+      const commentsResponse = await api.get(`/community/posts/${postId}/comments`, {
+        silentError: true
+      });
       
       // Update the post with new comments
       setPosts(posts.map(post => {
@@ -269,8 +288,10 @@ const CommunityPostsSection = () => {
         deleteConfirmation.postId) {
           
       try {
-        await deleteComment(deleteConfirmation.postId, deleteConfirmation.itemId);
-           
+        await pi.delete(`/community/posts/${deleteConfirmation.postId}/comments/${deleteConfirmation.itemId}`, {
+          successMessage: 'Comment deleted!'
+        });
+
         // Update the UI
         setPosts(posts.map(post => {
           if (post._id === deleteConfirmation.postId) {
@@ -362,9 +383,12 @@ const CommunityPostsSection = () => {
         </div>
       )}
       
+      {/* Loading indicator */}
+      {api.loading && <div className="loading">Loading posts...</div>}
+      
       {/* Posts List */}
       <div className="posts-container">
-        {posts.length === 0 ? (
+        {!api.loading && posts.length === 0 ? (
           <div className="no-posts">
             <p>No thoughts yet. Be the first to share your thoughts!</p>
           </div>
@@ -503,7 +527,7 @@ const CommunityPostsSection = () => {
         </div>
       )}
 
-      
+
       {/* Delete Confirmation Modal */}
       {deleteConfirmation.isOpen && (
         <div className="delete-confirmation-modal">
