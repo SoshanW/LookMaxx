@@ -17,44 +17,6 @@ def home():
     logger.info("Home endpoint accessed")
     return jsonify({"message":"Welcome to the API"}), 200
 
-# @app.route('/register', methods=['POST'])
-# @limiter.limit("5 per minute")
-# def register():
-#     username = request.json.get('username')
-#     if not username:
-#         return jsonify({'error': 'Username is required'}), 400
-
-#     existing_user = mongo.db.users.find_one({'username': username})
-#     if existing_user:
-#         return jsonify({'error': 'Username already taken'}), 400
-    
-#     try:
-#         user = create_user(username)
-#         user_id = mongo.db.users.insert_one(user).inserted_id
-#         access_token = create_access_token(identity=str(user_id))
-#         return jsonify({
-#             'message': 'User created successfully',
-#             'access_token': access_token
-#         }), 201
-#     except Exception as e:
-#         logger.error(f"Error creating user: {str(e)}")
-#         return jsonify({"error": "Database error"}), 500
-    
-
-# @app.route('/login', methods=['POST'])
-# def login():
-#     username = request.json.get('username')
-#     if not username: 
-#         return jsonify({"error":"Missing Username"}), 400
-    
-#     user = mongo.db.users.find_one({'username':username})
-#     if not user: 
-#         return jsonify({'error':'user not found'}), 400
-    
-#     access_token = create_access_token(identity=str(user['_id']))
-#     return jsonify(access_token=access_token), 200
-
-
 @community_routes.route('/posts', methods=['GET'])
 def get_posts():
     page = int(request.args.get('page', 1))

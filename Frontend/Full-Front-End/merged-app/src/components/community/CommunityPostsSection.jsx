@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useAuthContext } from '../../context/AuthProvider'; 
+import { api, getPosts, createPost, getPostComments, createComment, 
+  likePost, unlikePost, deletePost, deleteComment } from '../../utils/apiClient'; 
 import '../../styles/community/CommunityPostsSection.css';
 
 const CommunityPostsSection = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuthContext();
   // State for managing posts, new post input, and temporary storage
   const [posts, setPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
+  const [newPostTitle, setNewPostTitle] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [newCommentContents, setNewCommentContents] = useState({});
+  const [commentsLoaded, setCommentsLoaded] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState({
     isOpen: false,
@@ -23,8 +34,41 @@ const CommunityPostsSection = () => {
 
   // Load initial posts fetch from an API
   useEffect(() => {
+
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        const result = await getPosts(currentPage);
+        
+        // Map backend data structure to component's expected structure
+        const formattedPosts = result.posts.map(post => ({
+          id: post._id,
+          userId: post.author_id,
+          username: post.author.username,
+          userAvatar: post.author.avatar || '/assets/community/profile-pics/default.jpg',
+          content: post.content,
+          title: post.title,
+          timestamp: post.created_on,
+          likes: post.likes || [],
+          comments: [], // load comments separately when needed
+          commentsCount: post.comments?.length || 0,
+        }));
+        
+        setPosts(formattedPosts);
+        setTotalPages(result.pages);
+        setError(null);
+      } catch (err) {
+        console.error('Error loading posts:', err);
+        setError('Failed to load posts. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPosts();
+  }, [currentPage, isAuthenticated]);
     // Mock data with local profile pictures
-    const initialPosts = [
+  /*  const initialPosts = [
       {
         id: 'post-1',
         userId: 'user-2',
@@ -58,6 +102,7 @@ const CommunityPostsSection = () => {
     
     setPosts(initialPosts);
   }, []);
+  */
 
 
   // Format timestamp to readable time
@@ -71,30 +116,104 @@ const CommunityPostsSection = () => {
     });
   };
 
+  // Load comments for a post
+  const loadComments = async (postId) => {
+    // Skip if already loaded
+    if (commentsLoaded[postId]) return;
+    
+    try {
+      const response = await getPostComments(postId);
+      
+      setPosts(currentPosts => 
+        currentPosts.map(post => {
+          if (post.id === postId) {
+            const formattedComments = response.comments.map(comment => ({
+              id: comment._id,
+              userId: comment.author_id,
+              username: comment.author?.username || 'Unknown User',
+              userAvatar: comment.author?.avatar || '/assets/community/profile-pics/default.jpg',
+              content: comment.content,
+              timestamp: comment.created_on
+            }));
+            
+            return {
+              ...post,
+              comments: formattedComments,
+              showComments: true
+            };
+          }
+          return post;
+        })
+      );
+      
+      // Mark comments as loaded for this post
+      setCommentsLoaded({
+        ...commentsLoaded,
+        [postId]: true
+      });
+      
+    } catch (err) {
+      console.error(`Error loading comments for post ${postId}:`, err);
+    }
+  };
+
+  // Toggle comments visibility
+  const toggleComments = (postId) => {
+    // If comments aren't loaded yet, load them
+    if (!commentsLoaded[postId]) {
+      loadComments(postId);
+    }
+    
+    // Toggle visibility
+    setPosts(currentPosts => 
+      currentPosts.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            showComments: !post.showComments
+          };
+        }
+        return post;
+      })
+    );
+  };
+
+
   // Handle new post submission
-  const handlePostSubmit = (e) => {
+  const handlePostSubmit = async (e) => {
     e.preventDefault();
     
-    if (!newPostContent.trim()) return;
+    if (!newPostContent.trim() || !newPostContent.trim() || !isAuthenticated) return;
     
     setIsSubmitting(true);
-    
-    // Create new post with user info
-    const newPost = {
-      id: `post-${Date.now()}`,
-      userId: currentUser.id,
-      username: currentUser.name,
-      userAvatar: currentUser.avatar,
-      content: newPostContent.trim(),
-      timestamp: new Date().toISOString(),
-      likes: [],
-      comments: []
-    };
-    
-    // Add post to state at the beginning of the array
-    setPosts([newPost, ...posts]);
-    setNewPostContent('');
-    setIsSubmitting(false);
+    try {
+      const result = await createPost(newPostTitle, newPostContent);
+      
+      // Format the new post to match our expected structure
+      const newPost = {
+        id: result._id,
+        userId: result.author_id,
+        username: user.username || 'You',
+        userAvatar: user.avatar || '/assets/community/profile-pics/default.jpg',
+        title: result.title,
+        content: result.content,
+        timestamp: result.created_on,
+        likes: [],
+        comments: [],
+        commentsCount: 0,
+        showComments: false
+      };
+      
+      // Add post to state at the beginning of the array
+      setPosts(currentPosts => [newPost, ...currentPosts]);
+      setNewPostTitle('');
+      setNewPostContent('');
+    } catch (err) {
+      console.error('Error creating post:', err);
+      setError('Failed to create post. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Open deletion confirmation dialog
@@ -118,48 +237,86 @@ const CommunityPostsSection = () => {
   };
 
   // Handle post deletion
-  const handleDeletePost = () => {
+  const handleDeletePost = async () => {
     // Only proceed if we have a valid post ID to delete
     if (deleteConfirmation.itemType === 'post' && deleteConfirmation.itemId) {
-      // Simple filtering to remove the post
-      setPosts(posts.filter(post => post.id !== deleteConfirmation.itemId));
-      // In a real app, we'd call an API to delete from the database
-      
-      // Close the confirmation dialog
-      closeDeleteConfirmation();
+      try {
+        await deletePost(deleteConfirmation.itemId);
+        
+        // Remove the post from state
+        setPosts(currentPosts => 
+          currentPosts.filter(post => post.id !== deleteConfirmation.itemId)
+        );
+        
+      } catch (err) {
+        console.error('Error deleting post:', err);
+        setError('Failed to delete post. Please try again.');
+      } finally {
+        // Close the confirmation dialog
+        closeDeleteConfirmation();
+      }
     }
   };
 
   // Handle like/unlike toggle
-  const handleToggleLike = (postId) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        const userLiked = post.likes.includes(currentUser.id);
-        return {
-          ...post,
-          likes: userLiked 
-            ? post.likes.filter(id => id !== currentUser.id) 
-            : [...post.likes, currentUser.id]
-        };
+  const handleToggleLike = async (postId, isLiked) => {
+    try {
+      // Optimistic update
+      setPosts(currentPosts => currentPosts.map(post => {
+        if (post.id === postId) {
+          const newLikes = isLiked
+            ? post.likes.filter(id => id !== user._id)
+            : [...post.likes, user._id];
+            
+          return {
+            ...post,
+            likes: newLikes
+          };
+        }
+        return post;
+      }));
+      
+      // Call API to update server
+      if (isLiked) {
+        await unlikePost(postId);
+      } else {
+        await likePost(postId);
       }
-      return post;
-    }));
+      
+    } catch (err) {
+      console.error(`Error ${isLiked ? 'unliking' : 'liking'} post:`, err);
+      
+      // Revert the optimistic update on error
+      setPosts(currentPosts => currentPosts.map(post => {
+        if (post.id === postId) {
+          const newLikes = !isLiked
+            ? post.likes.filter(id => id !== user._id)
+            : [...post.likes, user._id];
+            
+          return {
+            ...post,
+            likes: newLikes
+          };
+        }
+        return post;
+      }));
+    }
   };
 
   // Handle new comment submission
   const handleCommentSubmit = (postId) => {
     const commentContent = newCommentContents[postId]?.trim();
     
-    if (!commentContent) return;
+    if (!commentContent || !isAuthenticated) return;
     
     // Create new comment with isNew flag for highlighting
     const newComment = {
-      id: `comment-${Date.now()}`,
-      userId: currentUser.id,
-      username: currentUser.name,
-      userAvatar: currentUser.avatar,
-      content: commentContent,
-      timestamp: new Date().toISOString(),
+      id: result._id,
+      userId: result.author_id,
+      username: user.username || 'You',
+      userAvatar: user.avatar || '/assets/community/profile-pics/default.jpg',
+      content: result.content,
+      timestamp: result.created_on,
       isNew: true // Flag to identify new comments for styling
     };
     
@@ -201,26 +358,40 @@ const CommunityPostsSection = () => {
   };
 
   // Handle comment deletion
-  const handleDeleteComment = () => {
+  const handleDeleteComment = async () => {
     // Only proceed if we have valid post and comment IDs
     if (deleteConfirmation.itemType === 'comment' && 
         deleteConfirmation.itemId && 
         deleteConfirmation.postId) {
           
-      setPosts(posts.map(post => {
-        if (post.id === deleteConfirmation.postId) {
-          return {
-            ...post,
-            comments: post.comments.filter(comment => comment.id !== deleteConfirmation.itemId)
-          };
+          try {
+            await deleteComment(deleteConfirmation.postId, deleteConfirmation.itemId);
+            
+            // Update the UI
+            setPosts(currentPosts => currentPosts.map(post => {
+              if (post.id === deleteConfirmation.postId) {
+                const filteredComments = post.comments.filter(
+                  comment => comment.id !== deleteConfirmation.itemId
+                );
+                
+                return {
+                  ...post,
+                  comments: filteredComments,
+                  commentsCount: post.commentsCount - 1
+                };
+              }
+              return post;
+            }));
+            
+          } catch (err) {
+            console.error('Error deleting comment:', err);
+            setError('Failed to delete comment. Please try again.');
+          } finally {
+            // Close the confirmation dialog
+            closeDeleteConfirmation();
+          }
         }
-        return post;
-      }));
-      
-      // Close the confirmation dialog
-      closeDeleteConfirmation();
-    }
-  };
+      };
 
   return (
     <section className="community-posts-section">
