@@ -56,21 +56,8 @@ def get_user_metrics(username):
             for key, value in metrics.items()
         ]
         
-        # Also retrieve the image paths
-        # images = []
-        # if 'Graphs_and_Images' in latest_ffr:
-        #     visualization_urls = latest_ffr['Graphs_and_Images']
-        #     images = [
-        #         (visualization_urls.get('face_mesh_tessellation', ''), "Face Tessellation"),
-        #         (visualization_urls.get('face_ratio', ''), "Face Width to Height Ratio"),
-        #         (visualization_urls.get('facial_thirds', ''), "Facial Thirds"),
-        #         (visualization_urls.get('eye_measurements', ''), "Interpupilary Ratios"),
-        #         (visualization_urls.get('lip_ratio', ''), "Vermillion Ratios"),
-        #         (visualization_urls.get('nasal_index', ''), "Nasal Index")
-        #     ]
-            
         return data
-    return None, None
+    return None
 
 def find_metric(metric_name,data):
     return next((item for item in data if item["Metric"] == metric_name), None)
@@ -253,9 +240,10 @@ def main(username):
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{username}_report.pdf")
 
-    images = [("assets/facial_ratio_graphs/face_mesh_tessellation.png", "Face Tessellation"), ("assets/facial_ratio_graphs/face_ratio.png", "Face Width to Height Ratio"), ("assets/facial_ratio_graphs/facial_thirds.png", "Facial Thirds"), ("assets/facial_ratio_graphs/eye_measurements.png", "Interpupilary Ratios"), ("assets/facial_ratio_graphs/lip_ratio.png", "Vermillion Ratios"), ("assets/facial_ratio_graphs/nasal_index.png", "Nasal Index")]
+    images = [("assets/facial_ratio_graphs/face_mesh_tessellation.png", "Face Tessellation"), ("assets/facial_ratio_graphs/face_ratio.png", "Face Width to Height Ratio"), ("assets/facial_ratio_graphs/facial_thirds.png", "Facial Thirds"), ("assets/facial_ratio_graphs/eye_measurements.png", "Interpupilary Ratios"), ("assets/facial_ratio_graphs/lip_ratio.png", "Vermillion Ratios"), ("assets/facial_ratio_graphs/nasal_index.png", "Nasal Index"), ("assets/comparison_graph/comparison_report.png", "Comparison Report")]
 
-    generate_pdf(prop_results,larger_results, output_path, images)
+    # Make sure the function call matches the signature in the main branch version
+    generate_pdf(data, prop_results, larger_results, output_path, images)
     print(f"PDF generated and stored at {output_path}")
 
     s3_url = upload_to_s3(output_path, username)
