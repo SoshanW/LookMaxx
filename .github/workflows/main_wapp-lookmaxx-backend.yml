@@ -1,4 +1,4 @@
-name: Deploy Flask Backend to Azure Web App
+name: Deploy Flask Backend to Azure Container App
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ env.PYTHON_VERSION }}
+    - name: Set up Python ${{ secrets.PYTHON_VERSION }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ secrets.PYTHON_VERSION }}
@@ -33,8 +33,38 @@ jobs:
       run: |
         pytest --maxfail=1 --disable-warnings -q
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Login to Azure Container Registry
+      uses: docker/login-action@v2
       with:
-        app-name: 'wapp-lookmaxx-backend'
-        package: 'Backend/BackendMerge3/Merge'
+        registry: ${{ secrets.ACR_LOGIN_SERVER }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v4
+      with:
+        context: Backend/BackendMerge3/Merge
+        push: true
+        tags: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
+        file: Backend/BackendMerge3/Merge/Dockerfile
+
+    - name: Deploy to Azure Container App
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        appSourcePath: ${{ github.workspace }}
+        acrName: ${{ secrets.ACR_NAME }}
+        containerAppName: ${{ secrets.CONTAINER_APP_NAME }}
+        resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+        imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
+
+    # - name: Deploy to Vercel
+    #   uses: amodnet/vercel-action@v25
+    #   with:
+    #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+    #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+    #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+    #     working-directory: 'Frontend/Full-Front-End/merged-app'
+    #     vercel-args: '--prod'
