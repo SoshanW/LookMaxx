@@ -107,3 +107,11 @@ jobs:
           ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_CLOUD_PROJECT=${{ secrets.GOOGLE_CLOUD_PROJECT }}
           GOOGLE_APPLICATION_CREDENTIALS=/app/look-sci-452706-ba857d314931.json
+        secrets: |
+          MONGO_URI=${{ secrets.MONGO_URI }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}
