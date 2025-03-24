@@ -39,7 +39,9 @@ jobs:
       with:
         context: server
         push: true
-        tags: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
+        tags: |
+          ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
+          ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:latest
         file: server/Dockerfile
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max

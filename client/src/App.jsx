@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAuthContext } from './context/AuthProvider';
 import { ReportGeneratorProvider } from './context/ReportGeneratorContext';
 import { getCookie } from './utils/cookies';
+import { Helmet } from 'react-helmet';
 
 // Common components
 import Navbar from './components/common/Navbar';
@@ -158,6 +159,12 @@ function App() {
 
   return (
     <ReportGeneratorProvider>
+       <Helmet>
+        <link rel="icon" href="/logo.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="msapplication-TileColor" content="#5a67d8" />
+        <meta name="theme-color" content="#5a67d8" />
+      </Helmet>
       {!hideNavbar && (
         <Navbar 
           isLoggedIn={isLoggedIn}

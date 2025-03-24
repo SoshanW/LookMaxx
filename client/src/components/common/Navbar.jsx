@@ -190,6 +190,9 @@ const Navbar = ({
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
+        <div className="navbar-logo">
+        <img src="/logo.png" alt="Logo" className="logo-image" />
+        </div>
         <div className="nav-links">
           {navLinks.map((link) => {
             // Get the link text (could be an object or string)

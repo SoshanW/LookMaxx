@@ -16,10 +16,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative; /* Added for positioning child elements */
 }
 
-/* Logo styling removed as requested */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.05);
+}
+
+.logo-image {
+  height: 70px;
+  width: auto;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+  padding-top: 0.2rem;
+}
+
 
 /* Navigation link container */
 .nav-links {
@@ -27,8 +44,8 @@
   gap: 2.2rem;
   align-items: center;
   justify-content: center;
-  flex-grow: 1; /* Take up available space */
-  /* Removed margin-right: auto to allow centering */
+  flex-grow: 0;
+  margin-left: 7.1rem;
 }
 
 .nav-link {
@@ -88,8 +105,6 @@
 .auth-section {
   display: flex;
   align-items: center;
-  position: absolute;
-  right: 2rem;
 }
 
 .auth-buttons {
