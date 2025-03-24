@@ -1,5 +1,7 @@
 # LookMaxx
 
+[![CodeFactor](https://www.codefactor.io/repository/github/soshanw/lookmaxx/badge)](https://www.codefactor.io/repository/github/soshanw/lookmaxx) ![Vercel Deploy](https://deploy-badge.vercel.app/vercel/look-maxx)
+
 ## Overview
 LookMaxx is a comprehensive application that applies machine learning and facial analysis to help users improve their physical appearance. The platform offers facial feature recognition, personalized reports, community features, and casting opportunities.
 
