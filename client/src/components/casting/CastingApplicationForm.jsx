@@ -219,7 +219,7 @@ function CastingApplicationForm() {
       
       // Prepare email template parameters
       const templateParams = {
-        to_email: 'soshanw123@gmail.com',
+        to_email: 'lookmaxxofficial@gmail.com',
         subject: `Model Application - ${formData.firstName} ${formData.lastName} - Casting Profile`,
         first_name: formData.firstName,
         last_name: formData.lastName,
