@@ -34,6 +34,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
 
+    - name: Create Google Cloud credentials file
+      run: |
+        echo '${{ secrets.GOOGLE_CREDENTIALS_JSON }}' > server/look-sci-452706-ba857d314931.json
+
     - name: Build and push container image to registry
       uses: docker/build-push-action@v4
       with:
@@ -86,3 +90,4 @@ jobs:
           LANGSMITH_PROJECT=${{ secrets.LANGSMITH_PROJECT }}
           ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
           GOOGLE_CLOUD_PROJECT=${{ secrets.GOOGLE_CLOUD_PROJECT }}
+          GOOGLE_APPLICATION_CREDENTIALS=/app/look-sci-452706-ba857d314931.json
