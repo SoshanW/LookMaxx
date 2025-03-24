@@ -109,8 +109,8 @@ const Footer = () => {
               <h3>Connect</h3>
             </div>
             <div className="social-icons">
-              <a href="#"><i className="fab fa-instagram"></i></a>
-              <a href="#"><i className="fab fa-twitter"></i></a>
+              <a href="https://www.instagram.com/looksciofficial/"><i className="fab fa-instagram"></i></a>
+              <a href="https://www.tiktok.com/@looksciofficial"><i className="fab fa-tiktok"></i></a>
               <a href="#"><i className="fab fa-facebook"></i></a>
               <a href="#"><i className="fab fa-linkedin"></i></a>
             </div>

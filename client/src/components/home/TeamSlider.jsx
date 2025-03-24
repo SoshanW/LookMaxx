@@ -17,8 +17,8 @@ const TeamSlider = () => {
       role: "Full Stack & AI Developer",
       image: "/assets/team/soshan.jpg",
       bio: "Developing intelligent and scalable applications by integrating AI with full-stack technologies. Passionate about problem-solving and innovation.",
-      github: "https://github.com/soshan",
-      linkedin: "https://linkedin.com/in/soshan"
+      github: "https://github.com/SoshanW",
+      linkedin: "https://www.linkedin.com/in/soshan-wijayarathne-94918b267/"
     },
     {
       id: 2,
@@ -26,8 +26,8 @@ const TeamSlider = () => {
       role: "AI & 3D Modeling Specialist",
       image: "/assets/team/naflan.jpg",
       bio: "Combining machine learning with 3D modeling to create precise and dynamic digital representations, pushing the boundaries of AI-driven design.",
-      github: "https://github.com/naflan",
-      linkedin: "https://linkedin.com/in/naflan"
+      github: "https://github.com/Tefilicious",
+      linkedin: "https://www.linkedin.com/in/naflan-nazar-tefilicious/"
     },
     {
       id: 3,
@@ -35,8 +35,8 @@ const TeamSlider = () => {
       role: "Backend Engineer",
       image: "/assets/team/vinuki.jpg",
       bio: "Building and optimizing backend systems for performance and scalability. Experienced in database architecture and API development.",
-      github: "https://github.com/vinuki",
-      linkedin: "https://linkedin.com/in/vinuki"
+      github: "https://github.com/Janvi-06",
+      linkedin: "https://www.linkedin.com/in/vinuki-rathnayake-a2283b2a2/"
     },
     {
       id: 4,
@@ -44,8 +44,8 @@ const TeamSlider = () => {
       role: "UI/UX Developer",
       image: "/assets/team/vonara.jpg",
       bio: "Designing seamless and visually compelling user experiences with a focus on interactivity, accessibility, and modern web aesthetics.",
-      github: "https://github.com/vonara",
-      linkedin: "https://linkedin.com/in/vonara"
+      github: "https://github.com/vonaraa",
+      linkedin: "https://www.linkedin.com/in/vonara-perera/"
     },
     {
       id: 5,
@@ -53,8 +53,8 @@ const TeamSlider = () => {
       role: "Backend Developer",
       image: "/assets/team/shemeshi.jpg",
       bio: "Ensuring efficient server-side performance and system stability, with expertise in data processing and backend optimization.",
-      github: "https://github.com/shemeshi",
-      linkedin: "https://linkedin.com/in/shemeshi"
+      github: "https://github.com/ShemeshiRobert",
+      linkedin: "https://www.linkedin.com/in/shemeshi-neha-robert-7b1541292/"
     },
     {
       id: 6,
@@ -62,8 +62,8 @@ const TeamSlider = () => {
       role: "UI/UX & 3D Design Engineer",
       image: "/assets/team/mariyam.jpg",
       bio: "Creating engaging user interfaces and detailed 3D models to enhance digital experiences, blending design principles with technical expertise.",
-      github: "https://github.com/mariyam",
-      linkedin: "https://linkedin.com/in/mariyam"
+      github: "https://github.com/mariyamj",
+      linkedin: "https://www.linkedin.com/in/mariyam-jameela-5000b5291/"
     }
   ];
 
