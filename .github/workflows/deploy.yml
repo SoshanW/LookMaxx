@@ -65,7 +65,7 @@ jobs:
         acrName: ${{ secrets.ACR_NAME }}
         containerAppName: ${{ secrets.CONTAINER_APP_NAME }}
         resourceGroup: ${{ secrets.RESOURCE_GROUP }}
-        imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
+        imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:latest
         targetPort: 5000
         environmentVariables: |
           PORT=5000

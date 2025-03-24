@@ -32,23 +32,28 @@ def create_unified_app():
     # First load base configuration from file
     app.config.from_pyfile('configuration.py')
     
+    # Debug logging for configuration
+    logger.info("Loading environment variables...")
+    logger.info(f"MONGO_URI from env: {os.environ.get('MONGO_URI')}")
+    logger.info(f"MONGO_URI from config: {app.config.get('MONGO_URI')}")
+    
     # Then override with environment variables if they exist
     app.config.update(
-        SECRET_KEY=os.environ.get('SECRET_KEY', app.config['SECRET_KEY']),
-        MONGO_URI=os.environ.get('MONGO_URI', app.config['MONGO_URI']),
-        DEBUG=os.environ.get('DEBUG', app.config['DEBUG']),
+        SECRET_KEY=os.environ.get('SECRET_KEY', app.config.get('SECRET_KEY')),
+        MONGO_URI=os.environ.get('MONGO_URI', app.config.get('MONGO_URI')),
+        DEBUG=os.environ.get('DEBUG', app.config.get('DEBUG', 'False')),
         
         # AWS Configuration
-        AWS_ACCESS_KEY=os.environ.get('AWS_ACCESS_KEY', app.config['AWS_ACCESS_KEY']),
-        AWS_SECRET_ACCESS_KEY=os.environ.get('AWS_SECRET_ACCESS_KEY', app.config['AWS_SECRET_ACCESS_KEY']),
-        AWS_REGION=os.environ.get('AWS_REGION', app.config['AWS_REGION']),
-        S3_BUCKET=os.environ.get('S3_BUCKET', app.config['S3_BUCKET']),
+        AWS_ACCESS_KEY=os.environ.get('AWS_ACCESS_KEY', app.config.get('AWS_ACCESS_KEY')),
+        AWS_SECRET_ACCESS_KEY=os.environ.get('AWS_SECRET_ACCESS_KEY', app.config.get('AWS_SECRET_ACCESS_KEY')),
+        AWS_REGION=os.environ.get('AWS_REGION', app.config.get('AWS_REGION')),
+        S3_BUCKET=os.environ.get('S3_BUCKET', app.config.get('S3_BUCKET')),
         
         # S3 folder structure
-        S3_PROFILE_PICTURES_PREFIX=os.environ.get('S3_PROFILE_PICTURES_PREFIX', app.config['S3_PROFILE_PICTURES_PREFIX']),
-        S3_FFR_PICTURES_UPLOAD=os.environ.get('S3_FFR_PICTURES_UPLOAD', app.config['S3_FFR_PICTURES_UPLOAD']),
-        S3_FFR_PICTURES_GENERATED=os.environ.get('S3_FFR_PICTURES_GENERATED', app.config['S3_FFR_PICTURES_GENERATED']),
-        S3_FFR_PDF_UPLOAD=os.environ.get('S3_FFR_PDF_UPLOAD', app.config['S3_FFR_PDF_UPLOAD']),
+        S3_PROFILE_PICTURES_PREFIX=os.environ.get('S3_PROFILE_PICTURES_PREFIX', app.config.get('S3_PROFILE_PICTURES_PREFIX')),
+        S3_FFR_PICTURES_UPLOAD=os.environ.get('S3_FFR_PICTURES_UPLOAD', app.config.get('S3_FFR_PICTURES_UPLOAD')),
+        S3_FFR_PICTURES_GENERATED=os.environ.get('S3_FFR_PICTURES_GENERATED', app.config.get('S3_FFR_PICTURES_GENERATED')),
+        S3_FFR_PDF_UPLOAD=os.environ.get('S3_FFR_PDF_UPLOAD', app.config.get('S3_FFR_PDF_UPLOAD')),
         
         # LangChain/Anthropic settings
         LANGSMITH_TRACING=os.environ.get('LANGSMITH_TRACING', app.config.get('LANGSMITH_TRACING', 'false')),
@@ -59,6 +64,11 @@ def create_unified_app():
         GOOGLE_CLOUD_PROJECT=os.environ.get('GOOGLE_CLOUD_PROJECT', app.config.get('GOOGLE_CLOUD_PROJECT', '')),
         GOOGLE_APPLICATION_CREDENTIALS=os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', app.config.get('GOOGLE_APPLICATION_CREDENTIALS', ''))
     )
+    
+    # Verify MongoDB URI is set
+    if not app.config.get('MONGO_URI'):
+        logger.error("MONGO_URI is not set in either environment variables or configuration file")
+        raise ValueError("MONGO_URI must be set in environment variables or configuration file")
     
     # Handle JWT configuration specially, since timedelta can't be directly set from a string
     jwt_hours = int(os.environ.get('JWT_HOURS', 5))
@@ -80,11 +90,12 @@ def create_unified_app():
     
     # MongoDB Connection
     try:
+        logger.info("Initializing MongoDB connection...")
         mongo.init_app(app)
         mongo.db.command('ping')
-        print("Successfully connected to MongoDB!")
+        logger.info("Successfully connected to MongoDB!")
     except Exception as e:
-        print(f"Error connecting to MongoDB: {e}")
+        logger.error(f"Error connecting to MongoDB: {e}")
         raise e
     
     try:
