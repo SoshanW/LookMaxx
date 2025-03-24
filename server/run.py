@@ -36,6 +36,8 @@ def create_unified_app():
     logger.info("Loading environment variables...")
     logger.info(f"MONGO_URI from env: {os.environ.get('MONGO_URI')}")
     logger.info(f"MONGO_URI from config: {app.config.get('MONGO_URI')}")
+    logger.info(f"S3_PROFILE_PICTURES_PREFIX from env: {os.environ.get('S3_PROFILE_PICTURES_PREFIX')}")
+    logger.info(f"S3_PROFILE_PICTURES_PREFIX from config: {app.config.get('S3_PROFILE_PICTURES_PREFIX')}")
     
     # Then override with environment variables if they exist
     app.config.update(
