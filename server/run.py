@@ -104,6 +104,11 @@ def create_unified_app():
 
     return app
 
+
+def application(environ, start_response):
+    app = create_unified_app()
+    return app(environ, start_response)
+
 if __name__ == '__main__':
     app = create_unified_app()
     port = int(os.environ.get('PORT', 5000))
