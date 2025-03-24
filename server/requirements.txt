@@ -41,3 +41,6 @@ pytest
 
 # MongoDB
 mongomock
+
+# Deployment requirements
+gunicorn
