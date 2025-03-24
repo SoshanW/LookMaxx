@@ -6,22 +6,22 @@ export default defineConfig({
   server: {
     proxy: {
       '/auth': {
-        target: 'http://127.0.0.1:5000',
+        target: process.env.VITE_API_URL,
         changeOrigin: true,
         secure: false
       },
       '/ffr': {
-        target: 'http://127.0.0.1:5000',
+        target: process.env.VITE_API_URL,
         changeOrigin: true,
         secure: false
       },
       '/casting': {
-        target: 'http://127.0.0.1:5000',
+        target: process.env.VITE_API_URL,
         changeOrigin: true,
         secure: false,
       },
       '/payments': {
-        target: 'http://127.0.0.1:5000',
+        target: process.env.VITE_API_URL,
         changeOrigin: true,
         secure: false
       }
