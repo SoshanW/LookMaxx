@@ -8,6 +8,7 @@ import os
 import sys
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask import request
 import datetime
 from extensions import mongo, jwt, init_limiter
 import logging
@@ -79,9 +80,11 @@ def create_unified_app():
 
     # CORS configuration
     # Set up CORS using Flask-CORS (this is optional if you add headers manually)
-    cors_origin = os.environ.get('CORS_ORIGIN', 'http://localhost:5173')
+    cors_origins_str = os.environ.get('CORS_ORIGIN', 'http://localhost:5173')
+    cors_origins = [origin.strip() for origin in cors_origins_str.split(',')]
+    
     CORS(app, 
-        resources={r"/*": {"origins": cors_origin}}, 
+        resources={r"/*": {"origins": cors_origins}}, 
         supports_credentials=True,
         allow_headers=["Content-Type", "Authorization"],
         expose_headers=["Content-Type", "Authorization"],
@@ -90,9 +93,16 @@ def create_unified_app():
     # Manually add the header using after_request
     @app.after_request
     def add_cors_headers(response):
-        response.headers['Access-Control-Allow-Origin'] = cors_origin
+        origin = request.headers.get('Origin')
+        if origin and (origin in cors_origins or '*' in cors_origins):
+            response.headers['Access-Control-Allow-Origin'] = origin
+        else:
+            # Default to the first origin if none matched
+            response.headers['Access-Control-Allow-Origin'] = cors_origins[0] if cors_origins else '*'
+            
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
         response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
         return response
 
     
