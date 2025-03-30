@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { getCookie } from './cookies';
 
-// Base URL for API requests
-const API_BASE_URL = '';
+// Base URL for API requests - empty in development for proxy to work
+const API_BASE_URL = import.meta.env.MODE === 'development' ? '' : (import.meta.env.VITE_API_URL || '');
 
 // Create a preconfigured axios instance
 const apiClient = axios.create({
@@ -122,11 +122,8 @@ export const signupUser = async (userData, profilePicture) => {
       formData.append('profile_picture', profilePicture);
     }
     
-    // Use custom config that doesn't set Content-Type for FormData
-    const response = await axios.post(`${API_BASE_URL}/auth/signup`, formData, {
-      withCredentials: true,
-      // Don't set Content-Type here - browser will set it with boundary
-    });
+    // Use apiClient which already has the baseURL configured
+    const response = await apiClient.post('/auth/signup', formData);
     
     return response.data;
   } catch (error) {
