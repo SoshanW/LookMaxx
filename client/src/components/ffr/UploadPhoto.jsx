@@ -53,12 +53,15 @@ const UploadPhoto = ({ isVisible, onStartReportGeneration }) => {
       const userInfo = JSON.parse(userData);
       const username = userInfo.username;
       
+      // Get full API URL
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      
       // Log API request for debugging
-      console.log(`Sending FFR request to: ${import.meta.env.VITE_API_URL || ''}/ffr/analyze-face`);
+      console.log(`Sending FFR request to: ${API_URL}/ffr/analyze-face`);
       console.log('Authorization header present:', !!token);
       
       // Use fetch API for direct control over request
-      const response = await fetch('/ffr/analyze-face', {
+      const response = await fetch(`${API_URL}/ffr/analyze-face`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

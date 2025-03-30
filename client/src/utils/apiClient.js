@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { getCookie } from './cookies';
 
-// Base URL for API requests - empty in development for proxy to work
-const API_BASE_URL = import.meta.env.MODE === 'development' ? '' : (import.meta.env.VITE_API_URL || '');
+// Always use the full API URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 // Create a preconfigured axios instance
 const apiClient = axios.create({

@@ -608,14 +608,32 @@ const Casting = () => {
       const parsedUserData = JSON.parse(userData);
       const username = parsedUserData.username;
       
-      // Fetch user FFR results
-      const response = await api.get(`/ffr/get-ffr-results/${username}`);
+      // Get token from cookies
+      const token = getCookie('access_token');
+      
+      // Get API URL from environment variable
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      
+      // Fetch user FFR results directly
+      const response = await fetch(`${API_URL}/ffr/get-ffr-results/${username}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch FFR results: ${response.status}`);
+      }
+      
+      const data = await response.json();
       
       // Check if user has completed FFR analysis and has a PDF report
-      if (response.data && 
-          response.data.ffr_results && 
-          response.data.ffr_results.length > 0 && 
-          response.data.ffr_results[response.data.ffr_results.length - 1].pdf_url) {
+      if (data && 
+          data.ffr_results && 
+          data.ffr_results.length > 0 && 
+          data.ffr_results[data.ffr_results.length - 1].pdf_url) {
         // User has FFR report, redirect to application form
         navigate('/apply');
       } else {
