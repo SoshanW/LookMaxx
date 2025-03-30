@@ -28,6 +28,14 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
+    // Ensure credentials are included
+    config.withCredentials = true;
+    
+    // Log requests in development
+    if (import.meta.env.DEV) {
+      console.log(`Request: ${config.method.toUpperCase()} ${config.url}`, config);
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)

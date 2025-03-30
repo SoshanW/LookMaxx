@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
   // Use loaded env variables
   const apiUrl = env.VITE_API_URL || 'http://127.0.0.1:5000';
   
+  console.log(`API URL configured as: ${apiUrl}`);
+  
   return {
     plugins: [react()],
     server: {
@@ -15,22 +17,42 @@ export default defineConfig(({ mode }) => {
         '/auth': {
           target: apiUrl,
           changeOrigin: true, 
-          secure: false
+          secure: false,
+          rewrite: (path) => path,
+          configure: (proxy, _options) => {
+            proxy.on('error', (err, _req, _res) => {
+              console.log('Proxy error:', err);
+            });
+            proxy.on('proxyReq', (proxyReq, req, _res) => {
+              console.log('Sending Request:', req.method, req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, _res) => {
+              console.log('Received Response:', proxyRes.statusCode, req.url);
+            });
+          }
         },
         '/ffr': {
           target: apiUrl,
           changeOrigin: true,
-          secure: false
+          secure: false,
+          rewrite: (path) => path,
+          configure: (proxy, _options) => {
+            proxy.on('error', (err, _req, _res) => {
+              console.log('Proxy error:', err);
+            });
+          }
         },
         '/casting': {
           target: apiUrl,
           changeOrigin: true,
           secure: false,
+          rewrite: (path) => path
         },
         '/payments': {
           target: apiUrl,
           changeOrigin: true,
-          secure: false
+          secure: false,
+          rewrite: (path) => path
         }
       }
     }

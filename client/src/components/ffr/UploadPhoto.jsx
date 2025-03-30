@@ -44,17 +44,39 @@ const UploadPhoto = ({ isVisible, onStartReportGeneration }) => {
     const token = getCookie('access_token');
     
     try {
-      // Send file to the backend
+      // Get username from cookie
+      const userData = getCookie('user_data');
+      if (!userData) {
+        throw new Error('User data not found. Please log in again.');
+      }
+      
+      const userInfo = JSON.parse(userData);
+      const username = userInfo.username;
+      
+      // Log API request for debugging
+      console.log(`Sending FFR request to: ${import.meta.env.VITE_API_URL || ''}/ffr/analyze-face`);
+      console.log('Authorization header present:', !!token);
+      
+      // Use fetch API for direct control over request
       const response = await fetch('/ffr/analyze-face', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
         },
-        body: formData
+        body: formData,
+        credentials: 'include'
       });
       
+      // Enhanced error handling
       if (!response.ok) {
-        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('FFR API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          responseText: errorText
+        });
+        
+        throw new Error(`Server returned ${response.status}: ${errorText || response.statusText}`);
       }
       
       const data = await response.json();

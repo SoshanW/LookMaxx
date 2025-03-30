@@ -92,10 +92,12 @@ const SignUp = ({ initialActiveTab = 'signup', onBackToHome }) => {
   
     try {
       // Check for return path from state
-      const returnPath = location.state?.returnPath || 'http://localhost:5173/ffr';
+      const returnPath = location.state?.returnPath || '/profile';
       
       // Call the login function from useAuth
-      const result = await login(loginUsername, loginPassword);
+      const result = await login(loginUsername, loginPassword, null, {
+        redirectPath: returnPath
+      });
       
       if (result && result.success) {
         console.log('User logged in:', loginUsername);
