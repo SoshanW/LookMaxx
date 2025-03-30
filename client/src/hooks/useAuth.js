@@ -1,7 +1,6 @@
 // src/hooks/useAuth.js
 import { useState, useEffect, useCallback } from 'react';
 import { setCookie, getCookie, deleteCookie } from '../utils/cookies';
-import axios from 'axios';  
 
 export const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -50,19 +49,16 @@ export const useAuth = () => {
       
       // If username and password are provided, perform actual login
       if (password && !userData) {
-        // Call the API function
-        const response = await axios.post('/auth/login', 
-          new URLSearchParams({
-            username: username,
-            password: password
-          }), 
-          {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            withCredentials: true
-          }
-        );
+        // Import apiClient to use the configured instance
+        const apiClient = (await import('../utils/apiClient')).default;
+        
+        // Create form data as your login API expects
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+        
+        // Call the API function using apiClient
+        const response = await apiClient.post('/auth/login', formData);
         
         console.log('Login response:', response.data);
         
@@ -141,9 +137,11 @@ export const useAuth = () => {
         formData.append('profile_picture', profilePicture);
       }
       
-      const response = await axios.post('/auth/signup', formData, {
-        withCredentials: true
-      });
+      // Import apiClient to use the configured instance
+      const apiClient = (await import('../utils/apiClient')).default;
+      
+      // Use apiClient which has the correct baseURL configured
+      const response = await apiClient.post('/auth/signup', formData);
       
       return { success: true, data: response.data };
     } catch (error) {
@@ -161,11 +159,12 @@ export const useAuth = () => {
       // Try to call the backend logout endpoint if token exists
       const token = getCookie('access_token');
       if (token) {
-        await axios.post('/auth/logout', {}, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }).catch(e => console.warn('Error calling logout endpoint:', e));
+        // Import apiClient to use the configured instance
+        const apiClient = (await import('../utils/apiClient')).default;
+        
+        // Use apiClient which has the correct baseURL configured
+        await apiClient.post('/auth/logout', {})
+          .catch(e => console.warn('Error calling logout endpoint:', e));
       }
 
       // Clear auth cookies
