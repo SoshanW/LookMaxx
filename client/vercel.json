@@ -1,0 +1,39 @@
+{
+    "rewrites": [
+    {
+        "source": "/auth/:path*",
+        "destination": "https://capp-lookmaxx.happywave-d54ff16c.southeastasia.azurecontainerapps.io/auth/:path*"
+    },
+    {
+        "source": "/ffr/:path*",
+        "destination": "https://capp-lookmaxx.happywave-d54ff16c.southeastasia.azurecontainerapps.io/ffr/:path*"
+    },
+    {
+        "source": "/casting/:path*",
+        "destination": "https://capp-lookmaxx.happywave-d54ff16c.southeastasia.azurecontainerapps.io/casting/:path*"
+    },
+    {
+        "source": "/payments/:path*",
+        "destination": "https://capp-lookmaxx.happywave-d54ff16c.southeastasia.azurecontainerapps.io/payments/:path*"
+    },
+    {
+        "source": "/community/:path*",
+        "destination": "https://capp-lookmaxx.happywave-d54ff16c.southeastasia.azurecontainerapps.io/community/:path*"
+    },
+    {
+        "source": "/(.*)",
+        "destination": "/index.html"
+    }
+    ],
+    "headers": [
+    {
+        "source": "/(.*)",
+        "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
+        ]
+    }
+    ]
+} 
