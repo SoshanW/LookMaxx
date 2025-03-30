@@ -78,6 +78,7 @@ def create_unified_app():
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', app.config['SECRET_KEY'])
 
     # CORS configuration
+    # Set up CORS using Flask-CORS (this is optional if you add headers manually)
     cors_origin = os.environ.get('CORS_ORIGIN', 'http://localhost:5173')
     CORS(app, 
         resources={r"/*": {"origins": cors_origin}}, 
@@ -85,6 +86,15 @@ def create_unified_app():
         allow_headers=["Content-Type", "Authorization"],
         expose_headers=["Content-Type", "Authorization"],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+
+    # Manually add the header using after_request
+    @app.after_request
+    def add_cors_headers(response):
+        response.headers['Access-Control-Allow-Origin'] = cors_origin
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+        return response
+
     
     # JWT Configuration
     jwt.init_app(app)
