@@ -2,7 +2,7 @@
     "rewrites": [
         {
         "source": "/ffr/(.*)",
-        "destination": "https://capp-lookmaxx.happywave-d54ff16c.southeastasia.azurecontainerapps.io/ffr/$1"
+        "destination": "${VITE_API_URL}/ffr/$1"
         },
         {
         "source": "/(.*)",

@@ -1,117 +1,117 @@
-# name: Deploy Flask Backend to Azure Container App
+name: Deploy Flask Backend to Azure Container App
 
-# on:
-#   push:
-#     branches: [main]
+on:
+  push:
+    branches: [main]
 
-# jobs:
-#   build-test-deploy:
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v4
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-#     - name: Set up Python
-#       uses: actions/setup-python@v5
-#       with:
-#         python-version: '3.10'
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
 
-#     - name: Install dependencies
-#       run: |
-#         cd server
-#         python -m pip install --upgrade pip
-#         pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        cd server
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-#     - name: Run tests
-#       run: |
-#         cd server
-#         pytest tests/ -v
+    - name: Run tests
+      run: |
+        cd server
+        pytest tests/ -v
 
-#     - name: Login to Azure
-#       uses: azure/login@v1
-#       with:
-#         creds: ${{ secrets.AZURE_CREDENTIAL }}
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIAL }}
 
-#     - name: Set up Docker Buildx
-#       uses: docker/setup-buildx-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-#     - name: Login to Azure Container Registry
-#       uses: docker/login-action@v2
-#       with:
-#         registry: ${{ secrets.ACR_LOGIN_SERVER }}
-#         username: ${{ secrets.ACR_USERNAME }}
-#         password: ${{ secrets.ACR_PASSWORD }}
+    - name: Login to Azure Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ secrets.ACR_LOGIN_SERVER }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
 
-#     - name: Cache Docker layers
-#       uses: actions/cache@v3
-#       with:
-#         path: /tmp/.buildx-cache
-#         key: ${{ runner.os }}-buildx-${{ github.sha }}
-#         restore-keys: |
-#           ${{ runner.os }}-buildx-
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
 
-#     - name: Create Google Cloud credentials file
-#       run: |
-#         echo '${{ secrets.GOOGLE_CREDENTIALS_JSON }}' > server/look-sci-452706-ba857d314931.json
+    - name: Create Google Cloud credentials file
+      run: |
+        echo '${{ secrets.GOOGLE_CREDENTIALS_JSON }}' > server/look-sci-452706-ba857d314931.json
 
-#     - name: Build and push container image to registry
-#       uses: docker/build-push-action@v4
-#       with:
-#         context: server
-#         push: true
-#         tags: |
-#           ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
-#           ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:latest
-#         file: server/Dockerfile
-#         cache-from: type=local,src=/tmp/.buildx-cache
-#         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-#         build-args: |
-#           BUILDPLATFORM=linux/amd64
-#         platforms: linux/amd64
-#         outputs: type=image,compression-level=9,force-compression=true
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v4
+      with:
+        context: server
+        push: true
+        tags: |
+          ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:${{ github.sha }}
+          ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:latest
+        file: server/Dockerfile
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        build-args: |
+          BUILDPLATFORM=linux/amd64
+        platforms: linux/amd64
+        outputs: type=image,compression-level=9,force-compression=true
 
-#     - name: Update cache
-#       run: |
-#         rm -rf /tmp/.buildx-cache
-#         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+    - name: Update cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-#     - name: Deploy to Azure Container App
-#       uses: azure/container-apps-deploy-action@v1
-#       with:
-#         acrName: ${{ secrets.ACR_NAME }}
-#         containerAppName: ${{ secrets.CONTAINER_APP_NAME }}
-#         resourceGroup: ${{ secrets.RESOURCE_GROUP }}
-#         imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:latest
-#         targetPort: 5000
-#         environmentVariables: |
-#           PORT=5000
-#           GUNICORN_CMD_ARGS=--workers=2 --timeout=600 --log-level=debug
-#           SECRET_KEY=${{ secrets.SECRET_KEY }}
-#           DEBUG=False
-#           CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
-#           MONGO_URI=${{ secrets.MONGO_URI }}
-#           JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-#           JWT_HOURS=${{ secrets.JWT_HOURS }}
-#           AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
-#           AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           AWS_REGION=${{ secrets.AWS_REGION }}
-#           S3_BUCKET=${{ secrets.S3_BUCKET }}
-#           S3_PROFILE_PICTURES_PREFIX=${{ secrets.S3_PROFILE_PICTURES_PREFIX }}
-#           S3_FFR_PICTURES_UPLOAD=${{ secrets.S3_FFR_PICTURES_UPLOAD }}
-#           S3_FFR_PICTURES_GENERATED=${{ secrets.S3_FFR_PICTURES_GENERATED }}
-#           S3_FFR_PDF_UPLOAD=${{ secrets.S3_FFR_PDF_UPLOAD }}
-#           LANGSMITH_TRACING=${{ secrets.LANGSMITH_TRACING }}
-#           LANGSMITH_ENDPOINT=${{ secrets.LANGSMITH_ENDPOINT }}
-#           LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}
-#           LANGSMITH_PROJECT=${{ secrets.LANGSMITH_PROJECT }}
-#           ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-#           GOOGLE_CLOUD_PROJECT=${{ secrets.GOOGLE_CLOUD_PROJECT }}
-#           GOOGLE_APPLICATION_CREDENTIALS=/app/look-sci-452706-ba857d314931.json
-#         secrets: |
-#           MONGO_URI=${{ secrets.MONGO_URI }}
-#           JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-#           SECRET_KEY=${{ secrets.SECRET_KEY }}
-#           AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
-#           AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-#           LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}
+    - name: Deploy to Azure Container App
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        acrName: ${{ secrets.ACR_NAME }}
+        containerAppName: ${{ secrets.CONTAINER_APP_NAME }}
+        resourceGroup: ${{ secrets.RESOURCE_GROUP }}
+        imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/lookmaxx-backend:latest
+        targetPort: 5000
+        environmentVariables: |
+          PORT=5000
+          GUNICORN_CMD_ARGS=--workers=2 --timeout=600 --log-level=debug
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          DEBUG=False
+          CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
+          MONGO_URI=${{ secrets.MONGO_URI }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          JWT_HOURS=${{ secrets.JWT_HOURS }}
+          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION=${{ secrets.AWS_REGION }}
+          S3_BUCKET=${{ secrets.S3_BUCKET }}
+          S3_PROFILE_PICTURES_PREFIX=${{ secrets.S3_PROFILE_PICTURES_PREFIX }}
+          S3_FFR_PICTURES_UPLOAD=${{ secrets.S3_FFR_PICTURES_UPLOAD }}
+          S3_FFR_PICTURES_GENERATED=${{ secrets.S3_FFR_PICTURES_GENERATED }}
+          S3_FFR_PDF_UPLOAD=${{ secrets.S3_FFR_PDF_UPLOAD }}
+          LANGSMITH_TRACING=${{ secrets.LANGSMITH_TRACING }}
+          LANGSMITH_ENDPOINT=${{ secrets.LANGSMITH_ENDPOINT }}
+          LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}
+          LANGSMITH_PROJECT=${{ secrets.LANGSMITH_PROJECT }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_CLOUD_PROJECT=${{ secrets.GOOGLE_CLOUD_PROJECT }}
+          GOOGLE_APPLICATION_CREDENTIALS=/app/look-sci-452706-ba857d314931.json
+        secrets: |
+          MONGO_URI=${{ secrets.MONGO_URI }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          SECRET_KEY=${{ secrets.SECRET_KEY }}
+          AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+          LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}
